@@ -658,27 +658,28 @@
       font-family: var(--sans);
       font-size: 10.5px;
       font-weight: 500;
-      letter-spacing: 0.2em;
+      letter-spacing: 0.22em;
       text-transform: uppercase;
-      color: var(--dark-1);
-      background: none;
-      border: none;
-      border-bottom: 1px solid var(--dark-1);
-      padding-bottom: 3px;
+      color: var(--bronze);
+      background: transparent;
+      border: 1.5px solid var(--bronze);
+      padding: 13px 28px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 7px;
-      transition: border-color 0.3s, color 0.3s;
+      gap: 9px;
+      transition: background 0.3s, color 0.3s, transform 0.2s;
     }
     .btn-watch-video:hover {
-      color: var(--bronze);
-      border-color: var(--bronze);
+      background: var(--bronze);
+      color: var(--dark);
+      transform: translateY(-2px);
     }
     .btn-watch-video svg {
-      width: 14px;
-      height: 14px;
+      width: 15px;
+      height: 15px;
       flex-shrink: 0;
+      transition: color 0.3s;
     }
 
     .about-image-col {
@@ -1318,7 +1319,7 @@
       <div class="about-cta-row">
         <a href="mailto:shana@craftbauer.com" class="btn-primary-dark">Work With Shana</a>
         <button class="btn-watch-video" onclick="openVideoModal()">
-          <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.5"/><polygon points="10,8 17,12 10,16" fill="currentColor"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9.25" stroke="currentColor" stroke-width="1.5"/><polygon points="10.5,8.5 16.5,12 10.5,15.5" fill="currentColor"/></svg>
           Watch Video
         </button>
       </div>
