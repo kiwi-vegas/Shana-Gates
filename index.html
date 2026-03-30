@@ -773,6 +773,26 @@
       margin-top: 48px;
     }
 
+    /* Force YLOPO widget text to dark/black — widget defaults to light colors */
+    .YLOPO_resultsWidget,
+    .YLOPO_resultsWidget * {
+      color: #1a1814 !important;
+    }
+    .YLOPO_resultsWidget input,
+    .YLOPO_resultsWidget select,
+    .YLOPO_resultsWidget textarea {
+      color: #1a1814 !important;
+      background-color: #fff !important;
+    }
+    .YLOPO_resultsWidget button,
+    .YLOPO_resultsWidget [role="button"] {
+      color: #1a1814 !important;
+    }
+    /* Keep any explicitly white-text buttons (e.g. solid CTA buttons) legible */
+    .YLOPO_resultsWidget [style*="background-color: rgb("] {
+      color: #fff !important;
+    }
+
     .btn-view-all-properties {
       display: inline-block;
       font-family: var(--sans);

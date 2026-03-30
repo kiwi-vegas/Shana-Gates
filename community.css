@@ -803,6 +803,28 @@ footer {
 }
 
 /* ============================================================
+   YLOPO WIDGET — Force dark text (widget defaults to light colors)
+============================================================ */
+.YLOPO_resultsWidget,
+.YLOPO_resultsWidget * {
+  color: #1a1814 !important;
+}
+.YLOPO_resultsWidget input,
+.YLOPO_resultsWidget select,
+.YLOPO_resultsWidget textarea {
+  color: #1a1814 !important;
+  background-color: #fff !important;
+}
+.YLOPO_resultsWidget button,
+.YLOPO_resultsWidget [role="button"] {
+  color: #1a1814 !important;
+}
+/* Keep solid CTA buttons with colored backgrounds legible */
+.YLOPO_resultsWidget [style*="background-color: rgb("] {
+  color: #fff !important;
+}
+
+/* ============================================================
    MAPBOX OVERRIDES
 ============================================================ */
 .mapboxgl-ctrl-bottom-right,
