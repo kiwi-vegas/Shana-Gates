@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Content Assistant — Shana Gates</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: #0a0a0a;
+      font-family: system-ui, -apple-system, sans-serif;
+      color: #fff;
+      overflow: hidden;
+    }
+
+    /* ── Header ── */
+    #header {
+      padding: 14px 24px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #111;
+      flex-shrink: 0;
+    }
+    #header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: rgba(184,151,90,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+      position: relative;
+    }
+    .avatar-dot {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: #4ade80;
+      border: 2px solid #111;
+    }
+    .header-label {
+      color: rgba(255,255,255,0.35);
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .header-name {
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    #header-right {
+      display: flex;
+      gap: 8px;
+    }
+    .btn-icon {
+      background: none;
+      border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.4);
+      padding: 7px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .btn-icon:hover {
+      border-color: rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.7);
+    }
+
+    /* ── Messages ── */
+    #messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 24px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .msg-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+    }
+    .msg-row.user { justify-content: flex-end; }
+    .msg-row.assistant { justify-content: flex-start; }
+    .msg-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(184,151,90,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+    .bubble {
+      max-width: 72%;
+      padding: 13px 17px;
+      font-size: 14px;
+      line-height: 1.65;
+      white-space: pre-wrap;
+    }
+    .bubble.user {
+      background: #B8975A;
+      color: #000;
+      border-radius: 18px 18px 4px 18px;
+    }
+    .bubble.assistant {
+      background: #1a1a1a;
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px 18px 18px 4px;
+    }
+    .bubble img.attached {
+      max-width: 200px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    /* ── Loading dots ── */
+    .loading-dots {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      padding: 13px 17px;
+    }
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.25);
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+    .loading-label {
+      color: rgba(255,255,255,0.35);
+      font-size: 12px;
+      margin-left: 4px;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.25; transform: scale(0.9); }
+      50% { opacity: 1; transform: scale(1.1); }
+    }
+
+    /* ── Image preview bar ── */
+    #image-preview-bar {
+      padding: 12px 24px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #111;
+      display: none;
+    }
+    #image-preview-bar img {
+      height: 48px;
+      border-radius: 6px;
+    }
+    #image-preview-bar span {
+      color: rgba(255,255,255,0.5);
+      font-size: 13px;
+    }
+    #remove-image {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.3);
+      cursor: pointer;
+      font-size: 22px;
+      margin-left: auto;
+      line-height: 1;
+      padding: 0;
+    }
+    #remove-image:hover { color: rgba(255,255,255,0.6); }
+
+    /* ── Input bar ── */
+    #input-bar {
+      padding: 16px 24px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+      background: #111;
+      flex-shrink: 0;
+    }
+    #attach-btn {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.5);
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 18px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+    }
+    #attach-btn:hover { background: rgba(255,255,255,0.09); }
+    #message-input {
+      flex: 1;
+      padding: 12px 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 14px;
+      font-family: inherit;
+      resize: none;
+      outline: none;
+      line-height: 1.5;
+      max-height: 120px;
+      overflow-y: auto;
+      transition: border-color 0.2s;
+    }
+    #message-input:focus { border-color: rgba(184,151,90,0.4); }
+    #message-input::placeholder { color: rgba(255,255,255,0.25); }
+    #send-btn {
+      background: #B8975A;
+      border: none;
+      border-radius: 8px;
+      color: #000;
+      padding: 12px 20px;
+      font-weight: 700;
+      font-size: 14px;
+      font-family: inherit;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: opacity 0.15s;
+    }
+    #send-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+    #send-btn:not(:disabled):hover { opacity: 0.88; }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div id="header">
+    <div id="header-left">
+      <div class="avatar">
+        ✦
+        <div class="avatar-dot"></div>
+      </div>
+      <div>
+        <div class="header-label">Shana Gates &nbsp;·&nbsp; Craft &amp; Bauer</div>
+        <div class="header-name">Site Assistant</div>
+      </div>
+    </div>
+    <div id="header-right">
+      <button class="btn-icon" id="logout-btn">Sign Out</button>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  <div id="messages"></div>
+
+  <!-- Image preview bar -->
+  <div id="image-preview-bar">
+    <img id="image-preview-thumb" src="" alt="pending" />
+    <span>Image attached</span>
+    <button id="remove-image">×</button>
+  </div>
+
+  <!-- Input bar -->
+  <div id="input-bar">
+    <input type="file" id="file-input" accept="image/*" style="display:none" />
+    <button id="attach-btn" title="Attach image">📎</button>
+    <textarea
+      id="message-input"
+      rows="1"
+      placeholder="Message your assistant…"
+    ></textarea>
+    <button id="send-btn" disabled>Send</button>
+  </div>
+
+  <script>
+    // ── Auth guard ──
+    if (!localStorage.getItem('sg_auth')) {
+      window.location.href = '/admin/assistant/login.html';
+    }
+
+    // ── State ──
+    let apiMessages = [];
+    let pendingImage = null; // { base64, mimeType, preview }
+    let loading = false;
+
+    const messagesEl = document.getElementById('messages');
+    const inputEl = document.getElementById('message-input');
+    const sendBtn = document.getElementById('send-btn');
+    const fileInput = document.getElementById('file-input');
+    const imagePreviewBar = document.getElementById('image-preview-bar');
+    const imagePreviewThumb = document.getElementById('image-preview-thumb');
+
+    // ── Welcome message ──
+    appendAssistantMessage(
+      "Hi Shana! I'm here to help you update your website. You can tell me things like:\n\n" +
+      "• \"Change the median price in Palm Springs to $750K\"\n" +
+      "• \"Update active listings in Rancho Mirage to 180+\"\n" +
+      "• \"Change the drive to LA on Indian Wells to 1 hour 50 minutes\"\n" +
+      "• \"Update the hero headline on La Quinta\"\n" +
+      "• Attach an image to replace a hero or section photo\n\n" +
+      "What would you like to update?"
+    );
+
+    // ── Logout ──
+    document.getElementById('logout-btn').addEventListener('click', async function() {
+      await fetch('/api/assistant/auth', { method: 'DELETE' });
+      localStorage.removeItem('sg_auth');
+      window.location.href = '/admin/assistant/login.html';
+    });
+
+    // ── Image attach ──
+    document.getElementById('attach-btn').addEventListener('click', function() {
+      fileInput.click();
+    });
+
+    fileInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function() {
+        const dataUrl = reader.result;
+        const img = new Image();
+        img.onload = function() {
+          const MAX = 1200;
+          let w = img.width, h = img.height;
+          if (w > MAX || h > MAX) {
+            if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
+            else { w = Math.round(w * MAX / h); h = MAX; }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          const resized = canvas.toDataURL('image/jpeg', 0.85);
+          pendingImage = {
+            base64: resized.split(',')[1],
+            mimeType: 'image/jpeg',
+            preview: resized,
+          };
+          imagePreviewThumb.src = resized;
+          imagePreviewBar.style.display = 'flex';
+          updateSendBtn();
+        };
+        img.src = dataUrl;
+      };
+      reader.readAsDataURL(file);
+      e.target.value = '';
+    });
+
+    document.getElementById('remove-image').addEventListener('click', function() {
+      pendingImage = null;
+      imagePreviewBar.style.display = 'none';
+      updateSendBtn();
+    });
+
+    // ── Input handling ──
+    inputEl.addEventListener('input', function() {
+      updateSendBtn();
+      // Auto-resize
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+    });
+
+    inputEl.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        if (!sendBtn.disabled) send();
+      }
+    });
+
+    sendBtn.addEventListener('click', send);
+
+    function updateSendBtn() {
+      sendBtn.disabled = loading || (!inputEl.value.trim() && !pendingImage);
+    }
+
+    // ── Send ──
+    async function send() {
+      if (loading) return;
+      const text = inputEl.value.trim();
+      if (!text && !pendingImage) return;
+
+      inputEl.value = '';
+      inputEl.style.height = 'auto';
+
+      // Display user message
+      appendUserMessage(text, pendingImage?.preview);
+
+      // Build API message
+      let apiMsg;
+      if (pendingImage) {
+        apiMsg = {
+          role: 'user',
+          content: [
+            { type: 'image', source: { type: 'base64', media_type: pendingImage.mimeType, data: pendingImage.base64 } },
+            ...(text ? [{ type: 'text', text }] : []),
+          ],
+        };
+      } else {
+        apiMsg = { role: 'user', content: text };
+      }
+
+      const hadImage = !!pendingImage;
+      pendingImage = null;
+      imagePreviewBar.style.display = 'none';
+
+      const newApiMessages = [...apiMessages, apiMsg];
+      loading = true;
+      updateSendBtn();
+      const loadingEl = appendLoadingIndicator(hadImage);
+
+      try {
+        const res = await fetch('/api/assistant/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ messages: newApiMessages }),
+        });
+
+        if (res.status === 401) {
+          localStorage.removeItem('sg_auth');
+          window.location.href = '/admin/assistant/login.html';
+          return;
+        }
+
+        const data = await res.json();
+        removeLoadingIndicator(loadingEl);
+
+        if (data.reply) {
+          appendAssistantMessage(data.reply);
+          apiMessages = data.messages ?? newApiMessages;
+        } else {
+          appendAssistantMessage('Something went wrong. Please try again.');
+        }
+      } catch {
+        removeLoadingIndicator(loadingEl);
+        appendAssistantMessage('Connection error. Please try again.');
+      } finally {
+        loading = false;
+        updateSendBtn();
+      }
+    }
+
+    // ── DOM helpers ──
+    function appendUserMessage(text, imagePreview) {
+      const row = document.createElement('div');
+      row.className = 'msg-row user';
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble user';
+      if (imagePreview) {
+        const img = document.createElement('img');
+        img.src = imagePreview;
+        img.className = 'attached';
+        bubble.appendChild(img);
+      }
+      if (text) bubble.appendChild(document.createTextNode(text));
+      if (!text && !imagePreview) bubble.textContent = '(image attached)';
+      row.appendChild(bubble);
+      messagesEl.appendChild(row);
+      scrollToBottom();
+    }
+
+    function appendAssistantMessage(text) {
+      const row = document.createElement('div');
+      row.className = 'msg-row assistant';
+      const avatarEl = document.createElement('div');
+      avatarEl.className = 'msg-avatar';
+      avatarEl.textContent = '✦';
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble assistant';
+      bubble.textContent = text;
+      row.appendChild(avatarEl);
+      row.appendChild(bubble);
+      messagesEl.appendChild(row);
+      scrollToBottom();
+    }
+
+    function appendLoadingIndicator(hasImage) {
+      const row = document.createElement('div');
+      row.className = 'msg-row assistant';
+      const avatarEl = document.createElement('div');
+      avatarEl.className = 'msg-avatar';
+      avatarEl.textContent = '✦';
+      const dotsEl = document.createElement('div');
+      dotsEl.className = 'bubble assistant loading-dots';
+      dotsEl.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+      if (hasImage) {
+        const label = document.createElement('span');
+        label.className = 'loading-label';
+        label.textContent = 'Uploading image…';
+        dotsEl.appendChild(label);
+      }
+      row.appendChild(avatarEl);
+      row.appendChild(dotsEl);
+      messagesEl.appendChild(row);
+      scrollToBottom();
+      return row;
+    }
+
+    function removeLoadingIndicator(el) {
+      if (el && el.parentNode) el.parentNode.removeChild(el);
+    }
+
+    function scrollToBottom() {
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+  </script>
+</body>
+</html>

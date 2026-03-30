@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/assistant/chat.ts": {
+      "maxDuration": 120
+    }
+  }
+}

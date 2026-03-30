@@ -242,5 +242,46 @@
     new IntersectionObserver((e) => { if (e[0].isIntersecting && !lmi) { lmi = true; const m = new mapboxgl.Map({ container: 'lifestyle-map', style: 'mapbox://styles/mapbox/dark-v11', center: [LNG, LAT], zoom: 11.5, interactive: true, attributionControl: false }); m.on('load', () => { addBoundary(m,'lifestyle'); const el = document.createElement('div'); el.style.cssText = `width:14px;height:14px;background:${BRONZE};border:2px solid #fff;border-radius:50%;box-shadow:0 0 14px ${BRONZE}bb;`; new mapboxgl.Marker({ element: el }).setLngLat([LNG, LAT]).addTo(m); const label = document.createElement('div'); label.style.cssText = `position:absolute;bottom:40px;left:16px;background:rgba(10,10,10,0.88);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(184,151,90,0.35);border-radius:4px;padding:8px 14px;pointer-events:none;z-index:10;`; label.innerHTML = `<div style="font-size:10px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:#B8975A;font-family:'Jost',sans-serif;">Indio</div><div style="font-size:10px;color:rgba(255,255,255,0.45);margin-top:3px;font-family:'Jost',sans-serif;">Coachella Valley, CA</div>`; document.getElementById('lifestyle-map').appendChild(label); }); } }, { threshold: 0.1 }).observe(document.getElementById('lifestyle-map'));
     document.querySelectorAll('.reveal').forEach(el => { new IntersectionObserver((e) => { e.forEach(i => { if (i.isIntersecting) { i.target.classList.add('visible'); } }); }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }).observe(el); });
   </script>
+
+  <!-- Sanity content sync — updates stats and facts from CMS without redeploy -->
+  <script>
+  (function() {
+    var SLUG = 'indio';
+    var PROJECT = 'll3zy5cp';
+    var DATASET = 'production';
+    var query = '*[_type=="communityPage"&&slug.current=="' + SLUG + '"][0]{quickStats[]{key,value},heroImage{asset->{url}}}';
+    var url = 'https://' + PROJECT + '.apicdn.sanity.io/v2024-01-01/data/query/' + DATASET + '?query=' + encodeURIComponent(query);
+    fetch(url).then(function(r){ return r.json(); }).then(function(data) {
+      var doc = data.result;
+      if (!doc) return;
+      if (doc.quickStats && doc.quickStats.length) {
+        doc.quickStats.forEach(function(stat) {
+          var keyLower = stat.key.toLowerCase();
+          document.querySelectorAll('.hero-stat').forEach(function(el) {
+            var lbl = el.querySelector('.hero-stat-label');
+            var val = el.querySelector('.hero-stat-value');
+            if (lbl && val && lbl.textContent.trim().toLowerCase() === keyLower) val.textContent = stat.value;
+          });
+          document.querySelectorAll('.quick-fact').forEach(function(el) {
+            var lbl = el.querySelector('.fact-label');
+            var val = el.querySelector('.fact-value');
+            if (lbl && val && lbl.textContent.trim().toLowerCase() === keyLower) val.textContent = stat.value;
+          });
+        });
+      }
+      if (doc.heroImage && doc.heroImage.asset && doc.heroImage.asset.url) {
+        var heroSection = document.getElementById('community-hero');
+        var heroMap = document.getElementById('hero-map');
+        if (heroSection && heroMap) {
+          var overlay = document.createElement('div');
+          overlay.style.cssText = 'position:absolute;inset:0;background-image:url(' + doc.heroImage.asset.url + '?w=1600&auto=format);background-size:cover;background-position:center;z-index:1;';
+          heroSection.insertBefore(overlay, heroMap.nextSibling);
+          heroMap.style.display = 'none';
+        }
+      }
+    }).catch(function(){});
+  })();
+  </script>
+
 </body>
 </html>
