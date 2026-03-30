@@ -773,6 +773,26 @@
       margin-top: 48px;
     }
 
+    .btn-view-all-properties {
+      display: inline-block;
+      font-family: var(--sans);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--dark);
+      background: var(--bronze);
+      padding: 17px 48px;
+      text-decoration: none;
+      border: none;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    .btn-view-all-properties:hover {
+      background: var(--bronze-light);
+      transform: translateY(-2px);
+    }
+
     /* ============================================================
        FOOTER
     ============================================================ */
@@ -1144,7 +1164,7 @@
           </div>
           <div class="flip-card-back">
             <div class="map-container" id="map-palm-springs"></div>
-            <a class="map-label" href="https://search.searchcoachellavalleyhomes.com/search?s[locations][0][city]=Palm+Springs&s[locations][0][state]=CA" target="_blank" rel="noopener">Palm Springs &rarr;</a>
+            <a class="map-label" href="palm-springs.html">Palm Springs &rarr;</a>
           </div>
         </div>
       </div>
@@ -1160,7 +1180,7 @@
           </div>
           <div class="flip-card-back">
             <div class="map-container" id="map-palm-desert"></div>
-            <a class="map-label" href="https://search.searchcoachellavalleyhomes.com/search?s[locations][0][city]=Palm+Desert&s[locations][0][state]=CA" target="_blank" rel="noopener">Palm Desert &rarr;</a>
+            <a class="map-label" href="palm-desert.html">Palm Desert &rarr;</a>
           </div>
         </div>
       </div>
@@ -1176,7 +1196,7 @@
           </div>
           <div class="flip-card-back">
             <div class="map-container" id="map-rancho-mirage"></div>
-            <a class="map-label" href="https://search.searchcoachellavalleyhomes.com/search?s[locations][0][city]=Rancho+Mirage&s[locations][0][state]=CA" target="_blank" rel="noopener">Rancho Mirage &rarr;</a>
+            <a class="map-label" href="rancho-mirage.html">Rancho Mirage &rarr;</a>
           </div>
         </div>
       </div>
@@ -1192,7 +1212,7 @@
           </div>
           <div class="flip-card-back">
             <div class="map-container" id="map-indian-wells"></div>
-            <a class="map-label" href="https://search.searchcoachellavalleyhomes.com/search?s[locations][0][city]=Indian+Wells&s[locations][0][state]=CA" target="_blank" rel="noopener">Indian Wells &rarr;</a>
+            <a class="map-label" href="indian-wells.html">Indian Wells &rarr;</a>
           </div>
         </div>
       </div>
@@ -1208,7 +1228,7 @@
           </div>
           <div class="flip-card-back">
             <div class="map-container" id="map-la-quinta"></div>
-            <a class="map-label" href="https://search.searchcoachellavalleyhomes.com/search?s[locations][0][city]=La+Quinta&s[locations][0][state]=CA" target="_blank" rel="noopener">La Quinta &rarr;</a>
+            <a class="map-label" href="la-quinta.html">La Quinta &rarr;</a>
           </div>
         </div>
       </div>
@@ -1224,7 +1244,7 @@
           </div>
           <div class="flip-card-back">
             <div class="map-container" id="map-indio"></div>
-            <a class="map-label" href="https://search.searchcoachellavalleyhomes.com/search?s[locations][0][city]=Indio&s[locations][0][state]=CA" target="_blank" rel="noopener">Indio &rarr;</a>
+            <a class="map-label" href="indio.html">Indio &rarr;</a>
           </div>
         </div>
       </div>
@@ -1240,7 +1260,7 @@
           </div>
           <div class="flip-card-back">
             <div class="map-container" id="map-cathedral-city"></div>
-            <a class="map-label" href="https://search.searchcoachellavalleyhomes.com/search?s[locations][0][city]=Cathedral+City&s[locations][0][state]=CA" target="_blank" rel="noopener">Cathedral City &rarr;</a>
+            <a class="map-label" href="cathedral-city.html">Cathedral City &rarr;</a>
           </div>
         </div>
       </div>
@@ -1256,7 +1276,7 @@
           </div>
           <div class="flip-card-back">
             <div class="map-container" id="map-desert-hot-springs"></div>
-            <a class="map-label" href="https://search.searchcoachellavalleyhomes.com/search?s[locations][0][city]=Desert+Hot+Springs&s[locations][0][state]=CA" target="_blank" rel="noopener">Desert Hot Springs &rarr;</a>
+            <a class="map-label" href="desert-hot-springs.html">Desert Hot Springs &rarr;</a>
           </div>
         </div>
       </div>
@@ -1272,7 +1292,7 @@
           </div>
           <div class="flip-card-back">
             <div class="map-container" id="map-coachella"></div>
-            <a class="map-label" href="https://search.searchcoachellavalleyhomes.com/search?s[locations][0][city]=Coachella&s[locations][0][state]=CA" target="_blank" rel="noopener">Coachella &rarr;</a>
+            <a class="map-label" href="coachella.html">Coachella &rarr;</a>
           </div>
         </div>
       </div>
@@ -1329,6 +1349,11 @@
     <div class="ylopo-container reveal">
       <div class="YLOPO_resultsWidget" data-search='{"locations":[{"city":"Coachella","state":"CA"},{"city":"Indio","state":"CA"},{"city":"La Quinta","state":"CA"},{"city":"Palm Springs","state":"CA"},{"city":"Palm Desert","state":"CA"}],"propertyTypes":["house"],"limit":12,"minPrice":1500000}'></div>
     </div>
+    <div class="ylopo-cta-row reveal" style="text-align:center; margin-top:52px;">
+      <a href="https://search.searchcoachellavalleyhomes.com/search" target="_blank" rel="noopener" class="btn-view-all-properties">
+        View All Coachella Valley Properties &rarr;
+      </a>
+    </div>
   </section>
 
   <!-- ============================================================
@@ -1350,12 +1375,15 @@
       <div>
         <p class="footer-col-heading">Communities</p>
         <ul class="footer-links">
-          <li><a href="#">Palm Springs</a></li>
-          <li><a href="#">Palm Desert</a></li>
-          <li><a href="#">Rancho Mirage</a></li>
-          <li><a href="#">Indian Wells</a></li>
-          <li><a href="#">La Quinta</a></li>
-          <li><a href="#">Indio</a></li>
+          <li><a href="palm-springs.html">Palm Springs</a></li>
+          <li><a href="palm-desert.html">Palm Desert</a></li>
+          <li><a href="rancho-mirage.html">Rancho Mirage</a></li>
+          <li><a href="indian-wells.html">Indian Wells</a></li>
+          <li><a href="la-quinta.html">La Quinta</a></li>
+          <li><a href="indio.html">Indio</a></li>
+          <li><a href="cathedral-city.html">Cathedral City</a></li>
+          <li><a href="desert-hot-springs.html">Desert Hot Springs</a></li>
+          <li><a href="coachella.html">Coachella</a></li>
         </ul>
       </div>
 
