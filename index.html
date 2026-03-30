@@ -380,6 +380,19 @@
       transition: transform 0.7s ease;
     }
 
+    .card-photo {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      transition: transform 0.7s ease;
+      display: block;
+    }
+
+    .property-card:hover .card-photo { transform: scale(1.05); }
+
     /* Subtle desert-tone gradients per card */
     .bg-1 { background: linear-gradient(150deg, #291f10 0%, #17110a 45%, #0d0d0b 100%); }
     .bg-2 { background: linear-gradient(155deg, #121820 0%, #0c1116 45%, #0d0d0d 100%); }
@@ -981,8 +994,7 @@
 
       <!-- 1: 459 Desert Lakes Dr, Palm Springs -->
       <a href="https://search.searchcoachellavalleyhomes.com/listing/26650637PS" target="_blank" rel="noopener" class="property-card reveal reveal-delay-1">
-        <div class="card-bg bg-1"></div>
-        <div class="card-texture"></div>
+        <img class="card-photo" src="images/459-desert-lakes-drive.jpeg" alt="459 Desert Lakes Drive, Palm Springs" />
         <div class="card-gradient-overlay"></div>
         <div class="card-bronze-hover"></div>
         <div class="card-content">
@@ -998,8 +1010,7 @@
 
       <!-- 2: 77553 Carinda Court, Palm Desert -->
       <a href="https://search.searchcoachellavalleyhomes.com/listing/26650855PS" target="_blank" rel="noopener" class="property-card reveal reveal-delay-2">
-        <div class="card-bg bg-2"></div>
-        <div class="card-texture"></div>
+        <img class="card-photo" src="images/77553-carinda-court.jpeg" alt="77553 Carinda Court, Palm Desert" />
         <div class="card-gradient-overlay"></div>
         <div class="card-bronze-hover"></div>
         <div class="card-content">
@@ -1013,10 +1024,9 @@
         </div>
       </a>
 
-      <!-- 3: 4321 Lumina Way — Video Card -->
+      <!-- 3: 4321 Lumina Way, Palm Springs -->
       <a href="https://search.searchcoachellavalleyhomes.com/listing/26648853PS" target="_blank" rel="noopener" class="property-card reveal reveal-delay-3">
-        <div class="card-bg bg-3"></div>
-        <div class="card-texture"></div>
+        <img class="card-photo" src="images/4321-lumina-way.jpeg" alt="4321 Lumina Way, Palm Springs" />
         <div class="card-gradient-overlay"></div>
         <div class="card-bronze-hover"></div>
         <div class="card-content">
@@ -1032,8 +1042,7 @@
 
       <!-- 4: 41098 Hanover Street, Indio -->
       <a href="https://search.searchcoachellavalleyhomes.com/search?s[locations][0][city]=Indio&s[locations][0][state]=CA" target="_blank" rel="noopener" class="property-card reveal reveal-delay-4">
-        <div class="card-bg bg-4"></div>
-        <div class="card-texture"></div>
+        <img class="card-photo" src="images/41098-hanover-st.jpeg" alt="41098 Hanover Street, Indio" />
         <div class="card-gradient-overlay"></div>
         <div class="card-bronze-hover"></div>
         <div class="card-content">
@@ -1049,8 +1058,7 @@
 
       <!-- 5: 78924 La Rosa Way, Palm Desert -->
       <a href="https://search.searchcoachellavalleyhomes.com/search?s[locations][0][city]=Palm+Desert&s[locations][0][state]=CA" target="_blank" rel="noopener" class="property-card reveal reveal-delay-5">
-        <div class="card-bg bg-5"></div>
-        <div class="card-texture"></div>
+        <img class="card-photo" src="images/78924-la-rosa-way.jpeg" alt="78924 La Rosa Way, Palm Desert" />
         <div class="card-gradient-overlay"></div>
         <div class="card-bronze-hover"></div>
         <div class="card-content">
@@ -1066,8 +1074,7 @@
 
       <!-- 6: 16264 Avenida Rambla, Desert Hot Springs -->
       <a href="https://search.searchcoachellavalleyhomes.com/search?s[locations][0][city]=Desert+Hot+Springs&s[locations][0][state]=CA" target="_blank" rel="noopener" class="property-card reveal reveal-delay-6">
-        <div class="card-bg bg-6"></div>
-        <div class="card-texture"></div>
+        <img class="card-photo" src="images/16264-avenida-rambla.jpeg" alt="16264 Avenida Rambla, Desert Hot Springs" />
         <div class="card-gradient-overlay"></div>
         <div class="card-bronze-hover"></div>
         <div class="card-content">
