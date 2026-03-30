@@ -612,139 +612,138 @@
     .about-image-col:hover img { transform: scale(1.03); }
 
     /* ============================================================
-       COMMUNITIES
+       COMMUNITIES — FLIP CARDS
     ============================================================ */
     #communities {
       background: var(--dark);
       padding: 100px 52px;
     }
 
-    .communities-map-layout {
+    .communities-grid {
       display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 0;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 3px;
       margin-top: 56px;
-      border: 1px solid rgba(184,151,90,0.14);
-      min-height: 580px;
     }
 
-    .communities-list {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      border-right: 1px solid rgba(184,151,90,0.14);
-    }
-
-    .community-card {
-      padding: 30px 24px 26px;
-      border-right: 1px solid rgba(184,151,90,0.14);
-      border-bottom: 1px solid rgba(184,151,90,0.14);
-      text-decoration: none;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      transition: background 0.3s;
+    /* Flip card wrapper */
+    .flip-card {
+      perspective: 1000px;
+      height: 220px;
       cursor: pointer;
     }
 
-    .community-card:nth-child(2n) { border-right: none; }
+    .flip-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 0.65s cubic-bezier(0.4, 0.2, 0.2, 1);
+    }
 
-    .community-card.active,
-    .community-card:hover { background: rgba(184,151,90,0.07); }
+    .flip-card:hover .flip-card-inner {
+      transform: rotateY(180deg);
+    }
+
+    .flip-card-front,
+    .flip-card-back {
+      position: absolute;
+      inset: 0;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+    }
+
+    /* Front face */
+    .flip-card-front {
+      background: var(--dark-2);
+      border: 1px solid rgba(184,151,90,0.1);
+      padding: 28px 24px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: border-color 0.3s;
+    }
+
+    .flip-card:hover .flip-card-front {
+      border-color: rgba(184,151,90,0.3);
+    }
 
     .comm-num {
       font-family: var(--sans);
       font-size: 9px;
       font-weight: 500;
-      letter-spacing: 0.25em;
+      letter-spacing: 0.28em;
       color: rgba(184,151,90,0.45);
     }
 
     .comm-name {
       font-family: var(--serif);
-      font-size: 22px;
+      font-size: 24px;
       font-weight: 400;
       color: var(--text-light);
-      line-height: 1.2;
+      line-height: 1.15;
+      margin-top: auto;
     }
 
     .comm-type {
       font-family: var(--sans);
       font-size: 9.5px;
       font-weight: 300;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.12em;
       color: var(--text-muted);
     }
 
-    .comm-arrow {
-      font-size: 13px;
-      color: rgba(184,151,90,0.3);
-      margin-top: 10px;
-      transition: transform 0.3s, color 0.3s;
-      display: inline-block;
+    .comm-hint {
+      font-family: var(--sans);
+      font-size: 9px;
+      font-weight: 400;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(184,151,90,0.4);
+      margin-top: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    .community-card:hover .comm-arrow,
-    .community-card.active .comm-arrow {
-      transform: translateX(4px);
-      color: var(--bronze);
+    .comm-hint::after {
+      content: '';
+      display: block;
+      width: 20px;
+      height: 1px;
+      background: rgba(184,151,90,0.3);
     }
 
-    /* Map panel */
-    .communities-map-panel {
-      position: relative;
-      background: #111;
+    /* Back face — map */
+    .flip-card-back {
+      transform: rotateY(180deg);
+      overflow: hidden;
+      border: 1px solid rgba(184,151,90,0.3);
     }
 
-    #community-map {
+    .flip-card-back .map-container {
       width: 100%;
       height: 100%;
-      min-height: 580px;
     }
 
-    .map-info-overlay {
+    .flip-card-back .map-label {
       position: absolute;
-      bottom: 24px;
-      left: 20px;
-      background: rgba(13,13,13,0.88);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(184,151,90,0.3);
-      padding: 12px 16px;
-      pointer-events: none;
-      transition: opacity 0.3s;
-      z-index: 10;
-    }
-
-    .map-info-name {
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 8px 12px;
+      background: linear-gradient(to top, rgba(13,13,13,0.92), transparent);
       font-family: var(--serif);
-      font-size: 17px;
-      font-weight: 400;
+      font-size: 14px;
       color: var(--text-light);
-      line-height: 1.2;
+      z-index: 10;
+      pointer-events: none;
     }
 
-    .map-info-type {
-      font-family: var(--sans);
-      font-size: 10px;
-      font-weight: 300;
-      letter-spacing: 0.12em;
-      color: var(--bronze);
-      margin-top: 3px;
-    }
-
-    /* Mapbox overrides for dark theme */
-    .mapboxgl-ctrl-group {
-      background: rgba(13,13,13,0.9) !important;
-      border: 1px solid rgba(184,151,90,0.25) !important;
-    }
-
-    .mapboxgl-ctrl-group button {
-      background-color: transparent !important;
-    }
-
-    .mapboxgl-ctrl-group button .mapboxgl-ctrl-icon {
-      filter: invert(1) !important;
-    }
+    /* Mapbox minimal overrides */
+    .mapboxgl-ctrl-bottom-right,
+    .mapboxgl-ctrl-bottom-left { display: none; }
+    .mapboxgl-ctrl-top-right { display: none; }
 
     /* ============================================================
        SEARCH / YLOPO
@@ -1125,100 +1124,187 @@
       <a href="#search-listings" class="view-all-link">Search All Areas &rarr;</a>
     </div>
 
-    <div class="communities-map-layout reveal">
-      <!-- Left: community cards -->
-      <div class="communities-list" id="communities-list">
+    <div class="communities-grid reveal">
 
-        <a href="https://search.searchcoachellavalleyhomes.com/search?s[locations][0][city]=Cathedral+City&s[locations][0][state]=CA" class="community-card" data-community="cathedral-city" target="_blank" rel="noopener">
-          <span class="comm-num">01</span>
-          <span class="comm-name">Cathedral City</span>
-          <span class="comm-type">Coachella Valley</span>
-          <span class="comm-arrow">&#8594;</span>
-        </a>
-
-        <a href="https://search.searchcoachellavalleyhomes.com/search?s[locations][0][city]=Coachella&s[locations][0][state]=CA" class="community-card" data-community="coachella" target="_blank" rel="noopener">
-          <span class="comm-num">02</span>
-          <span class="comm-name">Coachella</span>
-          <span class="comm-type">Coachella Valley</span>
-          <span class="comm-arrow">&#8594;</span>
-        </a>
-
-        <a href="https://search.searchcoachellavalleyhomes.com/search?s[locations][0][city]=Desert+Hot+Springs&s[locations][0][state]=CA" class="community-card" data-community="desert-hot-springs" target="_blank" rel="noopener">
-          <span class="comm-num">03</span>
-          <span class="comm-name">Desert Hot Springs</span>
-          <span class="comm-type">Coachella Valley</span>
-          <span class="comm-arrow">&#8594;</span>
-        </a>
-
-        <a href="https://search.searchcoachellavalleyhomes.com/search?s[locations][0][city]=Indian+Wells&s[locations][0][state]=CA" class="community-card" data-community="indian-wells" target="_blank" rel="noopener">
-          <span class="comm-num">04</span>
-          <span class="comm-name">Indian Wells</span>
-          <span class="comm-type">Luxury · Tennis · Golf</span>
-          <span class="comm-arrow">&#8594;</span>
-        </a>
-
-        <a href="https://search.searchcoachellavalleyhomes.com/search?s[locations][0][city]=Indio&s[locations][0][state]=CA" class="community-card" data-community="indio" target="_blank" rel="noopener">
-          <span class="comm-num">05</span>
-          <span class="comm-name">Indio</span>
-          <span class="comm-type">Coachella Valley</span>
-          <span class="comm-arrow">&#8594;</span>
-        </a>
-
-        <a href="https://search.searchcoachellavalleyhomes.com/search?s[locations][0][city]=La+Quinta&s[locations][0][state]=CA" class="community-card" data-community="la-quinta" target="_blank" rel="noopener">
-          <span class="comm-num">06</span>
-          <span class="comm-name">La Quinta</span>
-          <span class="comm-type">Golf · Resort Living</span>
-          <span class="comm-arrow">&#8594;</span>
-        </a>
-
-        <a href="https://search.searchcoachellavalleyhomes.com/search?s[locations][0][city]=Palm+Desert&s[locations][0][state]=CA" class="community-card" data-community="palm-desert" target="_blank" rel="noopener">
-          <span class="comm-num">07</span>
-          <span class="comm-name">Palm Desert</span>
-          <span class="comm-type">Shopping · Dining · Arts</span>
-          <span class="comm-arrow">&#8594;</span>
-        </a>
-
-        <a href="https://search.searchcoachellavalleyhomes.com/search?s[locations][0][city]=Palm+Springs&s[locations][0][state]=CA" class="community-card" data-community="palm-springs" target="_blank" rel="noopener">
-          <span class="comm-num">08</span>
-          <span class="comm-name">Palm Springs</span>
-          <span class="comm-type">Iconic · Mid-Century Modern</span>
-          <span class="comm-arrow">&#8594;</span>
-        </a>
-
-        <a href="https://search.searchcoachellavalleyhomes.com/search?s[locations][0][city]=Rancho+Mirage&s[locations][0][state]=CA" class="community-card" data-community="rancho-mirage" target="_blank" rel="noopener">
-          <span class="comm-num">09</span>
-          <span class="comm-name">Rancho Mirage</span>
-          <span class="comm-type">Luxury · Privacy · Estates</span>
-          <span class="comm-arrow">&#8594;</span>
-        </a>
-
-        <a href="https://search.searchcoachellavalleyhomes.com/search?s[propertyTypes][0]=house&s[locations][0][state]=CA" class="community-card" data-community="golf" target="_blank" rel="noopener">
-          <span class="comm-num">10</span>
-          <span class="comm-name">Golf Communities</span>
-          <span class="comm-type">Fairway · Course Views</span>
-          <span class="comm-arrow">&#8594;</span>
-        </a>
-
-        <a href="https://search.searchcoachellavalleyhomes.com/search?s[locations][0][state]=CA" class="community-card" data-community="55plus" target="_blank" rel="noopener">
-          <span class="comm-num">11</span>
-          <span class="comm-name">55+ Communities</span>
-          <span class="comm-type">Active Adult Living</span>
-          <span class="comm-arrow">&#8594;</span>
-        </a>
-
-        <!-- empty spacer cell -->
-        <div class="community-card" style="pointer-events:none; background:transparent; cursor:default;"></div>
-
-      </div>
-
-      <!-- Right: map -->
-      <div class="communities-map-panel">
-        <div id="community-map"></div>
-        <div class="map-info-overlay" id="map-info">
-          <div class="map-info-name" id="map-info-name">Coachella Valley</div>
-          <div class="map-info-type" id="map-info-type">California &nbsp;·&nbsp; 9 Communities</div>
+      <!-- 01 Palm Springs -->
+      <div class="flip-card" data-community="palm-springs" data-lng="-116.5453" data-lat="33.8303" data-zoom="12.5">
+        <div class="flip-card-inner">
+          <div class="flip-card-front">
+            <span class="comm-num">01</span>
+            <span class="comm-name">Palm Springs</span>
+            <span class="comm-type">Iconic · Mid-Century Modern</span>
+            <span class="comm-hint">View on map</span>
+          </div>
+          <div class="flip-card-back">
+            <div class="map-container" id="map-palm-springs"></div>
+            <a class="map-label" href="https://search.searchcoachellavalleyhomes.com/search?s[locations][0][city]=Palm+Springs&s[locations][0][state]=CA" target="_blank" rel="noopener">Palm Springs &rarr;</a>
+          </div>
         </div>
       </div>
+
+      <!-- 02 Palm Desert -->
+      <div class="flip-card" data-community="palm-desert" data-lng="-116.3744" data-lat="33.7222" data-zoom="12.5">
+        <div class="flip-card-inner">
+          <div class="flip-card-front">
+            <span class="comm-num">02</span>
+            <span class="comm-name">Palm Desert</span>
+            <span class="comm-type">Shopping · Dining · Arts</span>
+            <span class="comm-hint">View on map</span>
+          </div>
+          <div class="flip-card-back">
+            <div class="map-container" id="map-palm-desert"></div>
+            <a class="map-label" href="https://search.searchcoachellavalleyhomes.com/search?s[locations][0][city]=Palm+Desert&s[locations][0][state]=CA" target="_blank" rel="noopener">Palm Desert &rarr;</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 03 Rancho Mirage -->
+      <div class="flip-card" data-community="rancho-mirage" data-lng="-116.4125" data-lat="33.7395" data-zoom="13">
+        <div class="flip-card-inner">
+          <div class="flip-card-front">
+            <span class="comm-num">03</span>
+            <span class="comm-name">Rancho Mirage</span>
+            <span class="comm-type">Luxury · Privacy · Estates</span>
+            <span class="comm-hint">View on map</span>
+          </div>
+          <div class="flip-card-back">
+            <div class="map-container" id="map-rancho-mirage"></div>
+            <a class="map-label" href="https://search.searchcoachellavalleyhomes.com/search?s[locations][0][city]=Rancho+Mirage&s[locations][0][state]=CA" target="_blank" rel="noopener">Rancho Mirage &rarr;</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 04 Indian Wells -->
+      <div class="flip-card" data-community="indian-wells" data-lng="-116.3417" data-lat="33.7175" data-zoom="13.5">
+        <div class="flip-card-inner">
+          <div class="flip-card-front">
+            <span class="comm-num">04</span>
+            <span class="comm-name">Indian Wells</span>
+            <span class="comm-type">Luxury · Tennis · Golf</span>
+            <span class="comm-hint">View on map</span>
+          </div>
+          <div class="flip-card-back">
+            <div class="map-container" id="map-indian-wells"></div>
+            <a class="map-label" href="https://search.searchcoachellavalleyhomes.com/search?s[locations][0][city]=Indian+Wells&s[locations][0][state]=CA" target="_blank" rel="noopener">Indian Wells &rarr;</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 05 La Quinta -->
+      <div class="flip-card" data-community="la-quinta" data-lng="-116.3100" data-lat="33.6634" data-zoom="12.5">
+        <div class="flip-card-inner">
+          <div class="flip-card-front">
+            <span class="comm-num">05</span>
+            <span class="comm-name">La Quinta</span>
+            <span class="comm-type">Golf · Resort Living</span>
+            <span class="comm-hint">View on map</span>
+          </div>
+          <div class="flip-card-back">
+            <div class="map-container" id="map-la-quinta"></div>
+            <a class="map-label" href="https://search.searchcoachellavalleyhomes.com/search?s[locations][0][city]=La+Quinta&s[locations][0][state]=CA" target="_blank" rel="noopener">La Quinta &rarr;</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 06 Indio -->
+      <div class="flip-card" data-community="indio" data-lng="-116.2156" data-lat="33.7206" data-zoom="12">
+        <div class="flip-card-inner">
+          <div class="flip-card-front">
+            <span class="comm-num">06</span>
+            <span class="comm-name">Indio</span>
+            <span class="comm-type">Coachella Valley</span>
+            <span class="comm-hint">View on map</span>
+          </div>
+          <div class="flip-card-back">
+            <div class="map-container" id="map-indio"></div>
+            <a class="map-label" href="https://search.searchcoachellavalleyhomes.com/search?s[locations][0][city]=Indio&s[locations][0][state]=CA" target="_blank" rel="noopener">Indio &rarr;</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 07 Cathedral City -->
+      <div class="flip-card" data-community="cathedral-city" data-lng="-116.4653" data-lat="33.7797" data-zoom="13">
+        <div class="flip-card-inner">
+          <div class="flip-card-front">
+            <span class="comm-num">07</span>
+            <span class="comm-name">Cathedral City</span>
+            <span class="comm-type">Coachella Valley</span>
+            <span class="comm-hint">View on map</span>
+          </div>
+          <div class="flip-card-back">
+            <div class="map-container" id="map-cathedral-city"></div>
+            <a class="map-label" href="https://search.searchcoachellavalleyhomes.com/search?s[locations][0][city]=Cathedral+City&s[locations][0][state]=CA" target="_blank" rel="noopener">Cathedral City &rarr;</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 08 Desert Hot Springs -->
+      <div class="flip-card" data-community="desert-hot-springs" data-lng="-116.5014" data-lat="33.9611" data-zoom="13">
+        <div class="flip-card-inner">
+          <div class="flip-card-front">
+            <span class="comm-num">08</span>
+            <span class="comm-name">Desert Hot Springs</span>
+            <span class="comm-type">Coachella Valley</span>
+            <span class="comm-hint">View on map</span>
+          </div>
+          <div class="flip-card-back">
+            <div class="map-container" id="map-desert-hot-springs"></div>
+            <a class="map-label" href="https://search.searchcoachellavalleyhomes.com/search?s[locations][0][city]=Desert+Hot+Springs&s[locations][0][state]=CA" target="_blank" rel="noopener">Desert Hot Springs &rarr;</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 09 Coachella -->
+      <div class="flip-card" data-community="coachella" data-lng="-116.1739" data-lat="33.6803" data-zoom="13">
+        <div class="flip-card-inner">
+          <div class="flip-card-front">
+            <span class="comm-num">09</span>
+            <span class="comm-name">Coachella</span>
+            <span class="comm-type">Coachella Valley</span>
+            <span class="comm-hint">View on map</span>
+          </div>
+          <div class="flip-card-back">
+            <div class="map-container" id="map-coachella"></div>
+            <a class="map-label" href="https://search.searchcoachellavalleyhomes.com/search?s[locations][0][city]=Coachella&s[locations][0][state]=CA" target="_blank" rel="noopener">Coachella &rarr;</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 10 Golf Communities -->
+      <div class="flip-card" data-community="golf" data-lng="-116.3500" data-lat="33.7050" data-zoom="11">
+        <div class="flip-card-inner">
+          <div class="flip-card-front">
+            <span class="comm-num">10</span>
+            <span class="comm-name">Golf Communities</span>
+            <span class="comm-type">Fairway · Course Views</span>
+            <span class="comm-hint">View on map</span>
+          </div>
+          <div class="flip-card-back">
+            <div class="map-container" id="map-golf"></div>
+            <a class="map-label" href="https://search.searchcoachellavalleyhomes.com/search?s[locations][0][state]=CA" target="_blank" rel="noopener">Golf Communities &rarr;</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 11 55+ Communities -->
+      <div class="flip-card" data-community="55plus" data-lng="-116.3744" data-lat="33.7222" data-zoom="11">
+        <div class="flip-card-inner">
+          <div class="flip-card-front">
+            <span class="comm-num">11</span>
+            <span class="comm-name">55+ Communities</span>
+            <span class="comm-type">Active Adult Living</span>
+            <span class="comm-hint">View on map</span>
+          </div>
+          <div class="flip-card-back">
+            <div class="map-container" id="map-55plus"></div>
+            <a class="map-label" href="https://search.searchcoachellavalleyhomes.com/search?s[locations][0][state]=CA" target="_blank" rel="noopener">55+ Communities &rarr;</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 12 spacer -->
+      <div class="flip-card" style="pointer-events:none; opacity:0;"></div>
+
     </div>
   </section>
 
@@ -1301,158 +1387,54 @@
   <script src="https://d2hnwe88wt837l.cloudfront.net/build/js/widgetBuilder~runtime.js"></script>
 
   <!-- ============================================================
-       MAPBOX — COMMUNITIES MAP
+       MAPBOX — FLIP CARD COMMUNITY MAPS (lazy init)
   ============================================================ -->
   <script src="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.js"></script>
   <script>
     (function () {
-      const MAPBOX_TOKEN = 'pk.eyJ1IjoidmVnYXMta2l3aSIsImEiOiJjbW15dTZqZHAwMWx0MnJxOXY2a3IwZW1mIn0.SY-_CDAwcvuhzQETeViOzg';
+      mapboxgl.accessToken = 'pk.eyJ1IjoidmVnYXMta2l3aSIsImEiOiJjbW15dTZqZHAwMWx0MnJxOXY2a3IwZW1mIn0.SY-_CDAwcvuhzQETeViOzg';
       const BRONZE = '#B8975A';
+      const initializedMaps = {};
 
-      const COMMUNITIES = {
-        'palm-springs':      { name: 'Palm Springs',      type: 'Iconic · Mid-Century Modern', center: [-116.5453, 33.8303], zoom: 12.5,
-          boundary: [[-116.635,33.760],[-116.455,33.760],[-116.455,33.940],[-116.635,33.940],[-116.635,33.760]] },
-        'palm-desert':       { name: 'Palm Desert',       type: 'Shopping · Dining · Arts',    center: [-116.3744, 33.7222], zoom: 12.5,
-          boundary: [[-116.455,33.672],[-116.295,33.672],[-116.295,33.775],[-116.455,33.775],[-116.455,33.672]] },
-        'rancho-mirage':     { name: 'Rancho Mirage',     type: 'Luxury · Privacy · Estates',  center: [-116.4125, 33.7395], zoom: 13,
-          boundary: [[-116.465,33.710],[-116.360,33.710],[-116.360,33.775],[-116.465,33.775],[-116.465,33.710]] },
-        'indian-wells':      { name: 'Indian Wells',      type: 'Luxury · Tennis · Golf',      center: [-116.3417, 33.7175], zoom: 13.5,
-          boundary: [[-116.385,33.698],[-116.298,33.698],[-116.298,33.740],[-116.385,33.740],[-116.385,33.698]] },
-        'la-quinta':         { name: 'La Quinta',         type: 'Golf · Resort Living',        center: [-116.3100, 33.6634], zoom: 12.5,
-          boundary: [[-116.390,33.625],[-116.230,33.625],[-116.230,33.710],[-116.390,33.710],[-116.390,33.625]] },
-        'indio':             { name: 'Indio',             type: 'Coachella Valley',            center: [-116.2156, 33.7206], zoom: 12,
-          boundary: [[-116.315,33.680],[-116.130,33.680],[-116.130,33.765],[-116.315,33.765],[-116.315,33.680]] },
-        'cathedral-city':    { name: 'Cathedral City',    type: 'Coachella Valley',            center: [-116.4653, 33.7797], zoom: 13,
-          boundary: [[-116.515,33.752],[-116.415,33.752],[-116.415,33.815],[-116.515,33.815],[-116.515,33.752]] },
-        'desert-hot-springs':{ name: 'Desert Hot Springs',type: 'Coachella Valley',            center: [-116.5014, 33.9611], zoom: 13,
-          boundary: [[-116.560,33.920],[-116.440,33.920],[-116.440,34.000],[-116.560,34.000],[-116.560,33.920]] },
-        'coachella':         { name: 'Coachella',         type: 'Coachella Valley',            center: [-116.1739, 33.6803], zoom: 13,
-          boundary: [[-116.250,33.650],[-116.100,33.650],[-116.100,33.720],[-116.250,33.720],[-116.250,33.650]] },
-        'golf':              { name: 'Golf Communities',  type: 'Fairway · Course Views',      center: [-116.3500, 33.7050], zoom: 11,
-          boundary: [[-116.520,33.640],[-116.190,33.640],[-116.190,33.780],[-116.520,33.780],[-116.520,33.640]] },
-        '55plus':            { name: '55+ Communities',   type: 'Active Adult Living',         center: [-116.3744, 33.7222], zoom: 11,
-          boundary: [[-116.520,33.640],[-116.190,33.640],[-116.190,33.780],[-116.520,33.780],[-116.520,33.640]] },
-      };
+      function initMap(card) {
+        const id   = card.dataset.community;
+        const lng  = parseFloat(card.dataset.lng);
+        const lat  = parseFloat(card.dataset.lat);
+        const zoom = parseFloat(card.dataset.zoom);
+        const containerId = `map-${id}`;
 
-      const VALLEY_CENTER = [-116.37, 33.755];
-      const VALLEY_ZOOM   = 10;
+        if (initializedMaps[id]) return;
+        initializedMaps[id] = true;
 
-      mapboxgl.accessToken = MAPBOX_TOKEN;
+        const map = new mapboxgl.Map({
+          container: containerId,
+          style: 'mapbox://styles/mapbox/dark-v11',
+          center: [lng, lat],
+          zoom: zoom,
+          interactive: false,
+          attributionControl: false,
+        });
 
-      const map = new mapboxgl.Map({
-        container: 'community-map',
-        style: 'mapbox://styles/mapbox/dark-v11',
-        center: VALLEY_CENTER,
-        zoom: VALLEY_ZOOM,
-        attributionControl: false,
-        pitchWithRotate: false,
-        dragRotate: false,
-        cooperativeGestures: false,
-      });
-
-      map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
-      map.addControl(new mapboxgl.AttributionControl({ compact: true }), 'bottom-right');
-
-      let activeCommunityId = null;
-
-      map.on('load', () => {
-        // Pre-load all community boundary sources & layers (hidden by default)
-        Object.entries(COMMUNITIES).forEach(([id, c]) => {
-          map.addSource(`${id}-src`, {
-            type: 'geojson',
-            data: {
-              type: 'Feature',
-              geometry: { type: 'Polygon', coordinates: [c.boundary] },
-              properties: {},
-            },
-          });
-
-          map.addLayer({
-            id: `${id}-fill`,
-            type: 'fill',
-            source: `${id}-src`,
-            paint: { 'fill-color': BRONZE, 'fill-opacity': 0 },
-          });
-
-          map.addLayer({
-            id: `${id}-line`,
-            type: 'line',
-            source: `${id}-src`,
-            paint: { 'line-color': BRONZE, 'line-width': 2, 'line-opacity': 0 },
-          });
-
-          // Marker
+        map.on('load', () => {
+          // Bronze dot marker
           const el = document.createElement('div');
           el.style.cssText = `
-            width: 12px; height: 12px;
+            width: 14px; height: 14px;
             background: ${BRONZE};
-            border: 2px solid rgba(13,13,13,0.8);
+            border: 2px solid #0d0d0d;
             border-radius: 50%;
-            box-shadow: 0 0 10px ${BRONZE}80;
-            opacity: 0;
-            transition: opacity 0.3s;
+            box-shadow: 0 0 12px ${BRONZE}99;
           `;
-          el.id = `marker-${id}`;
-
-          new mapboxgl.Marker({ element: el })
-            .setLngLat(c.center)
-            .addTo(map);
-        });
-      });
-
-      function showCommunity(id) {
-        if (!map.loaded()) return;
-        const c = COMMUNITIES[id];
-        if (!c) return;
-
-        // Hide previous
-        if (activeCommunityId && activeCommunityId !== id) {
-          hideCommunity(activeCommunityId);
-        }
-
-        activeCommunityId = id;
-
-        map.setPaintProperty(`${id}-fill`, 'fill-opacity', 0.12);
-        map.setPaintProperty(`${id}-line`, 'line-opacity', 0.75);
-        const markerEl = document.getElementById(`marker-${id}`);
-        if (markerEl) markerEl.style.opacity = '1';
-
-        map.flyTo({ center: c.center, zoom: c.zoom, duration: 700, essential: true });
-
-        document.getElementById('map-info-name').textContent = c.name;
-        document.getElementById('map-info-type').textContent = c.type;
-      }
-
-      function hideCommunity(id) {
-        if (!map.loaded() || !id) return;
-        map.setPaintProperty(`${id}-fill`, 'fill-opacity', 0);
-        map.setPaintProperty(`${id}-line`, 'line-opacity', 0);
-        const markerEl = document.getElementById(`marker-${id}`);
-        if (markerEl) markerEl.style.opacity = '0';
-      }
-
-      function resetMap() {
-        if (activeCommunityId) hideCommunity(activeCommunityId);
-        activeCommunityId = null;
-        map.flyTo({ center: VALLEY_CENTER, zoom: VALLEY_ZOOM, duration: 700, essential: true });
-        document.getElementById('map-info-name').textContent = 'Coachella Valley';
-        document.getElementById('map-info-type').textContent = 'California · 9 Communities';
-      }
-
-      // Attach hover listeners to community cards
-      document.querySelectorAll('.community-card[data-community]').forEach(card => {
-        const id = card.dataset.community;
-
-        card.addEventListener('mouseenter', () => {
-          document.querySelectorAll('.community-card').forEach(c => c.classList.remove('active'));
-          card.classList.add('active');
-          showCommunity(id);
+          new mapboxgl.Marker({ element: el }).setLngLat([lng, lat]).addTo(map);
         });
 
-        card.addEventListener('mouseleave', () => {
-          card.classList.remove('active');
-          resetMap();
-        });
+        // Resize after flip animation completes so map renders correctly
+        setTimeout(() => map.resize(), 680);
+      }
+
+      // Lazy-init on first mouseenter
+      document.querySelectorAll('.flip-card[data-community]').forEach(card => {
+        card.addEventListener('mouseenter', () => initMap(card), { once: true });
       });
 
     })();
