@@ -32,17 +32,26 @@
       align-items: center;
       gap: 14px;
     }
+    .avatar-wrap {
+      position: relative;
+      flex-shrink: 0;
+    }
     .avatar {
       width: 42px;
       height: 42px;
       border-radius: 50%;
+      overflow: hidden;
       background: rgba(184,151,90,0.2);
+      background-image: url('/images/avatars/grid.jpg');
+      background-size: 700% 300%;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 18px;
       flex-shrink: 0;
-      position: relative;
+    }
+    .avatar.default-icon {
+      background-image: none;
     }
     .avatar-dot {
       position: absolute;
@@ -53,6 +62,14 @@
       border-radius: 50%;
       background: #4ade80;
       border: 2px solid #111;
+    }
+    .msg-avatar {
+      background-image: url('/images/avatars/grid.jpg');
+      background-size: 700% 300%;
+      overflow: hidden;
+    }
+    .msg-avatar.default-icon {
+      background-image: none;
     }
     .header-label {
       color: rgba(255,255,255,0.35);
@@ -106,11 +123,17 @@
       height: 32px;
       border-radius: 50%;
       background: rgba(184,151,90,0.2);
+      background-image: url('/images/avatars/grid.jpg');
+      background-size: 700% 300%;
+      overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 13px;
       flex-shrink: 0;
+    }
+    .msg-avatar.default-icon {
+      background-image: none;
     }
     .bubble {
       max-width: 72%;
@@ -262,16 +285,17 @@
   <!-- Header -->
   <div id="header">
     <div id="header-left">
-      <div class="avatar">
-        ✦
+      <div class="avatar-wrap">
+        <div class="avatar default-icon" id="header-avatar">✦</div>
         <div class="avatar-dot"></div>
       </div>
       <div>
         <div class="header-label">Shana Gates &nbsp;·&nbsp; Craft &amp; Bauer</div>
-        <div class="header-name">Site Assistant</div>
+        <div class="header-name" id="header-name">Site Assistant</div>
       </div>
     </div>
     <div id="header-right">
+      <button class="btn-icon" id="setup-btn" title="Change avatar or name">⚙️</button>
       <button class="btn-icon" id="logout-btn">Sign Out</button>
     </div>
   </div>
@@ -304,6 +328,36 @@
       window.location.href = '/admin/assistant/login.html';
     }
 
+    // ── Avatar helpers ──
+    const AVATAR_COLS = 7;
+    const AVATAR_ROWS = 3;
+
+    function getAvatarBgPos(index) {
+      const col = index % AVATAR_COLS;
+      const row = Math.floor(index / AVATAR_COLS);
+      const xPct = AVATAR_COLS > 1 ? (col / (AVATAR_COLS - 1)) * 100 : 0;
+      const yPct = AVATAR_ROWS > 1 ? (row / (AVATAR_ROWS - 1)) * 100 : 0;
+      return `${xPct}% ${yPct}%`;
+    }
+
+    function applyAvatarSprite(el, index) {
+      el.classList.remove('default-icon');
+      el.textContent = '';
+      el.style.backgroundPosition = getAvatarBgPos(index);
+    }
+
+    // ── Load avatar & name ──
+    const savedAvatarIndex = localStorage.getItem('sg_avatar');
+    const savedName = localStorage.getItem('sg_name') || 'Assistant';
+    let avatarIndex = savedAvatarIndex !== null ? Number(savedAvatarIndex) : null;
+    let assistantName = savedName;
+
+    const headerAvatar = document.getElementById('header-avatar');
+    const headerName = document.getElementById('header-name');
+
+    headerName.textContent = assistantName;
+    if (avatarIndex !== null) applyAvatarSprite(headerAvatar, avatarIndex);
+
     // ── State ──
     let apiMessages = [];
     let pendingImage = null; // { base64, mimeType, preview }
@@ -316,9 +370,11 @@
     const imagePreviewBar = document.getElementById('image-preview-bar');
     const imagePreviewThumb = document.getElementById('image-preview-thumb');
 
+    inputEl.placeholder = `Message ${assistantName}…`;
+
     // ── Welcome message ──
     appendAssistantMessage(
-      "Hi Shana! I'm here to help you update your website. You can tell me things like:\n\n" +
+      `Hi Shana! I'm ${assistantName}, here to help you update your website. You can tell me things like:\n\n` +
       "• \"Change the median price in Palm Springs to $750K\"\n" +
       "• \"Update active listings in Rancho Mirage to 180+\"\n" +
       "• \"Change the drive to LA on Indian Wells to 1 hour 50 minutes\"\n" +
@@ -326,6 +382,11 @@
       "• Attach an image to replace a hero or section photo\n\n" +
       "What would you like to update?"
     );
+
+    // ── Settings (avatar setup) ──
+    document.getElementById('setup-btn').addEventListener('click', function() {
+      window.location.href = '/admin/assistant/setup.html';
+    });
 
     // ── Logout ──
     document.getElementById('logout-btn').addEventListener('click', async function() {
@@ -484,16 +545,25 @@
       scrollToBottom();
     }
 
+    function makeMsgAvatar() {
+      const avatarEl = document.createElement('div');
+      if (avatarIndex !== null) {
+        avatarEl.className = 'msg-avatar';
+        avatarEl.style.backgroundPosition = getAvatarBgPos(avatarIndex);
+      } else {
+        avatarEl.className = 'msg-avatar default-icon';
+        avatarEl.textContent = '✦';
+      }
+      return avatarEl;
+    }
+
     function appendAssistantMessage(text) {
       const row = document.createElement('div');
       row.className = 'msg-row assistant';
-      const avatarEl = document.createElement('div');
-      avatarEl.className = 'msg-avatar';
-      avatarEl.textContent = '✦';
       const bubble = document.createElement('div');
       bubble.className = 'bubble assistant';
       bubble.textContent = text;
-      row.appendChild(avatarEl);
+      row.appendChild(makeMsgAvatar());
       row.appendChild(bubble);
       messagesEl.appendChild(row);
       scrollToBottom();
@@ -502,9 +572,6 @@
     function appendLoadingIndicator(hasImage) {
       const row = document.createElement('div');
       row.className = 'msg-row assistant';
-      const avatarEl = document.createElement('div');
-      avatarEl.className = 'msg-avatar';
-      avatarEl.textContent = '✦';
       const dotsEl = document.createElement('div');
       dotsEl.className = 'bubble assistant loading-dots';
       dotsEl.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
@@ -514,7 +581,7 @@
         label.textContent = 'Uploading image…';
         dotsEl.appendChild(label);
       }
-      row.appendChild(avatarEl);
+      row.appendChild(makeMsgAvatar());
       row.appendChild(dotsEl);
       messagesEl.appendChild(row);
       scrollToBottom();

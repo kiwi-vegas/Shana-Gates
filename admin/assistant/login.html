@@ -121,7 +121,8 @@
 
         if (res.ok) {
           localStorage.setItem('sg_auth', '1');
-          window.location.href = '/admin/assistant/';
+          const hasAvatar = localStorage.getItem('sg_avatar');
+          window.location.href = hasAvatar ? '/admin/assistant/' : '/admin/assistant/setup.html';
         } else {
           errorMsg.textContent = 'Incorrect password. Please try again.';
           errorMsg.style.display = 'block';

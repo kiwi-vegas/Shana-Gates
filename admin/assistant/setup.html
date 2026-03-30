@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Meet Your Assistant — Shana Gates</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #0a0a0a;
+      font-family: system-ui, -apple-system, sans-serif;
+      color: #fff;
+      padding: 40px 24px;
+    }
+
+    .wrap {
+      width: 100%;
+      max-width: 560px;
+    }
+
+    /* Header */
+    .page-header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+    .brand {
+      color: #B8975A;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    .page-header h1 {
+      color: #fff;
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .page-header p {
+      color: rgba(255,255,255,0.4);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    /* Cards */
+    .card {
+      background: #141414;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 28px;
+      margin-bottom: 16px;
+    }
+    .card-label {
+      color: rgba(255,255,255,0.35);
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    /* Avatar grid */
+    .avatar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 14px;
+      justify-items: center;
+    }
+    .avatar-sprite {
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
+      cursor: pointer;
+      background-image: url('/images/avatars/grid.jpg');
+      background-size: 700% 300%;
+      overflow: hidden;
+      border: 3px solid rgba(255,255,255,0.08);
+      transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+      flex-shrink: 0;
+    }
+    .avatar-sprite:hover {
+      border-color: rgba(184,151,90,0.5);
+      transform: scale(1.05);
+    }
+    .avatar-sprite.selected {
+      border-color: #B8975A;
+      box-shadow: 0 0 0 3px rgba(184,151,90,0.25);
+      transform: scale(1.1);
+    }
+
+    /* Name input */
+    #name-input {
+      width: 100%;
+      padding: 14px 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 16px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    #name-input:focus { border-color: rgba(184,151,90,0.5); }
+    #name-input::placeholder { color: rgba(255,255,255,0.25); }
+
+    /* Preview */
+    #preview-card {
+      background: #141414;
+      border: 1px solid rgba(184,151,90,0.25);
+      border-radius: 12px;
+      padding: 18px 24px;
+      margin-bottom: 16px;
+      display: none;
+      align-items: center;
+      gap: 16px;
+    }
+    #preview-card.visible { display: flex; }
+    #preview-avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background-image: url('/images/avatars/grid.jpg');
+      background-size: 700% 300%;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+    .preview-tag {
+      color: #B8975A;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .preview-name {
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .preview-role {
+      color: rgba(255,255,255,0.4);
+      font-size: 13px;
+    }
+    .preview-looks {
+      margin-left: auto;
+      color: rgba(255,255,255,0.2);
+      font-size: 13px;
+      font-style: italic;
+    }
+
+    /* Save button */
+    #save-btn {
+      width: 100%;
+      padding: 16px;
+      background: rgba(255,255,255,0.06);
+      border: none;
+      border-radius: 8px;
+      color: rgba(255,255,255,0.2);
+      font-size: 15px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: not-allowed;
+      transition: background 0.2s, color 0.2s;
+      letter-spacing: 0.02em;
+    }
+    #save-btn.ready {
+      background: #B8975A;
+      color: #000;
+      cursor: pointer;
+    }
+    #save-btn.ready:hover { opacity: 0.9; }
+
+    @media (max-width: 480px) {
+      .avatar-grid { grid-template-columns: repeat(5, 1fr); gap: 10px; }
+      .avatar-sprite { width: 52px; height: 52px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="wrap">
+
+    <div class="page-header">
+      <div class="brand">Shana Gates &nbsp;·&nbsp; Craft &amp; Bauer</div>
+      <h1>Meet Your Assistant</h1>
+      <p>Choose a face, give them a name, and they'll be ready<br>to help you update your site whenever you need.</p>
+    </div>
+
+    <!-- Avatar picker -->
+    <div class="card">
+      <p class="card-label">Choose an avatar</p>
+      <div class="avatar-grid" id="avatar-grid"></div>
+    </div>
+
+    <!-- Name input -->
+    <div class="card">
+      <p class="card-label">Name your assistant</p>
+      <input type="text" id="name-input" placeholder="e.g. Alex, Jordan, Riley…" maxlength="20" autocomplete="off" />
+    </div>
+
+    <!-- Preview -->
+    <div id="preview-card">
+      <div id="preview-avatar"></div>
+      <div>
+        <div class="preview-tag">Preview</div>
+        <div class="preview-name" id="preview-name"></div>
+        <div class="preview-role">Your content assistant</div>
+      </div>
+      <div class="preview-looks">Looks great!</div>
+    </div>
+
+    <!-- Save -->
+    <button id="save-btn">Select an avatar to continue</button>
+
+  </div>
+
+  <script>
+    // Auth guard
+    if (!localStorage.getItem('sg_auth')) {
+      window.location.href = '/admin/assistant/login.html';
+    }
+
+    const COLS = 7;
+    const ROWS = 3;
+    const AVATAR_COUNT = 21;
+
+    let selectedIndex = null;
+
+    const nameInput = document.getElementById('name-input');
+    const saveBtn = document.getElementById('save-btn');
+    const previewCard = document.getElementById('preview-card');
+    const previewAvatar = document.getElementById('preview-avatar');
+    const previewName = document.getElementById('preview-name');
+
+    // Build grid
+    const grid = document.getElementById('avatar-grid');
+    for (let i = 0; i < AVATAR_COUNT; i++) {
+      const el = document.createElement('div');
+      el.className = 'avatar-sprite';
+      setAvatarBg(el, i);
+      el.addEventListener('click', () => selectAvatar(i));
+      grid.appendChild(el);
+    }
+
+    // Restore saved values
+    const savedIndex = localStorage.getItem('sg_avatar');
+    const savedName = localStorage.getItem('sg_name');
+    if (savedIndex !== null) selectAvatar(Number(savedIndex));
+    if (savedName) { nameInput.value = savedName; updateUI(); }
+
+    function setAvatarBg(el, i) {
+      const col = i % COLS;
+      const row = Math.floor(i / COLS);
+      const xPct = COLS > 1 ? (col / (COLS - 1)) * 100 : 0;
+      const yPct = ROWS > 1 ? (row / (ROWS - 1)) * 100 : 0;
+      el.style.backgroundPosition = `${xPct}% ${yPct}%`;
+    }
+
+    function selectAvatar(i) {
+      selectedIndex = i;
+      grid.querySelectorAll('.avatar-sprite').forEach((el, idx) => {
+        el.classList.toggle('selected', idx === i);
+      });
+      setAvatarBg(previewAvatar, i);
+      updateUI();
+    }
+
+    nameInput.addEventListener('input', updateUI);
+    nameInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && canSave()) save();
+    });
+
+    function canSave() {
+      return selectedIndex !== null && nameInput.value.trim().length > 0;
+    }
+
+    function updateUI() {
+      const name = nameInput.value.trim();
+      if (selectedIndex !== null && name) {
+        previewName.textContent = name;
+        previewCard.classList.add('visible');
+      } else {
+        previewCard.classList.remove('visible');
+      }
+
+      if (canSave()) {
+        saveBtn.classList.add('ready');
+        saveBtn.textContent = `Start chatting with ${name} →`;
+      } else if (selectedIndex === null) {
+        saveBtn.classList.remove('ready');
+        saveBtn.textContent = 'Select an avatar to continue';
+      } else {
+        saveBtn.classList.remove('ready');
+        saveBtn.textContent = 'Enter a name to continue';
+      }
+    }
+
+    saveBtn.addEventListener('click', function() {
+      if (canSave()) save();
+    });
+
+    function save() {
+      localStorage.setItem('sg_avatar', String(selectedIndex));
+      localStorage.setItem('sg_name', nameInput.value.trim());
+      window.location.href = '/admin/assistant/';
+    }
+  </script>
+</body>
+</html>
