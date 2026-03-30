@@ -937,6 +937,98 @@
     }
 
     /* ============================================================
+       RESPONSIVE — TABLET (≤1024px)
+    ============================================================ */
+    @media (max-width: 1024px) {
+      nav { padding: 20px 32px; }
+      nav.scrolled { padding: 16px 32px; }
+
+      #featured-properties { padding: 80px 32px; }
+      .properties-grid { grid-template-columns: repeat(2, 1fr); }
+
+      #about { grid-template-columns: 1fr; min-height: auto; }
+      .about-text-col { padding: 72px 48px; }
+      .about-image-col { min-height: 420px; }
+
+      .communities-grid { grid-template-columns: repeat(3, 1fr); }
+
+      #search-listings { padding: 72px 32px; }
+
+      footer { padding: 64px 32px 32px; }
+      .footer-grid { grid-template-columns: 1fr 1fr; gap: 40px; }
+    }
+
+    /* ============================================================
+       RESPONSIVE — MOBILE (≤768px)
+    ============================================================ */
+    @media (max-width: 768px) {
+
+      /* NAV */
+      nav { padding: 16px 20px; }
+      nav.scrolled { padding: 14px 20px; }
+      .nav-links { display: none; }
+      .nav-cta { font-size: 10px; padding: 10px 18px; }
+
+      /* HERO */
+      .hero-content { padding: 0 20px; }
+      .hero-title { font-size: clamp(44px, 14vw, 72px); }
+      .hero-buttons { flex-direction: column; align-items: center; gap: 12px; }
+      .btn-primary, .btn-outline { width: 100%; max-width: 280px; text-align: center; }
+      .hero-scroll-indicator { display: none; }
+
+      /* FEATURED PROPERTIES */
+      #featured-properties { padding: 64px 20px; }
+      .section-header { flex-direction: column; align-items: flex-start; gap: 16px; margin-bottom: 36px; }
+      .properties-grid { grid-template-columns: 1fr; gap: 3px; }
+      .property-card { aspect-ratio: 4/3; }
+
+      /* ABOUT */
+      #about { grid-template-columns: 1fr; }
+      .about-text-col { padding: 56px 24px; }
+      .about-image-col { min-height: 340px; order: -1; }
+      .about-cta-row { flex-direction: column; gap: 14px; }
+      .btn-primary-dark { text-align: center; }
+
+      /* COMMUNITIES */
+      #communities { padding: 64px 20px; }
+      .communities-grid { grid-template-columns: repeat(2, 1fr); }
+      .flip-card { height: 180px; }
+      /* On touch devices, tap to navigate directly — skip flip UX */
+      @media (hover: none) {
+        .flip-card-inner { transition: none; }
+        .flip-card:hover .flip-card-inner { transform: none; }
+        .flip-card-back { display: none; }
+        .flip-card-front {
+          cursor: pointer;
+          border-color: rgba(184,151,90,0.2);
+        }
+      }
+
+      /* SEARCH / YLOPO */
+      #search-listings { padding: 56px 20px; }
+      .btn-view-all-properties { padding: 15px 28px; font-size: 10px; width: 100%; text-align: center; display: block; }
+
+      /* FOOTER */
+      footer { padding: 52px 20px 28px; }
+      .footer-grid { grid-template-columns: 1fr; gap: 36px; }
+      .footer-bottom { flex-direction: column; gap: 16px; }
+      .footer-copy { white-space: normal; }
+    }
+
+    /* ============================================================
+       RESPONSIVE — SMALL MOBILE (≤480px)
+    ============================================================ */
+    @media (max-width: 480px) {
+      .communities-grid { grid-template-columns: 1fr; }
+      .flip-card { height: 160px; }
+      .hero-title { font-size: clamp(38px, 13vw, 58px); }
+      #featured-properties { padding: 52px 16px; }
+      #communities { padding: 52px 16px; }
+      #search-listings { padding: 48px 16px; }
+      footer { padding: 44px 16px 24px; }
+    }
+
+    /* ============================================================
        ANIMATIONS
     ============================================================ */
     @keyframes fadeUp {
