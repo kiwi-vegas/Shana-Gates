@@ -230,9 +230,16 @@
     mapboxgl.accessToken = 'pk.eyJ1IjoidmVnYXMta2l3aSIsImEiOiJjbW15dTZqZHAwMWx0MnJxOXY2a3IwZW1mIn0.SY-_CDAwcvuhzQETeViOzg';
     const BRONZE = '#B8975A';
     const LNG = -116.3100, LAT = 33.6634;
-    new mapboxgl.Map({ container: 'hero-map', style: 'mapbox://styles/mapbox/dark-v11', center: [LNG, LAT], zoom: 12.5, interactive: false, attributionControl: false });
+    const BOUNDARY_COORDS = [[-116.385,33.720],[-116.290,33.720],[-116.247,33.700],[-116.238,33.635],[-116.260,33.595],[-116.313,33.585],[-116.375,33.608],[-116.395,33.658],[-116.385,33.720]];
+    function addBoundary(map, id) {
+      map.addSource(id+'-boundary', { type:'geojson', data:{ type:'Feature', geometry:{ type:'Polygon', coordinates:[BOUNDARY_COORDS] }, properties:{} } });
+      map.addLayer({ id:id+'-fill', type:'fill', source:id+'-boundary', paint:{ 'fill-color':BRONZE, 'fill-opacity':0.12 } });
+      map.addLayer({ id:id+'-line', type:'line', source:id+'-boundary', paint:{ 'line-color':BRONZE, 'line-width':2, 'line-opacity':0.85 } });
+    }
+    const heroMap = new mapboxgl.Map({ container: 'hero-map', style: 'mapbox://styles/mapbox/dark-v11', center: [LNG, LAT], zoom: 12.5, interactive: false, attributionControl: false });
+    heroMap.on('load', () => addBoundary(heroMap, 'hero'));
     let lmi = false;
-    new IntersectionObserver((e) => { if (e[0].isIntersecting && !lmi) { lmi = true; const m = new mapboxgl.Map({ container: 'lifestyle-map', style: 'mapbox://styles/mapbox/dark-v11', center: [LNG, LAT], zoom: 12, interactive: true, attributionControl: false }); m.on('load', () => { const el = document.createElement('div'); el.style.cssText = `width:14px;height:14px;background:${BRONZE};border:2px solid #0d0d0d;border-radius:50%;box-shadow:0 0 12px ${BRONZE}99;`; new mapboxgl.Marker({ element: el }).setLngLat([LNG, LAT]).addTo(m); }); } }, { threshold: 0.1 }).observe(document.getElementById('lifestyle-map'));
+    new IntersectionObserver((e) => { if (e[0].isIntersecting && !lmi) { lmi = true; const m = new mapboxgl.Map({ container: 'lifestyle-map', style: 'mapbox://styles/mapbox/dark-v11', center: [LNG, LAT], zoom: 12, interactive: true, attributionControl: false }); m.on('load', () => { addBoundary(m,'lifestyle'); const el = document.createElement('div'); el.style.cssText = `width:14px;height:14px;background:${BRONZE};border:2px solid #fff;border-radius:50%;box-shadow:0 0 14px ${BRONZE}bb;`; new mapboxgl.Marker({ element: el }).setLngLat([LNG, LAT]).addTo(m); const label = document.createElement('div'); label.style.cssText = `position:absolute;bottom:40px;left:16px;background:rgba(10,10,10,0.88);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(184,151,90,0.35);border-radius:4px;padding:8px 14px;pointer-events:none;z-index:10;`; label.innerHTML = `<div style="font-size:10px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:#B8975A;font-family:'Jost',sans-serif;">La Quinta</div><div style="font-size:10px;color:rgba(255,255,255,0.45);margin-top:3px;font-family:'Jost',sans-serif;">Coachella Valley, CA</div>`; document.getElementById('lifestyle-map').appendChild(label); }); } }, { threshold: 0.1 }).observe(document.getElementById('lifestyle-map'));
     document.querySelectorAll('.reveal').forEach(el => { new IntersectionObserver((e) => { e.forEach(i => { if (i.isIntersecting) { i.target.classList.add('visible'); } }); }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }).observe(el); });
   </script>
 </body>
