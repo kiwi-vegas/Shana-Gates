@@ -606,6 +606,81 @@
       border-color: var(--bronze);
     }
 
+    /* Video Modal */
+    .video-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 9000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .video-modal-overlay.open {
+      display: flex;
+    }
+    .video-modal-inner {
+      position: relative;
+      width: 100%;
+      max-width: 960px;
+    }
+    .video-modal-inner::before {
+      content: '';
+      display: block;
+      padding-top: 56.25%; /* 16:9 */
+    }
+    .video-modal-inner iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+      border-radius: 4px;
+    }
+    .video-modal-close {
+      position: absolute;
+      top: -40px;
+      right: 0;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 28px;
+      line-height: 1;
+      cursor: pointer;
+      padding: 4px 8px;
+      opacity: 0.8;
+      transition: opacity 0.2s;
+    }
+    .video-modal-close:hover { opacity: 1; }
+
+    .btn-watch-video {
+      font-family: var(--sans);
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--dark-1);
+      background: none;
+      border: none;
+      border-bottom: 1px solid var(--dark-1);
+      padding-bottom: 3px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: border-color 0.3s, color 0.3s;
+    }
+    .btn-watch-video:hover {
+      color: var(--bronze);
+      border-color: var(--bronze);
+    }
+    .btn-watch-video svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
+
     .about-image-col {
       position: relative;
       overflow: hidden;
@@ -1125,7 +1200,7 @@
     <div class="properties-grid">
 
       <!-- 1: 459 Desert Lakes Dr, Palm Springs -->
-      <a href="https://search.searchcoachellavalleyhomes.com/listing/26650637PS" target="_blank" rel="noopener" class="property-card reveal reveal-delay-1">
+      <a href="https://search.searchcoachellavalleyhomes.com/search/detail/259876193?s[orderBy]=sourceCreationDate%2Cdesc&s[page]=1&s[mainInputSearch]=false&s[circle][lat]=33.79780119999999&s[circle][lng]=-116.5005879&s[circle][radius]=3&s[address]=459%20Desert%20Lakes%20Dr%2C%20Palm%20Springs%2C%20CA%2092264&s[addressComponents][street]=459%20Desert%20Lakes%20Drive&s[addressComponents][city]=Palm%20Springs&s[addressComponents][state]=CA&s[addressComponents][zip]=92264" target="_blank" rel="noopener" class="property-card reveal reveal-delay-1">
         <img class="card-photo" src="images/459-desert-lakes-drive.jpeg" alt="459 Desert Lakes Drive, Palm Springs" />
         <div class="card-gradient-overlay"></div>
         <div class="card-bronze-hover"></div>
@@ -1141,7 +1216,7 @@
       </a>
 
       <!-- 2: 77553 Carinda Court, Palm Desert -->
-      <a href="https://search.searchcoachellavalleyhomes.com/listing/26650855PS" target="_blank" rel="noopener" class="property-card reveal reveal-delay-2">
+      <a href="https://search.searchcoachellavalleyhomes.com/search/detail/259917628?s[orderBy]=sourceCreationDate%2Cdesc&s[page]=1&s[mainInputSearch]=false&s[circle][lat]=33.7550352&s[circle][lng]=-116.3099975&s[circle][radius]=3&s[address]=77553%20Carinda%20Ct%2C%20Palm%20Desert%2C%20CA%2092211&s[addressComponents][street]=77553%20Carinda%20Court&s[addressComponents][city]=Palm%20Desert&s[addressComponents][state]=CA&s[addressComponents][zip]=92211" target="_blank" rel="noopener" class="property-card reveal reveal-delay-2">
         <img class="card-photo" src="images/77553-carinda-court.jpeg" alt="77553 Carinda Court, Palm Desert" />
         <div class="card-gradient-overlay"></div>
         <div class="card-bronze-hover"></div>
@@ -1157,7 +1232,7 @@
       </a>
 
       <!-- 3: 4321 Lumina Way, Palm Springs -->
-      <a href="https://search.searchcoachellavalleyhomes.com/listing/26648853PS" target="_blank" rel="noopener" class="property-card reveal reveal-delay-3">
+      <a href="https://search.searchcoachellavalleyhomes.com/search/detail/259492317?s[orderBy]=sourceCreationDate%2Cdesc&s[page]=1&s[mainInputSearch]=false&s[circle][lat]=33.8360332&s[circle][lng]=-116.4991375&s[circle][radius]=3&s[address]=4321%20Lumina%20Way%2C%20Palm%20Springs%2C%20CA%2092262&s[addressComponents][street]=4321%20Lumina%20Way&s[addressComponents][city]=Palm%20Springs&s[addressComponents][state]=CA&s[addressComponents][zip]=92262" target="_blank" rel="noopener" class="property-card reveal reveal-delay-3">
         <img class="card-photo" src="images/4321-lumina-way.jpeg" alt="4321 Lumina Way, Palm Springs" />
         <div class="card-gradient-overlay"></div>
         <div class="card-bronze-hover"></div>
@@ -1173,7 +1248,7 @@
       </a>
 
       <!-- 4: 41098 Hanover Street, Indio -->
-      <a href="https://search.searchcoachellavalleyhomes.com/search?s[locations][0][city]=Indio&s[locations][0][state]=CA" target="_blank" rel="noopener" class="property-card reveal reveal-delay-4">
+      <a href="https://search.searchcoachellavalleyhomes.com/search/detail/261541877?s[orderBy]=sourceCreationDate%2Cdesc&s[page]=1&s[mainInputSearch]=false&s[circle][lat]=33.7505301&s[circle][lng]=-116.225812&s[circle][radius]=3&s[address]=41098%20Hanover%20St%2C%20Indio%2C%20CA%2092203&s[addressComponents][street]=41098%20Hanover%20Street&s[addressComponents][city]=Indio&s[addressComponents][state]=CA&s[addressComponents][zip]=92203" target="_blank" rel="noopener" class="property-card reveal reveal-delay-4">
         <img class="card-photo" src="images/41098-hanover-st.jpeg" alt="41098 Hanover Street, Indio" />
         <div class="card-gradient-overlay"></div>
         <div class="card-bronze-hover"></div>
@@ -1189,7 +1264,7 @@
       </a>
 
       <!-- 5: 78924 La Rosa Way, Palm Desert -->
-      <a href="https://search.searchcoachellavalleyhomes.com/search?s[locations][0][city]=Palm+Desert&s[locations][0][state]=CA" target="_blank" rel="noopener" class="property-card reveal reveal-delay-5">
+      <a href="https://search.searchcoachellavalleyhomes.com/search/detail/261197517?s[orderBy]=sourceCreationDate%2Cdesc&s[page]=1&s[mainInputSearch]=false&s[circle][lat]=33.760245&s[circle][lng]=-116.287728&s[circle][radius]=3&s[address]=78924%20La%20Rosa%20Wy%2C%20Palm%20Desert%2C%20CA%2092211&s[addressComponents][street]=78924%20La%20Rosa%20Way&s[addressComponents][city]=Palm%20Desert&s[addressComponents][state]=CA&s[addressComponents][zip]=92211" target="_blank" rel="noopener" class="property-card reveal reveal-delay-5">
         <img class="card-photo" src="images/78924-la-rosa-way.jpeg" alt="78924 La Rosa Way, Palm Desert" />
         <div class="card-gradient-overlay"></div>
         <div class="card-bronze-hover"></div>
@@ -1205,7 +1280,7 @@
       </a>
 
       <!-- 6: 16264 Avenida Rambla, Desert Hot Springs -->
-      <a href="https://search.searchcoachellavalleyhomes.com/search?s[locations][0][city]=Desert+Hot+Springs&s[locations][0][state]=CA" target="_blank" rel="noopener" class="property-card reveal reveal-delay-6">
+      <a href="https://search.searchcoachellavalleyhomes.com/search?s[orderBy]=sourceCreationDate%2Cdesc&s[page]=1&s[mainInputSearch]=true&s[circle][lat]=33.930134&s[circle][lng]=-116.485205&s[circle][radius]=3&s[address]=16264%20Ave%20Rambla%2C%20Desert%20Hot%20Springs%2C%20CA%2092240&s[addressComponents][street]=16264%20Avenue%20Rambla&s[addressComponents][city]=Desert%20Hot%20Springs&s[addressComponents][state]=CA&s[addressComponents][zip]=92240" target="_blank" rel="noopener" class="property-card reveal reveal-delay-6">
         <img class="card-photo" src="images/16264-avenida-rambla.jpeg" alt="16264 Avenida Rambla, Desert Hot Springs" />
         <div class="card-gradient-overlay"></div>
         <div class="card-bronze-hover"></div>
@@ -1242,7 +1317,10 @@
       </p>
       <div class="about-cta-row">
         <a href="mailto:shana@craftbauer.com" class="btn-primary-dark">Work With Shana</a>
-        <a href="#" class="btn-text-link">Learn More</a>
+        <button class="btn-watch-video" onclick="openVideoModal()">
+          <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.5"/><polygon points="10,8 17,12 10,16" fill="currentColor"/></svg>
+          Watch Video
+        </button>
       </div>
     </div>
     <div class="about-image-col">
@@ -1620,6 +1698,42 @@
     }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
 
     revealEls.forEach(el => observer.observe(el));
+  </script>
+
+  <!-- Video Modal -->
+  <div class="video-modal-overlay" id="videoModal" onclick="handleOverlayClick(event)">
+    <div class="video-modal-inner" id="videoModalInner">
+      <button class="video-modal-close" onclick="closeVideoModal()" aria-label="Close video">&times;</button>
+      <iframe id="videoIframe" src="" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <script>
+    function openVideoModal() {
+      const modal = document.getElementById('videoModal');
+      const iframe = document.getElementById('videoIframe');
+      iframe.src = 'https://player.vimeo.com/video/1178434432?autoplay=1&color=c9a96e&title=0&byline=0&portrait=0';
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeVideoModal() {
+      const modal = document.getElementById('videoModal');
+      const iframe = document.getElementById('videoIframe');
+      modal.classList.remove('open');
+      iframe.src = '';
+      document.body.style.overflow = '';
+    }
+
+    function handleOverlayClick(e) {
+      if (e.target === document.getElementById('videoModal')) {
+        closeVideoModal();
+      }
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeVideoModal();
+    });
   </script>
 
 </body>
