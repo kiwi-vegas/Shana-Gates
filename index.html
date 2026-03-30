@@ -1494,6 +1494,15 @@
         card.addEventListener('mouseenter', () => initMap(card), { once: true });
       });
 
+      // Click anywhere on the card → navigate to community page
+      document.querySelectorAll('.flip-card[data-community]').forEach(card => {
+        card.style.cursor = 'pointer';
+        card.addEventListener('click', () => {
+          const link = card.querySelector('.map-label');
+          if (link && link.href) window.location.href = link.href;
+        });
+      });
+
     })();
   </script>
 
