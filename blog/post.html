@@ -293,11 +293,6 @@
   </footer>
 
   <script>
-    const SANITY_PROJECT = 'll3zy5cp'
-    const SANITY_DATASET = 'production'
-    // Use non-CDN endpoint so posts are always fresh
-    const CDN = `https://${SANITY_PROJECT}.api.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}`
-
     const CATEGORY_COLORS = {
       'market-update': '#2563eb',
       'buying-tips': '#4CAF50',
@@ -329,24 +324,14 @@
         return
       }
 
-      const query = encodeURIComponent(`*[_type == "blogPost" && slug.current == $slug][0] {
-        _id, title, "slug": slug.current,
-        publishedAt, category, excerpt, body, pipeline,
-        sourceUrl, sourceTitle,
-        "heroImageUrl": select(
-          defined(heroImage) => heroImage.asset->url,
-          heroImageUrl
-        )
-      }`)
-
-      const res = await fetch(`${CDN}?query=${query}&$slug=${encodeURIComponent(JSON.stringify(slug))}`)
-      const data = await res.json()
-      const post = data.result
-
-      if (!post) {
+      const res = await fetch(`/api/blog/post?slug=${encodeURIComponent(slug)}`)
+      if (res.status === 404) {
         document.getElementById('loadingState').innerHTML = '<div style="text-align:center;padding:80px 0;color:rgba(255,255,255,0.4)"><h2>Post not found</h2><p><a href="/blog/" style="color:#B8975A">← Back to Blog</a></p></div>'
         return
       }
+      if (!res.ok) throw new Error(`Server error ${res.status}`)
+      const data = await res.json()
+      const post = data.post
 
       // Update page metadata
       document.title = `${post.title} — Shana Gates Blog`

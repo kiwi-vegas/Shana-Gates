@@ -319,11 +319,6 @@
   </footer>
 
   <script>
-    const SANITY_PROJECT = 'll3zy5cp'
-    const SANITY_DATASET = 'production'
-    // Use non-CDN endpoint so newly published posts appear immediately
-    const CDN = `https://${SANITY_PROJECT}.api.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}`
-
     const CATEGORY_COLORS = {
       'market-update': '#2563eb',
       'buying-tips': '#4CAF50',
@@ -350,21 +345,10 @@
     let activeCategory = ''
 
     async function fetchPosts() {
-      const query = encodeURIComponent(`*[_type == "blogPost"] | order(publishedAt desc) [0...48] {
-        _id,
-        title,
-        "slug": slug.current,
-        publishedAt,
-        category,
-        excerpt,
-        "heroImageUrl": select(
-          defined(heroImage) => heroImage.asset->url,
-          heroImageUrl
-        )
-      }`)
-      const res = await fetch(`${CDN}?query=${query}`)
+      const res = await fetch('/api/blog/posts')
+      if (!res.ok) throw new Error('Failed to load posts')
       const data = await res.json()
-      return data.result ?? []
+      return data.posts ?? []
     }
 
     function formatDate(iso) {
