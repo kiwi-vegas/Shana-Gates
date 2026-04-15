@@ -9,6 +9,9 @@
     "api/blog/publish-weekly.ts": {
       "maxDuration": 120
     },
+    "api/blog/run-research.ts": {
+      "maxDuration": 120
+    },
     "api/cron/research.ts": {
       "maxDuration": 120
     },

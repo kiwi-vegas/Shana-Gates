@@ -170,6 +170,24 @@
     /* ── States ── */
     .state-msg { text-align: center; padding: 80px 24px; color: var(--muted); }
     .state-msg h2 { color: var(--text); font-size: 22px; margin-bottom: 12px; }
+    .run-research-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 24px;
+      background: var(--bronze);
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      padding: 13px 28px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: var(--font);
+      transition: opacity 0.15s;
+    }
+    .run-research-btn:hover { opacity: 0.85; }
+    .run-research-btn:disabled { opacity: 0.45; cursor: not-allowed; }
 
     .skeleton {
       background: var(--surface);
@@ -410,17 +428,59 @@
 
     document.getElementById('publishBtn').addEventListener('click', publishSelected)
 
+    async function runWeeklyResearch() {
+      const overlay = document.getElementById('publishOverlay')
+      const status = document.getElementById('publishStatus')
+      overlay.classList.add('visible')
+      status.textContent = 'Running weekly research…'
+      document.querySelector('small').textContent = 'Claude is generating topic ideas for each category. This takes 60–90 seconds.'
+
+      try {
+        const res = await fetch('/api/blog/run-research?type=weekly', { method: 'POST' })
+        let data
+        try {
+          data = await res.json()
+        } catch {
+          throw new Error(`Server error (${res.status}) — check Vercel logs for details.`)
+        }
+        if (!res.ok) throw new Error(data.error || 'Research failed')
+
+        overlay.classList.remove('visible')
+        allTopics = data.topics || []
+        updateCounts()
+        renderTopics()
+      } catch (err) {
+        overlay.classList.remove('visible')
+        alert(`Research error: ${err.message}`)
+      }
+    }
+
     loadTopics().then(topics => {
       allTopics = topics
       document.getElementById('loadingState').style.display = 'none'
       updateCounts()
-      renderTopics()
+
+      if (topics.length === 0) {
+        document.getElementById('topicsContainer').innerHTML = `
+          <div class="state-msg">
+            <h2>No topics yet this week</h2>
+            <p>The weekly research runs automatically every Saturday evening. You can also generate topics right now.</p>
+            <button class="run-research-btn" onclick="runWeeklyResearch()">
+              ✦ Generate This Week's Topics
+            </button>
+          </div>`
+      } else {
+        renderTopics()
+      }
     }).catch(err => {
       document.getElementById('loadingState').style.display = 'none'
       document.getElementById('topicsContainer').innerHTML = `
         <div class="state-msg">
           <h2>Couldn't load topics</h2>
           <p>${err.message}</p>
+          <button class="run-research-btn" onclick="runWeeklyResearch()">
+            ✦ Try Generating Topics
+          </button>
         </div>`
     })
   </script>

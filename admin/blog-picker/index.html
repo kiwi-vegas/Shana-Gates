@@ -149,6 +149,24 @@
       color: var(--muted);
     }
     .state-msg h2 { color: var(--text); font-size: 22px; margin-bottom: 12px; }
+    .run-research-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 24px;
+      background: var(--bronze);
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      padding: 13px 28px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: var(--font);
+      transition: opacity 0.15s;
+    }
+    .run-research-btn:hover { opacity: 0.85; }
+    .run-research-btn:disabled { opacity: 0.45; cursor: not-allowed; }
 
     .skeleton {
       background: var(--surface);
@@ -276,7 +294,10 @@
         document.getElementById('articlesContainer').innerHTML = `
           <div class="state-msg">
             <h2>No articles today</h2>
-            <p>The research cron may still be running, or no Coachella Valley articles were found. Check back in a few minutes.</p>
+            <p>The daily research runs automatically each morning. You can also run it right now.</p>
+            <button class="run-research-btn" onclick="runDailyResearch()">
+              ✦ Run Today's Research
+            </button>
           </div>`
         return
       }
@@ -363,12 +384,40 @@
 
     document.getElementById('publishBtn').addEventListener('click', publishSelected)
 
+    async function runDailyResearch() {
+      const overlay = document.getElementById('publishOverlay')
+      const status = document.getElementById('publishStatus')
+      overlay.classList.add('visible')
+      status.textContent = 'Running daily research…'
+      document.querySelector('#publishOverlay small').textContent = 'Searching and scoring Coachella Valley news. Takes about 30–60 seconds.'
+
+      try {
+        const res = await fetch('/api/blog/run-research?type=daily', { method: 'POST' })
+        let data
+        try {
+          data = await res.json()
+        } catch {
+          throw new Error(`Server error (${res.status}) — check Vercel logs for details.`)
+        }
+        if (!res.ok) throw new Error(data.error || 'Research failed')
+        overlay.classList.remove('visible')
+        // Reload articles now that research ran
+        loadArticles().then(renderArticles).catch(() => {})
+      } catch (err) {
+        overlay.classList.remove('visible')
+        alert(`Research error: ${err.message}`)
+      }
+    }
+
     loadArticles().then(renderArticles).catch((err) => {
       document.getElementById('loadingState').style.display = 'none'
       document.getElementById('articlesContainer').innerHTML = `
         <div class="state-msg">
           <h2>Couldn't load articles</h2>
           <p>${err.message}</p>
+          <button class="run-research-btn" onclick="runDailyResearch()">
+            ✦ Run Today's Research
+          </button>
         </div>`
     })
   </script>
