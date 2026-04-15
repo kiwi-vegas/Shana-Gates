@@ -393,7 +393,6 @@
 
     .property-card:hover .card-photo { transform: scale(1.05); }
 
-    /* Subtle desert-tone gradients per card */
     .bg-1 { background: linear-gradient(150deg, #291f10 0%, #17110a 45%, #0d0d0b 100%); }
     .bg-2 { background: linear-gradient(155deg, #121820 0%, #0c1116 45%, #0d0d0d 100%); }
     .bg-3 { background: linear-gradient(145deg, #1e1708 0%, #130f06 45%, #0d0d0d 100%); }
@@ -401,7 +400,6 @@
     .bg-5 { background: linear-gradient(145deg, #1d1a0d 0%, #120f09 45%, #0d0d0d 100%); }
     .bg-6 { background: linear-gradient(150deg, #1a0f0f 0%, #110b0b 45%, #0d0d0d 100%); }
 
-    /* Subtle noise texture overlay */
     .card-texture {
       position: absolute;
       inset: 0;
@@ -628,7 +626,7 @@
     .video-modal-inner::before {
       content: '';
       display: block;
-      padding-top: 56.25%; /* 16:9 */
+      padding-top: 56.25%;
     }
     .video-modal-inner iframe {
       position: absolute;
@@ -701,63 +699,163 @@
     .about-image-col:hover img { transform: scale(1.03); }
 
     /* ============================================================
-       COMMUNITIES — FLIP CARDS
+       COMMUNITIES — INTERACTIVE VALLEY MAP
     ============================================================ */
     #communities {
       background: var(--dark);
       padding: 100px 52px;
     }
 
-    .communities-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 3px;
-      margin-top: 56px;
-    }
-
-    /* Flip card wrapper */
-    .flip-card {
-      perspective: 1000px;
-      height: 220px;
-      cursor: pointer;
-    }
-
-    .flip-card-inner {
+    /* Map container */
+    .valley-map-wrap {
       position: relative;
       width: 100%;
+      height: 660px;
+      border: 1px solid rgba(184,151,90,0.18);
+      overflow: hidden;
+    }
+
+    #valley-map {
+      width: 100%;
       height: 100%;
-      transform-style: preserve-3d;
-      transition: transform 0.65s cubic-bezier(0.4, 0.2, 0.2, 1);
     }
 
-    .flip-card:hover .flip-card-inner {
-      transform: rotateY(180deg);
-    }
-
-    .flip-card-front,
-    .flip-card-back {
+    /* Hover tooltip */
+    .valley-tooltip {
       position: absolute;
-      inset: 0;
-      -webkit-backface-visibility: hidden;
-      backface-visibility: hidden;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      background: rgba(13,13,13,0.92);
+      border: 1px solid rgba(184,151,90,0.45);
+      backdrop-filter: blur(12px);
+      padding: 16px 22px;
+      min-width: 200px;
+      opacity: 0;
+      transform: translate(16px, 16px);
+      transition: opacity 0.18s ease;
+      z-index: 10;
     }
 
-    /* Front face */
-    .flip-card-front {
+    .valley-tooltip.visible {
+      opacity: 1;
+    }
+
+    .tooltip-num {
+      font-family: var(--sans);
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.28em;
+      color: rgba(184,151,90,0.5);
+      margin-bottom: 6px;
+    }
+
+    .tooltip-name {
+      font-family: var(--serif);
+      font-size: 22px;
+      font-weight: 400;
+      color: var(--text-light);
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+
+    .tooltip-tag {
+      font-family: var(--sans);
+      font-size: 10px;
+      font-weight: 300;
+      letter-spacing: 0.1em;
+      color: rgba(242,237,228,0.45);
+      margin-bottom: 14px;
+    }
+
+    .tooltip-cta {
+      font-family: var(--sans);
+      font-size: 9.5px;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--bronze);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tooltip-cta::after {
+      content: '';
+      display: block;
+      width: 18px;
+      height: 1px;
+      background: var(--bronze);
+    }
+
+    /* City labels on the map */
+    .valley-city-label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      cursor: pointer;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    .valley-city-label .label-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--bronze);
+      border: 1.5px solid rgba(13,13,13,0.8);
+      box-shadow: 0 0 8px rgba(184,151,90,0.6);
+      transition: transform 0.2s, box-shadow 0.2s;
+      flex-shrink: 0;
+    }
+
+    .valley-city-label .label-text {
+      font-family: var(--sans);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(242,237,228,0.7);
+      white-space: nowrap;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.9), 0 0 12px rgba(0,0,0,0.8);
+      transition: color 0.2s;
+    }
+
+    .valley-city-label.hovered .label-dot {
+      transform: scale(1.5);
+      box-shadow: 0 0 16px rgba(184,151,90,0.9);
+    }
+
+    .valley-city-label.hovered .label-text {
+      color: var(--bronze);
+    }
+
+    /* Mobile community list */
+    .community-links-grid {
+      display: none;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3px;
+      margin-top: 16px;
+    }
+
+    .comm-link-card {
       background: var(--dark-2);
       border: 1px solid rgba(184,151,90,0.1);
-      padding: 28px 24px 22px;
+      padding: 22px 20px;
+      text-decoration: none;
       display: flex;
       flex-direction: column;
       gap: 6px;
-      transition: border-color 0.3s;
+      transition: border-color 0.25s, background 0.25s;
     }
 
-    .flip-card:hover .flip-card-front {
-      border-color: rgba(184,151,90,0.3);
+    .comm-link-card:hover {
+      border-color: rgba(184,151,90,0.35);
+      background: rgba(184,151,90,0.04);
     }
 
-    .comm-num {
+    .comm-link-num {
       font-family: var(--sans);
       font-size: 9px;
       font-weight: 500;
@@ -765,71 +863,23 @@
       color: rgba(184,151,90,0.45);
     }
 
-    .comm-name {
+    .comm-link-name {
       font-family: var(--serif);
-      font-size: 24px;
+      font-size: 19px;
       font-weight: 400;
       color: var(--text-light);
       line-height: 1.15;
-      margin-top: auto;
     }
 
-    .comm-type {
+    .comm-link-tag {
       font-family: var(--sans);
       font-size: 9.5px;
       font-weight: 300;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.1em;
       color: var(--text-muted);
     }
 
-    .comm-hint {
-      font-family: var(--sans);
-      font-size: 9px;
-      font-weight: 400;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: rgba(184,151,90,0.4);
-      margin-top: 14px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .comm-hint::after {
-      content: '';
-      display: block;
-      width: 20px;
-      height: 1px;
-      background: rgba(184,151,90,0.3);
-    }
-
-    /* Back face — map */
-    .flip-card-back {
-      transform: rotateY(180deg);
-      overflow: hidden;
-      border: 1px solid rgba(184,151,90,0.3);
-    }
-
-    .flip-card-back .map-container {
-      width: 100%;
-      height: 100%;
-    }
-
-    .flip-card-back .map-label {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      padding: 8px 12px;
-      background: linear-gradient(to top, rgba(13,13,13,0.92), transparent);
-      font-family: var(--serif);
-      font-size: 14px;
-      color: var(--text-light);
-      z-index: 10;
-      pointer-events: none;
-    }
-
-    /* Mapbox minimal overrides */
+    /* Mapbox controls hide */
     .mapboxgl-ctrl-bottom-right,
     .mapboxgl-ctrl-bottom-left { display: none; }
     .mapboxgl-ctrl-top-right { display: none; }
@@ -849,7 +899,6 @@
       margin-top: 48px;
     }
 
-    /* Force YLOPO widget text to dark/black — widget defaults to light colors */
     .YLOPO_resultsWidget,
     .YLOPO_resultsWidget * {
       color: #1a1814 !important;
@@ -864,7 +913,6 @@
     .YLOPO_resultsWidget [role="button"] {
       color: #1a1814 !important;
     }
-    /* Keep any explicitly white-text buttons (e.g. solid CTA buttons) legible */
     .YLOPO_resultsWidget [style*="background-color: rgb("] {
       color: #fff !important;
     }
@@ -1026,7 +1074,8 @@
       .about-text-col { padding: 72px 48px; }
       .about-image-col { min-height: 420px; }
 
-      .communities-grid { grid-template-columns: repeat(3, 1fr); }
+      #communities { padding: 80px 32px; }
+      .valley-map-wrap { height: 560px; }
 
       #search-listings { padding: 72px 32px; }
 
@@ -1039,67 +1088,47 @@
     ============================================================ */
     @media (max-width: 768px) {
 
-      /* NAV */
       nav { padding: 16px 20px; }
       nav.scrolled { padding: 14px 20px; }
       .nav-links { display: none; }
       .nav-cta { font-size: 10px; padding: 10px 18px; }
 
-      /* HERO */
       .hero-content { padding: 0 20px; }
       .hero-title { font-size: clamp(44px, 14vw, 72px); }
       .hero-buttons { flex-direction: column; align-items: center; gap: 12px; }
       .btn-primary, .btn-outline { width: 100%; max-width: 280px; text-align: center; }
       .hero-scroll-indicator { display: none; }
 
-      /* FEATURED PROPERTIES */
       #featured-properties { padding: 64px 20px; }
       .section-header { flex-direction: column; align-items: flex-start; gap: 16px; margin-bottom: 36px; }
       .properties-grid { grid-template-columns: 1fr; gap: 3px; }
       .property-card { aspect-ratio: 4/3; }
 
-      /* ABOUT */
       #about { grid-template-columns: 1fr; }
       .about-text-col { padding: 56px 24px; }
       .about-image-col { min-height: 340px; order: -1; }
       .about-cta-row { flex-direction: column; gap: 14px; }
       .btn-primary-dark { text-align: center; }
 
-      /* COMMUNITIES */
       #communities { padding: 64px 20px; }
-      .communities-grid { grid-template-columns: repeat(2, 1fr); }
-      .flip-card { height: 180px; }
-      /* On touch devices, tap to navigate directly — skip flip UX */
-      @media (hover: none) {
-        .flip-card-inner { transition: none; }
-        .flip-card:hover .flip-card-inner { transform: none; }
-        .flip-card-back { display: none; }
-        .flip-card-front {
-          cursor: pointer;
-          border-color: rgba(184,151,90,0.2);
-        }
-      }
+      .valley-map-wrap { height: 400px; }
+      .community-links-grid { display: grid; grid-template-columns: repeat(3, 1fr); }
 
-      /* SEARCH / YLOPO */
       #search-listings { padding: 56px 20px; }
       .btn-view-all-properties { padding: 15px 28px; font-size: 10px; width: 100%; text-align: center; display: block; }
 
-      /* FOOTER */
       footer { padding: 52px 20px 28px; }
       .footer-grid { grid-template-columns: 1fr; gap: 36px; }
       .footer-bottom { flex-direction: column; gap: 16px; }
       .footer-copy { white-space: normal; }
     }
 
-    /* ============================================================
-       RESPONSIVE — SMALL MOBILE (≤480px)
-    ============================================================ */
     @media (max-width: 480px) {
-      .communities-grid { grid-template-columns: 1fr; }
-      .flip-card { height: 160px; }
       .hero-title { font-size: clamp(38px, 13vw, 58px); }
       #featured-properties { padding: 52px 16px; }
       #communities { padding: 52px 16px; }
+      .valley-map-wrap { height: 320px; }
+      .community-links-grid { grid-template-columns: repeat(2, 1fr); }
       #search-listings { padding: 48px 16px; }
       footer { padding: 44px 16px 24px; }
     }
@@ -1238,7 +1267,7 @@
         <div class="card-gradient-overlay"></div>
         <div class="card-bronze-hover"></div>
         <div class="card-content">
-          <span class="card-badge has-video">&#9654; Video Tour</span>
+          <span class="card-badge">Active</span>
           <p class="card-address">4321 Lumina Way</p>
           <p class="card-city">Palm Springs, CA</p>
           <div class="card-footer">
@@ -1330,7 +1359,7 @@
   </section>
 
   <!-- ============================================================
-       COMMUNITIES
+       COMMUNITIES — INTERACTIVE VALLEY MAP
   ============================================================ -->
   <section id="communities">
     <div class="section-header reveal">
@@ -1341,188 +1370,66 @@
       <a href="#search-listings" class="view-all-link">Search All Areas &rarr;</a>
     </div>
 
-    <div class="communities-grid reveal">
-
-      <!-- 01 Palm Springs -->
-      <div class="flip-card" data-community="palm-springs" data-lng="-116.5453" data-lat="33.8303" data-zoom="12.5">
-        <div class="flip-card-inner">
-          <div class="flip-card-front">
-            <span class="comm-num">01</span>
-            <span class="comm-name">Palm Springs</span>
-            <span class="comm-type">Iconic · Mid-Century Modern</span>
-            <span class="comm-hint">View on map</span>
-          </div>
-          <div class="flip-card-back">
-            <div class="map-container" id="map-palm-springs"></div>
-            <a class="map-label" href="palm-springs.html">Palm Springs &rarr;</a>
-          </div>
-        </div>
+    <div class="valley-map-wrap reveal">
+      <div id="valley-map"></div>
+      <!-- Hover tooltip -->
+      <div class="valley-tooltip" id="valley-tooltip">
+        <div class="tooltip-num" id="tooltip-num"></div>
+        <div class="tooltip-name" id="tooltip-name"></div>
+        <div class="tooltip-tag" id="tooltip-tag"></div>
+        <div class="tooltip-cta">Explore Community</div>
       </div>
-
-      <!-- 02 Palm Desert -->
-      <div class="flip-card" data-community="palm-desert" data-lng="-116.3744" data-lat="33.7222" data-zoom="12.5">
-        <div class="flip-card-inner">
-          <div class="flip-card-front">
-            <span class="comm-num">02</span>
-            <span class="comm-name">Palm Desert</span>
-            <span class="comm-type">Shopping · Dining · Arts</span>
-            <span class="comm-hint">View on map</span>
-          </div>
-          <div class="flip-card-back">
-            <div class="map-container" id="map-palm-desert"></div>
-            <a class="map-label" href="palm-desert.html">Palm Desert &rarr;</a>
-          </div>
-        </div>
-      </div>
-
-      <!-- 03 Rancho Mirage -->
-      <div class="flip-card" data-community="rancho-mirage" data-lng="-116.4125" data-lat="33.7395" data-zoom="13">
-        <div class="flip-card-inner">
-          <div class="flip-card-front">
-            <span class="comm-num">03</span>
-            <span class="comm-name">Rancho Mirage</span>
-            <span class="comm-type">Luxury · Privacy · Estates</span>
-            <span class="comm-hint">View on map</span>
-          </div>
-          <div class="flip-card-back">
-            <div class="map-container" id="map-rancho-mirage"></div>
-            <a class="map-label" href="rancho-mirage.html">Rancho Mirage &rarr;</a>
-          </div>
-        </div>
-      </div>
-
-      <!-- 04 Indian Wells -->
-      <div class="flip-card" data-community="indian-wells" data-lng="-116.3417" data-lat="33.7175" data-zoom="13.5">
-        <div class="flip-card-inner">
-          <div class="flip-card-front">
-            <span class="comm-num">04</span>
-            <span class="comm-name">Indian Wells</span>
-            <span class="comm-type">Luxury · Tennis · Golf</span>
-            <span class="comm-hint">View on map</span>
-          </div>
-          <div class="flip-card-back">
-            <div class="map-container" id="map-indian-wells"></div>
-            <a class="map-label" href="indian-wells.html">Indian Wells &rarr;</a>
-          </div>
-        </div>
-      </div>
-
-      <!-- 05 La Quinta -->
-      <div class="flip-card" data-community="la-quinta" data-lng="-116.3100" data-lat="33.6634" data-zoom="12.5">
-        <div class="flip-card-inner">
-          <div class="flip-card-front">
-            <span class="comm-num">05</span>
-            <span class="comm-name">La Quinta</span>
-            <span class="comm-type">Golf · Resort Living</span>
-            <span class="comm-hint">View on map</span>
-          </div>
-          <div class="flip-card-back">
-            <div class="map-container" id="map-la-quinta"></div>
-            <a class="map-label" href="la-quinta.html">La Quinta &rarr;</a>
-          </div>
-        </div>
-      </div>
-
-      <!-- 06 Indio -->
-      <div class="flip-card" data-community="indio" data-lng="-116.2156" data-lat="33.7206" data-zoom="12">
-        <div class="flip-card-inner">
-          <div class="flip-card-front">
-            <span class="comm-num">06</span>
-            <span class="comm-name">Indio</span>
-            <span class="comm-type">Coachella Valley</span>
-            <span class="comm-hint">View on map</span>
-          </div>
-          <div class="flip-card-back">
-            <div class="map-container" id="map-indio"></div>
-            <a class="map-label" href="indio.html">Indio &rarr;</a>
-          </div>
-        </div>
-      </div>
-
-      <!-- 07 Cathedral City -->
-      <div class="flip-card" data-community="cathedral-city" data-lng="-116.4653" data-lat="33.7797" data-zoom="13">
-        <div class="flip-card-inner">
-          <div class="flip-card-front">
-            <span class="comm-num">07</span>
-            <span class="comm-name">Cathedral City</span>
-            <span class="comm-type">Coachella Valley</span>
-            <span class="comm-hint">View on map</span>
-          </div>
-          <div class="flip-card-back">
-            <div class="map-container" id="map-cathedral-city"></div>
-            <a class="map-label" href="cathedral-city.html">Cathedral City &rarr;</a>
-          </div>
-        </div>
-      </div>
-
-      <!-- 08 Desert Hot Springs -->
-      <div class="flip-card" data-community="desert-hot-springs" data-lng="-116.5014" data-lat="33.9611" data-zoom="13">
-        <div class="flip-card-inner">
-          <div class="flip-card-front">
-            <span class="comm-num">08</span>
-            <span class="comm-name">Desert Hot Springs</span>
-            <span class="comm-type">Coachella Valley</span>
-            <span class="comm-hint">View on map</span>
-          </div>
-          <div class="flip-card-back">
-            <div class="map-container" id="map-desert-hot-springs"></div>
-            <a class="map-label" href="desert-hot-springs.html">Desert Hot Springs &rarr;</a>
-          </div>
-        </div>
-      </div>
-
-      <!-- 09 Coachella -->
-      <div class="flip-card" data-community="coachella" data-lng="-116.1739" data-lat="33.6803" data-zoom="13">
-        <div class="flip-card-inner">
-          <div class="flip-card-front">
-            <span class="comm-num">09</span>
-            <span class="comm-name">Coachella</span>
-            <span class="comm-type">Coachella Valley</span>
-            <span class="comm-hint">View on map</span>
-          </div>
-          <div class="flip-card-back">
-            <div class="map-container" id="map-coachella"></div>
-            <a class="map-label" href="coachella.html">Coachella &rarr;</a>
-          </div>
-        </div>
-      </div>
-
-      <!-- 10 Golf Communities -->
-      <div class="flip-card" data-community="golf" data-lng="-116.3500" data-lat="33.7050" data-zoom="11">
-        <div class="flip-card-inner">
-          <div class="flip-card-front">
-            <span class="comm-num">10</span>
-            <span class="comm-name">Golf Communities</span>
-            <span class="comm-type">Fairway · Course Views</span>
-            <span class="comm-hint">View on map</span>
-          </div>
-          <div class="flip-card-back">
-            <div class="map-container" id="map-golf"></div>
-            <a class="map-label" href="https://search.searchcoachellavalleyhomes.com/search?s[locations][0][state]=CA" target="_blank" rel="noopener">Golf Communities &rarr;</a>
-          </div>
-        </div>
-      </div>
-
-      <!-- 11 55+ Communities -->
-      <div class="flip-card" data-community="55plus" data-lng="-116.3744" data-lat="33.7222" data-zoom="11">
-        <div class="flip-card-inner">
-          <div class="flip-card-front">
-            <span class="comm-num">11</span>
-            <span class="comm-name">55+ Communities</span>
-            <span class="comm-type">Active Adult Living</span>
-            <span class="comm-hint">View on map</span>
-          </div>
-          <div class="flip-card-back">
-            <div class="map-container" id="map-55plus"></div>
-            <a class="map-label" href="https://search.searchcoachellavalleyhomes.com/search?s[locations][0][state]=CA" target="_blank" rel="noopener">55+ Communities &rarr;</a>
-          </div>
-        </div>
-      </div>
-
-      <!-- 12 spacer -->
-      <div class="flip-card" style="pointer-events:none; opacity:0;"></div>
-
     </div>
+
+    <!-- Fallback grid for mobile / no-map -->
+    <div class="community-links-grid">
+      <a class="comm-link-card" href="palm-springs.html">
+        <span class="comm-link-num">01</span>
+        <span class="comm-link-name">Palm Springs</span>
+        <span class="comm-link-tag">Iconic · Mid-Century Modern</span>
+      </a>
+      <a class="comm-link-card" href="palm-desert.html">
+        <span class="comm-link-num">02</span>
+        <span class="comm-link-name">Palm Desert</span>
+        <span class="comm-link-tag">Shopping · Dining · Arts</span>
+      </a>
+      <a class="comm-link-card" href="rancho-mirage.html">
+        <span class="comm-link-num">03</span>
+        <span class="comm-link-name">Rancho Mirage</span>
+        <span class="comm-link-tag">Luxury · Privacy · Estates</span>
+      </a>
+      <a class="comm-link-card" href="indian-wells.html">
+        <span class="comm-link-num">04</span>
+        <span class="comm-link-name">Indian Wells</span>
+        <span class="comm-link-tag">Luxury · Tennis · Golf</span>
+      </a>
+      <a class="comm-link-card" href="la-quinta.html">
+        <span class="comm-link-num">05</span>
+        <span class="comm-link-name">La Quinta</span>
+        <span class="comm-link-tag">Golf · Resort Living</span>
+      </a>
+      <a class="comm-link-card" href="indio.html">
+        <span class="comm-link-num">06</span>
+        <span class="comm-link-name">Indio</span>
+        <span class="comm-link-tag">Festivals · Community</span>
+      </a>
+      <a class="comm-link-card" href="cathedral-city.html">
+        <span class="comm-link-num">07</span>
+        <span class="comm-link-name">Cathedral City</span>
+        <span class="comm-link-tag">Vibrant · Accessible</span>
+      </a>
+      <a class="comm-link-card" href="desert-hot-springs.html">
+        <span class="comm-link-num">08</span>
+        <span class="comm-link-name">Desert Hot Springs</span>
+        <span class="comm-link-tag">Wellness · Views · Value</span>
+      </a>
+      <a class="comm-link-card" href="coachella.html">
+        <span class="comm-link-num">09</span>
+        <span class="comm-link-name">Coachella</span>
+        <span class="comm-link-tag">Culture · Growth</span>
+      </a>
+    </div>
+
   </section>
 
   <!-- ============================================================
@@ -1615,79 +1522,277 @@
   <script src="https://search.searchcoachellavalleyhomes.com/build/js/widgets-1.0.0.js" defer></script>
 
   <!-- ============================================================
-       MAPBOX — FLIP CARD COMMUNITY MAPS (lazy init)
+       MAPBOX — INTERACTIVE VALLEY MAP
   ============================================================ -->
   <script src="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.js"></script>
   <script>
-    (function () {
-      mapboxgl.accessToken = 'pk.eyJ1IjoidmVnYXMta2l3aSIsImEiOiJjbW15dTZqZHAwMWx0MnJxOXY2a3IwZW1mIn0.SY-_CDAwcvuhzQETeViOzg';
-      const BRONZE = '#B8975A';
-      const initializedMaps = {};
+  (function () {
+    const MAPBOX_TOKEN = 'pk.eyJ1IjoidmVnYXMta2l3aSIsImEiOiJjbW15dTZqZHAwMWx0MnJxOXY2a3IwZW1mIn0.SY-_CDAwcvuhzQETeViOzg';
+    const BRONZE       = '#B8975A';
+    const BRONZE_GLOW  = 'rgba(184,151,90,0.55)';
 
-      function initMap(card) {
-        const id   = card.dataset.community;
-        const lng  = parseFloat(card.dataset.lng);
-        const lat  = parseFloat(card.dataset.lat);
-        const zoom = parseFloat(card.dataset.zoom);
-        const containerId = `map-${id}`;
+    const COMMUNITIES = [
+      {
+        id: 'palm-springs',
+        num: '01',
+        name: 'Palm Springs',
+        tag: 'Iconic · Mid-Century Modern',
+        url: 'palm-springs.html',
+        center: [-116.5453, 33.8303],
+        boundary: [[-116.635,33.885],[-116.510,33.885],[-116.488,33.862],[-116.484,33.800],[-116.505,33.773],[-116.560,33.772],[-116.630,33.796],[-116.645,33.840],[-116.635,33.885]],
+      },
+      {
+        id: 'palm-desert',
+        num: '02',
+        name: 'Palm Desert',
+        tag: 'Shopping · Dining · Arts',
+        url: 'palm-desert.html',
+        center: [-116.3744, 33.7222],
+        boundary: [[-116.452,33.782],[-116.362,33.782],[-116.295,33.754],[-116.285,33.700],[-116.305,33.660],[-116.382,33.648],[-116.458,33.668],[-116.470,33.726],[-116.452,33.782]],
+      },
+      {
+        id: 'rancho-mirage',
+        num: '03',
+        name: 'Rancho Mirage',
+        tag: 'Luxury · Privacy · Estates',
+        url: 'rancho-mirage.html',
+        center: [-116.4125, 33.7395],
+        boundary: [[-116.462,33.774],[-116.400,33.776],[-116.358,33.764],[-116.342,33.732],[-116.350,33.710],[-116.400,33.703],[-116.462,33.712],[-116.480,33.742],[-116.462,33.774]],
+      },
+      {
+        id: 'indian-wells',
+        num: '04',
+        name: 'Indian Wells',
+        tag: 'Luxury · Tennis · Golf',
+        url: 'indian-wells.html',
+        center: [-116.3417, 33.7175],
+        boundary: [[-116.372,33.740],[-116.330,33.741],[-116.300,33.732],[-116.290,33.713],[-116.298,33.700],[-116.330,33.694],[-116.370,33.700],[-116.383,33.718],[-116.372,33.740]],
+      },
+      {
+        id: 'la-quinta',
+        num: '05',
+        name: 'La Quinta',
+        tag: 'Golf · Resort Living',
+        url: 'la-quinta.html',
+        center: [-116.3100, 33.6634],
+        boundary: [[-116.385,33.720],[-116.290,33.720],[-116.247,33.700],[-116.238,33.635],[-116.260,33.595],[-116.313,33.585],[-116.375,33.608],[-116.395,33.658],[-116.385,33.720]],
+      },
+      {
+        id: 'indio',
+        num: '06',
+        name: 'Indio',
+        tag: 'Festivals · Community',
+        url: 'indio.html',
+        center: [-116.2156, 33.7206],
+        boundary: [[-116.305,33.773],[-116.180,33.773],[-116.130,33.750],[-116.120,33.700],[-116.140,33.660],[-116.192,33.648],[-116.285,33.655],[-116.315,33.700],[-116.305,33.773]],
+      },
+      {
+        id: 'cathedral-city',
+        num: '07',
+        name: 'Cathedral City',
+        tag: 'Vibrant · Accessible',
+        url: 'cathedral-city.html',
+        center: [-116.4653, 33.7797],
+        boundary: [[-116.512,33.815],[-116.454,33.818],[-116.420,33.803],[-116.402,33.773],[-116.410,33.750],[-116.450,33.742],[-116.502,33.752],[-116.522,33.780],[-116.512,33.815]],
+      },
+      {
+        id: 'desert-hot-springs',
+        num: '08',
+        name: 'Desert Hot Springs',
+        tag: 'Wellness · Views · Value',
+        url: 'desert-hot-springs.html',
+        center: [-116.5014, 33.9611],
+        boundary: [[-116.558,33.998],[-116.475,33.998],[-116.445,33.975],[-116.438,33.940],[-116.458,33.918],[-116.500,33.915],[-116.548,33.935],[-116.568,33.968],[-116.558,33.998]],
+      },
+      {
+        id: 'coachella',
+        num: '09',
+        name: 'Coachella',
+        tag: 'Culture · Growth',
+        url: 'coachella.html',
+        center: [-116.1739, 33.6803],
+        boundary: [[-116.228,33.712],[-116.147,33.712],[-116.118,33.698],[-116.112,33.665],[-116.130,33.638],[-116.178,33.628],[-116.228,33.638],[-116.248,33.670],[-116.228,33.712]],
+      },
+    ];
 
-        if (initializedMaps[id]) return;
-        initializedMaps[id] = true;
+    // --- Map init ---
+    mapboxgl.accessToken = MAPBOX_TOKEN;
 
-        const map = new mapboxgl.Map({
-          container: containerId,
-          style: 'mapbox://styles/mapbox/dark-v11',
-          center: [lng, lat],
-          zoom: zoom,
-          interactive: false,
-          attributionControl: false,
+    const map = new mapboxgl.Map({
+      container: 'valley-map',
+      style: 'mapbox://styles/mapbox/dark-v11',
+      center: [-116.37, 33.785],
+      zoom: 9.6,
+      minZoom: 8,
+      maxZoom: 14,
+      attributionControl: false,
+    });
+
+    const tooltip    = document.getElementById('valley-tooltip');
+    const tipNum     = document.getElementById('tooltip-num');
+    const tipName    = document.getElementById('tooltip-name');
+    const tipTag     = document.getElementById('tooltip-tag');
+    const mapWrap    = document.querySelector('.valley-map-wrap');
+
+    let hoveredId = null;
+    let currentUrl = null;
+
+    map.on('load', () => {
+
+      // Fit to show the full valley with padding
+      map.fitBounds(
+        [[-116.68, 33.56], [-116.08, 34.02]],
+        { padding: { top: 60, bottom: 60, left: 60, right: 60 }, duration: 0 }
+      );
+
+      // Add each community as its own source + layers
+      COMMUNITIES.forEach((c) => {
+        const geojson = {
+          type: 'Feature',
+          geometry: { type: 'Polygon', coordinates: [c.boundary] },
+          properties: { id: c.id, name: c.name, num: c.num, tag: c.tag, url: c.url },
+        };
+
+        map.addSource(c.id, { type: 'geojson', data: geojson });
+
+        // Fill layer
+        map.addLayer({
+          id: c.id + '-fill',
+          type: 'fill',
+          source: c.id,
+          paint: {
+            'fill-color': BRONZE,
+            'fill-opacity': [
+              'case',
+              ['boolean', ['feature-state', 'hovered'], false],
+              0.38,
+              0.07,
+            ],
+          },
         });
 
-        map.on('load', () => {
-          // Bronze dot marker
-          const el = document.createElement('div');
-          el.style.cssText = `
-            width: 14px; height: 14px;
-            background: ${BRONZE};
-            border: 2px solid #0d0d0d;
-            border-radius: 50%;
-            box-shadow: 0 0 12px ${BRONZE}99;
-          `;
-          new mapboxgl.Marker({ element: el }).setLngLat([lng, lat]).addTo(map);
+        // Border layer
+        map.addLayer({
+          id: c.id + '-line',
+          type: 'line',
+          source: c.id,
+          paint: {
+            'line-color': BRONZE,
+            'line-width': [
+              'case',
+              ['boolean', ['feature-state', 'hovered'], false],
+              2.5,
+              1.2,
+            ],
+            'line-opacity': [
+              'case',
+              ['boolean', ['feature-state', 'hovered'], false],
+              1.0,
+              0.45,
+            ],
+          },
         });
 
-        // Resize after flip animation completes so map renders correctly
-        setTimeout(() => map.resize(), 680);
+        // --- Hover events ---
+        map.on('mousemove', c.id + '-fill', (e) => {
+          map.getCanvas().style.cursor = 'pointer';
+
+          if (hoveredId !== c.id) {
+            // Clear previous hover
+            if (hoveredId) {
+              map.setFeatureState({ source: hoveredId, id: 0 }, { hovered: false });
+              const prevLabel = document.getElementById('label-' + hoveredId);
+              if (prevLabel) prevLabel.classList.remove('hovered');
+            }
+            hoveredId = c.id;
+            map.setFeatureState({ source: c.id, id: 0 }, { hovered: true });
+            const label = document.getElementById('label-' + c.id);
+            if (label) label.classList.add('hovered');
+          }
+
+          currentUrl = c.url;
+
+          // Update tooltip content
+          tipNum.textContent  = c.num;
+          tipName.textContent = c.name;
+          tipTag.textContent  = c.tag;
+
+          // Position tooltip relative to map container, following cursor
+          const rect   = mapWrap.getBoundingClientRect();
+          const mouseX = e.originalEvent.clientX - rect.left;
+          const mouseY = e.originalEvent.clientY - rect.top;
+
+          // Keep tooltip inside the map bounds
+          const ttW = tooltip.offsetWidth  || 220;
+          const ttH = tooltip.offsetHeight || 110;
+          const pad = 20;
+          let tx = mouseX + 18;
+          let ty = mouseY - ttH / 2;
+          if (tx + ttW > mapWrap.offsetWidth  - pad) tx = mouseX - ttW - 18;
+          if (ty < pad) ty = pad;
+          if (ty + ttH > mapWrap.offsetHeight - pad) ty = mapWrap.offsetHeight - ttH - pad;
+
+          tooltip.style.transform = `translate(${tx}px, ${ty}px)`;
+          tooltip.classList.add('visible');
+        });
+
+        map.on('mouseleave', c.id + '-fill', () => {
+          map.getCanvas().style.cursor = '';
+          if (hoveredId === c.id) {
+            map.setFeatureState({ source: c.id, id: 0 }, { hovered: false });
+            const label = document.getElementById('label-' + c.id);
+            if (label) label.classList.remove('hovered');
+            hoveredId  = null;
+            currentUrl = null;
+          }
+          tooltip.classList.remove('visible');
+        });
+
+        map.on('click', c.id + '-fill', () => {
+          window.location.href = c.url;
+        });
+      });
+
+      // --- City label markers ---
+      COMMUNITIES.forEach((c) => {
+        const el = document.createElement('div');
+        el.className = 'valley-city-label';
+        el.id = 'label-' + c.id;
+        el.innerHTML = `<div class="label-dot"></div><div class="label-text">${c.name}</div>`;
+
+        // Click on label also navigates
+        el.addEventListener('click', () => { window.location.href = c.url; });
+
+        new mapboxgl.Marker({ element: el, anchor: 'center' })
+          .setLngLat(c.center)
+          .addTo(map);
+      });
+
+    }); // map.on('load')
+
+    // Touch support: on mobile, tap navigates directly
+    map.on('touchend', (e) => {
+      const features = map.queryRenderedFeatures(e.point, {
+        layers: COMMUNITIES.map(c => c.id + '-fill'),
+      });
+      if (features.length > 0) {
+        const url = features[0].properties.url;
+        if (url) window.location.href = url;
       }
+    });
 
-      // Lazy-init on first mouseenter
-      document.querySelectorAll('.flip-card[data-community]').forEach(card => {
-        card.addEventListener('mouseenter', () => initMap(card), { once: true });
-      });
-
-      // Click anywhere on the card → navigate to community page
-      document.querySelectorAll('.flip-card[data-community]').forEach(card => {
-        card.style.cursor = 'pointer';
-        card.addEventListener('click', () => {
-          const link = card.querySelector('.map-label');
-          if (link && link.href) window.location.href = link.href;
-        });
-      });
-
-    })();
+  })();
   </script>
 
   <!-- ============================================================
        SCROLL BEHAVIORS
   ============================================================ -->
   <script>
-    // Nav scroll state
     const nav = document.getElementById('main-nav');
     window.addEventListener('scroll', () => {
       nav.classList.toggle('scrolled', window.scrollY > 60);
     }, { passive: true });
 
-    // Reveal on scroll
     const revealEls = document.querySelectorAll('.reveal');
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
