@@ -112,12 +112,15 @@ Return ONLY valid JSON, no markdown, no commentary.`
 
   const response = await anthropic.messages.create({
     model: 'claude-opus-4-6',
-    max_tokens: 4000,
+    max_tokens: 8000,
     messages: [{ role: 'user', content: prompt }],
     system: SCORING_SYSTEM,
   })
 
-  const text = response.content.filter((b): b is Anthropic.TextBlock => b.type === 'text').map((b) => b.text).join('')
+  const raw = response.content.filter((b): b is Anthropic.TextBlock => b.type === 'text').map((b) => b.text).join('')
+
+  // Strip markdown code fences if present
+  const text = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/i, '').trim()
 
   try {
     return JSON.parse(text) as ScoredArticle[]

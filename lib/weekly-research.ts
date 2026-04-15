@@ -111,10 +111,12 @@ Return ONLY valid JSON, no markdown fences, no commentary.`
     system: TOPIC_SYSTEM,
   })
 
-  const text = response.content
+  const raw = response.content
     .filter((b): b is Anthropic.TextBlock => b.type === 'text')
     .map((b) => b.text)
     .join('')
+
+  const text = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/i, '').trim()
 
   try {
     return JSON.parse(text) as WeeklyTopic[]
