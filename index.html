@@ -1165,6 +1165,139 @@
     .reveal-delay-5 { transition-delay: 0.5s; }
     .reveal-delay-6 { transition-delay: 0.6s; }
 
+    /* ============================================================
+       TESTIMONIALS
+    ============================================================ */
+    #testimonials {
+      background: var(--dark);
+      padding: 100px 52px;
+      overflow: hidden;
+    }
+
+    .testimonials-header {
+      text-align: center;
+      max-width: 520px;
+      margin: 0 auto 56px;
+    }
+
+    .testimonials-header .section-eyebrow { text-align: center; }
+
+    .testimonials-columns {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      max-height: 720px;
+      overflow: hidden;
+      -webkit-mask-image: linear-gradient(to bottom, transparent, black 16%, black 84%, transparent);
+      mask-image: linear-gradient(to bottom, transparent, black 16%, black 84%, transparent);
+    }
+
+    .testimonials-col {
+      display: flex;
+      flex-direction: column;
+      flex: 0 0 auto;
+    }
+
+    .testimonials-col-2 { display: none; }
+    .testimonials-col-3 { display: none; }
+
+    @media (min-width: 769px)  { .testimonials-col-2 { display: flex; } }
+    @media (min-width: 1025px) { .testimonials-col-3 { display: flex; } }
+
+    .testimonials-track {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      animation: testimonialScrollUp var(--scroll-duration, 22s) linear infinite;
+      will-change: transform;
+    }
+
+    .testimonials-track:hover { animation-play-state: paused; }
+
+    @keyframes testimonialScrollUp {
+      0%   { transform: translateY(0); }
+      100% { transform: translateY(-50%); }
+    }
+
+    .testimonial-card {
+      background: var(--dark-2);
+      border: 1px solid rgba(184,151,90,0.13);
+      border-radius: 14px;
+      padding: 26px 26px 22px;
+      width: 292px;
+      flex-shrink: 0;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .testimonial-card:hover {
+      border-color: rgba(184,151,90,0.32);
+      box-shadow: 0 6px 36px rgba(0,0,0,0.45), 0 0 28px rgba(184,151,90,0.07);
+    }
+
+    .testimonial-quote {
+      font-family: var(--sans);
+      font-size: 13.5px;
+      font-weight: 300;
+      line-height: 1.78;
+      color: rgba(242,237,228,0.72);
+      margin-bottom: 20px;
+    }
+
+    .testimonial-divider {
+      width: 28px;
+      height: 1px;
+      background: rgba(184,151,90,0.35);
+      margin-bottom: 16px;
+    }
+
+    .testimonial-person {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+    }
+
+    .testimonial-person img {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1.5px solid rgba(184,151,90,0.28);
+      flex-shrink: 0;
+    }
+
+    .testimonial-name {
+      font-family: var(--sans);
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--text-light);
+      line-height: 1.3;
+    }
+
+    .testimonial-role {
+      font-family: var(--sans);
+      font-size: 11px;
+      font-weight: 300;
+      color: var(--bronze);
+      letter-spacing: 0.04em;
+      line-height: 1.4;
+      opacity: 0.85;
+    }
+
+    @media (max-width: 1024px) {
+      #testimonials { padding: 80px 32px; }
+    }
+
+    @media (max-width: 768px) {
+      #testimonials { padding: 64px 20px; }
+      .testimonials-columns { max-height: 540px; }
+      .testimonial-card { width: 272px; }
+    }
+
+    @media (max-width: 480px) {
+      #testimonials { padding: 52px 16px; }
+      .testimonial-card { width: 252px; }
+    }
+
   </style>
 </head>
 <body>
@@ -1430,6 +1563,269 @@
       </a>
     </div>
 
+  </section>
+
+  <!-- ============================================================
+       TESTIMONIALS
+  ============================================================ -->
+  <section id="testimonials">
+    <div class="testimonials-header reveal">
+      <p class="section-eyebrow">Client Stories</p>
+      <h2 class="section-title">What Clients Say</h2>
+    </div>
+
+    <div class="testimonials-columns reveal">
+
+      <!-- Column 1 -->
+      <div class="testimonials-col testimonials-col-1">
+        <div class="testimonials-track" style="--scroll-duration:24s">
+
+          <!-- Card 1 -->
+          <div class="testimonial-card">
+            <p class="testimonial-quote">"Shana made our first home purchase feel effortless. Her knowledge of Palm Springs neighborhoods — from the Historic Tennis Club to Movie Colony — helped us find exactly the home we envisioned."</p>
+            <div class="testimonial-divider"></div>
+            <div class="testimonial-person">
+              <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Jennifer M." loading="lazy" />
+              <div>
+                <div class="testimonial-name">Jennifer M.</div>
+                <div class="testimonial-role">Home Buyer · Palm Springs</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="testimonial-card">
+            <p class="testimonial-quote">"We listed with Shana after speaking with three other agents. Her Leverage Advantage program is real — we had multiple offers within four days and closed above asking."</p>
+            <div class="testimonial-divider"></div>
+            <div class="testimonial-person">
+              <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="David K." loading="lazy" />
+              <div>
+                <div class="testimonial-name">David &amp; Sarah K.</div>
+                <div class="testimonial-role">Home Sellers · Rancho Mirage</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="testimonial-card">
+            <p class="testimonial-quote">"As an investor expanding into the Coachella Valley, Shana's market data and off-market connections were invaluable. She found us a La Quinta property before it ever hit the MLS."</p>
+            <div class="testimonial-divider"></div>
+            <div class="testimonial-person">
+              <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Marcus T." loading="lazy" />
+              <div>
+                <div class="testimonial-name">Marcus T.</div>
+                <div class="testimonial-role">Real Estate Investor · La Quinta</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Duplicate for seamless loop -->
+          <div class="testimonial-card">
+            <p class="testimonial-quote">"Shana made our first home purchase feel effortless. Her knowledge of Palm Springs neighborhoods — from the Historic Tennis Club to Movie Colony — helped us find exactly the home we envisioned."</p>
+            <div class="testimonial-divider"></div>
+            <div class="testimonial-person">
+              <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Jennifer M." loading="lazy" />
+              <div>
+                <div class="testimonial-name">Jennifer M.</div>
+                <div class="testimonial-role">Home Buyer · Palm Springs</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="testimonial-card">
+            <p class="testimonial-quote">"We listed with Shana after speaking with three other agents. Her Leverage Advantage program is real — we had multiple offers within four days and closed above asking."</p>
+            <div class="testimonial-divider"></div>
+            <div class="testimonial-person">
+              <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="David K." loading="lazy" />
+              <div>
+                <div class="testimonial-name">David &amp; Sarah K.</div>
+                <div class="testimonial-role">Home Sellers · Rancho Mirage</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="testimonial-card">
+            <p class="testimonial-quote">"As an investor expanding into the Coachella Valley, Shana's market data and off-market connections were invaluable. She found us a La Quinta property before it ever hit the MLS."</p>
+            <div class="testimonial-divider"></div>
+            <div class="testimonial-person">
+              <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Marcus T." loading="lazy" />
+              <div>
+                <div class="testimonial-name">Marcus T.</div>
+                <div class="testimonial-role">Real Estate Investor · La Quinta</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Column 2 (hidden on mobile) -->
+      <div class="testimonials-col testimonials-col-2">
+        <div class="testimonials-track" style="--scroll-duration:30s">
+
+          <!-- Card 4 -->
+          <div class="testimonial-card">
+            <p class="testimonial-quote">"Shana's experience in Indian Wells luxury properties is unmatched. She guided our estate sale with complete discretion and achieved a result that exceeded our expectations."</p>
+            <div class="testimonial-divider"></div>
+            <div class="testimonial-person">
+              <img src="https://randomuser.me/api/portraits/women/55.jpg" alt="Christine L." loading="lazy" />
+              <div>
+                <div class="testimonial-name">Christine L.</div>
+                <div class="testimonial-role">Home Seller · Indian Wells</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 5 -->
+          <div class="testimonial-card">
+            <p class="testimonial-quote">"We relocated from San Diego and couldn't have navigated the Palm Desert market without Shana. From our initial call to closing day, she kept us informed every single step."</p>
+            <div class="testimonial-divider"></div>
+            <div class="testimonial-person">
+              <img src="https://randomuser.me/api/portraits/men/22.jpg" alt="Rob F." loading="lazy" />
+              <div>
+                <div class="testimonial-name">Rob &amp; Amy F.</div>
+                <div class="testimonial-role">Buyers · Palm Desert</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 6 -->
+          <div class="testimonial-card">
+            <p class="testimonial-quote">"I moved from Chicago specifically for the Palm Springs lifestyle. Shana understood exactly what I was looking for and only showed me homes that were a true fit — no time wasted."</p>
+            <div class="testimonial-divider"></div>
+            <div class="testimonial-person">
+              <img src="https://randomuser.me/api/portraits/women/67.jpg" alt="Elena V." loading="lazy" />
+              <div>
+                <div class="testimonial-name">Elena V.</div>
+                <div class="testimonial-role">Relocation Buyer · Palm Springs</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Duplicate for seamless loop -->
+          <div class="testimonial-card">
+            <p class="testimonial-quote">"Shana's experience in Indian Wells luxury properties is unmatched. She guided our estate sale with complete discretion and achieved a result that exceeded our expectations."</p>
+            <div class="testimonial-divider"></div>
+            <div class="testimonial-person">
+              <img src="https://randomuser.me/api/portraits/women/55.jpg" alt="Christine L." loading="lazy" />
+              <div>
+                <div class="testimonial-name">Christine L.</div>
+                <div class="testimonial-role">Home Seller · Indian Wells</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="testimonial-card">
+            <p class="testimonial-quote">"We relocated from San Diego and couldn't have navigated the Palm Desert market without Shana. From our initial call to closing day, she kept us informed every single step."</p>
+            <div class="testimonial-divider"></div>
+            <div class="testimonial-person">
+              <img src="https://randomuser.me/api/portraits/men/22.jpg" alt="Rob F." loading="lazy" />
+              <div>
+                <div class="testimonial-name">Rob &amp; Amy F.</div>
+                <div class="testimonial-role">Buyers · Palm Desert</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="testimonial-card">
+            <p class="testimonial-quote">"I moved from Chicago specifically for the Palm Springs lifestyle. Shana understood exactly what I was looking for and only showed me homes that were a true fit — no time wasted."</p>
+            <div class="testimonial-divider"></div>
+            <div class="testimonial-person">
+              <img src="https://randomuser.me/api/portraits/women/67.jpg" alt="Elena V." loading="lazy" />
+              <div>
+                <div class="testimonial-name">Elena V.</div>
+                <div class="testimonial-role">Relocation Buyer · Palm Springs</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Column 3 (desktop only) -->
+      <div class="testimonials-col testimonials-col-3">
+        <div class="testimonials-track" style="--scroll-duration:27s">
+
+          <!-- Card 7 -->
+          <div class="testimonial-card">
+            <p class="testimonial-quote">"Shana sold our Cathedral City home in under two weeks at full asking price. Her photography and marketing strategy made our property stand out in a crowded market."</p>
+            <div class="testimonial-divider"></div>
+            <div class="testimonial-person">
+              <img src="https://randomuser.me/api/portraits/men/71.jpg" alt="Tom H." loading="lazy" />
+              <div>
+                <div class="testimonial-name">Tom &amp; Linda H.</div>
+                <div class="testimonial-role">Home Sellers · Cathedral City</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 8 -->
+          <div class="testimonial-card">
+            <p class="testimonial-quote">"Professional, patient, and deeply knowledgeable. Shana helped us understand every nuance of the La Quinta market — golf course access, HOA details, and seasonal value trends."</p>
+            <div class="testimonial-divider"></div>
+            <div class="testimonial-person">
+              <img src="https://randomuser.me/api/portraits/women/33.jpg" alt="Priya N." loading="lazy" />
+              <div>
+                <div class="testimonial-name">Priya N.</div>
+                <div class="testimonial-role">Home Buyer · La Quinta</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 9 -->
+          <div class="testimonial-card">
+            <p class="testimonial-quote">"We've worked with many agents across the country. Shana is in a different league — her communication is exceptional, her strategy is clear, and her results speak for themselves."</p>
+            <div class="testimonial-divider"></div>
+            <div class="testimonial-person">
+              <img src="https://randomuser.me/api/portraits/men/52.jpg" alt="James W." loading="lazy" />
+              <div>
+                <div class="testimonial-name">James &amp; Kim W.</div>
+                <div class="testimonial-role">Buyers · Coachella Valley</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Duplicate for seamless loop -->
+          <div class="testimonial-card">
+            <p class="testimonial-quote">"Shana sold our Cathedral City home in under two weeks at full asking price. Her photography and marketing strategy made our property stand out in a crowded market."</p>
+            <div class="testimonial-divider"></div>
+            <div class="testimonial-person">
+              <img src="https://randomuser.me/api/portraits/men/71.jpg" alt="Tom H." loading="lazy" />
+              <div>
+                <div class="testimonial-name">Tom &amp; Linda H.</div>
+                <div class="testimonial-role">Home Sellers · Cathedral City</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="testimonial-card">
+            <p class="testimonial-quote">"Professional, patient, and deeply knowledgeable. Shana helped us understand every nuance of the La Quinta market — golf course access, HOA details, and seasonal value trends."</p>
+            <div class="testimonial-divider"></div>
+            <div class="testimonial-person">
+              <img src="https://randomuser.me/api/portraits/women/33.jpg" alt="Priya N." loading="lazy" />
+              <div>
+                <div class="testimonial-name">Priya N.</div>
+                <div class="testimonial-role">Home Buyer · La Quinta</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="testimonial-card">
+            <p class="testimonial-quote">"We've worked with many agents across the country. Shana is in a different league — her communication is exceptional, her strategy is clear, and her results speak for themselves."</p>
+            <div class="testimonial-divider"></div>
+            <div class="testimonial-person">
+              <img src="https://randomuser.me/api/portraits/men/52.jpg" alt="James W." loading="lazy" />
+              <div>
+                <div class="testimonial-name">James &amp; Kim W.</div>
+                <div class="testimonial-role">Buyers · Coachella Valley</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
   </section>
 
   <!-- ============================================================
