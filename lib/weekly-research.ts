@@ -48,10 +48,8 @@ interface TavilyResult {
 async function searchTavily(query: string): Promise<TavilyResult[]> {
   const client = tavily({ apiKey: process.env.TAVILY_API_KEY! })
   const result = await client.search(query, {
-    search_depth: 'basic',
-    max_results: 5,
-    include_answer: false,
-    include_raw_content: false,
+    searchDepth: 'basic',
+    maxResults: 5,
   })
   return (result.results ?? []) as TavilyResult[]
 }
