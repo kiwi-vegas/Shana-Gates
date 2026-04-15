@@ -127,7 +127,50 @@ export default async function handler(req: any, res: any) {
     return res.status(200).json(results)
   }
 
-  // ── 6. Env var presence check ─────────────────────────────────────────
+  // ── 6. Publish pipeline step-by-step trace ───────────────────────────
+  if (step === 'publish-trace') {
+    const { getWeeklyTopics } = await import('../../lib/blog-store')
+    const { writeFromTopic } = await import('../../lib/writer')
+    const { publishBlogPost } = await import('../../lib/blog-sanity')
+
+    // Step A: load topics from Redis
+    const t0 = Date.now()
+    try {
+      const topics = await getWeeklyTopics()
+      results.a_redis = { ok: true, count: topics.length, ms: Date.now() - t0 }
+
+      if (topics.length === 0) {
+        results.a_redis.note = 'No topics in Redis — run /api/cron/weekly first'
+        return res.status(200).json(results)
+      }
+
+      // Step B: write one post with Claude (first topic)
+      const topic = topics[0]
+      results.b_topic = { id: topic.id, title: topic.title, category: topic.category }
+      const t1 = Date.now()
+      try {
+        const post = await writeFromTopic(topic)
+        results.b_write = { ok: true, ms: Date.now() - t1, title: post.title, bodyLength: post.body.length }
+
+        // Step C: publish to Sanity (skip image gen — use static fallback URL)
+        const t2 = Date.now()
+        try {
+          const heroImage = { sanityAssetId: null, externalUrl: 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=1792&h=1024&fit=crop' }
+          const published = await publishBlogPost(post, heroImage)
+          results.c_sanity = { ok: true, ms: Date.now() - t2, slug: published.slug }
+        } catch (e: any) {
+          results.c_sanity = { ok: false, ms: Date.now() - t2, error: e.message }
+        }
+      } catch (e: any) {
+        results.b_write = { ok: false, ms: Date.now() - t1, error: e.message }
+      }
+    } catch (e: any) {
+      results.a_redis = { ok: false, ms: Date.now() - t0, error: e.message }
+    }
+    return res.status(200).json(results)
+  }
+
+  // ── 7. Env var presence check ─────────────────────────────────────────
   if (step === 'all' || step === 'env') {
     const vars = [
       'TAVILY_API_KEY', 'UPSTASH_REDIS_REST_URL', 'UPSTASH_REDIS_REST_TOKEN',
