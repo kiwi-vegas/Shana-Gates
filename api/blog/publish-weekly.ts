@@ -43,17 +43,26 @@ export default async function handler(req: any, res: any) {
     return res.status(400).json({ error: 'topicIds[] required' })
   }
 
-  // Load stored weekly topics
-  const allTopics = await getWeeklyTopics()
+  let allTopics: Awaited<ReturnType<typeof getWeeklyTopics>>
+  try {
+    allTopics = await getWeeklyTopics()
+  } catch (err) {
+    console.error('[publish-weekly] Redis error loading topics:', err)
+    return res.status(500).json({ error: 'Could not load topics from cache. Try again.' })
+  }
+
   const selected = allTopics.filter((t) => topicIds.includes(t.id))
 
   if (selected.length === 0) {
-    return res.status(404).json({ error: 'No matching topics found' })
+    return res.status(404).json({ error: 'No matching topics found — the weekly topics may have expired. Re-run the weekly research.' })
   }
 
-  // Write + publish in parallel
-  const results = await Promise.allSettled(
-    selected.map(async (topic) => {
+  // Write + publish serially to avoid parallel API timeouts
+  const published: any[] = []
+  const failed: string[] = []
+
+  for (const topic of selected) {
+    try {
       const post = await writeFromTopic(topic)
       const heroImage = await generateHeroImage(
         post.title,
@@ -61,18 +70,13 @@ export default async function handler(req: any, res: any) {
         post.category,
         ''
       )
-      const published = await publishBlogPost(post, heroImage)
-      return { ...published, title: post.title, category: post.category }
-    })
-  )
-
-  const published = results
-    .filter((r): r is PromiseFulfilledResult<any> => r.status === 'fulfilled')
-    .map((r) => r.value)
-
-  const failed = results
-    .filter((r): r is PromiseRejectedResult => r.status === 'rejected')
-    .map((r) => r.reason?.message ?? 'Unknown error')
+      const result = await publishBlogPost(post, heroImage)
+      published.push({ ...result, title: post.title, category: post.category })
+    } catch (err) {
+      console.error(`[publish-weekly] Failed to publish topic "${topic.title}":`, err)
+      failed.push(`${topic.title}: ${err instanceof Error ? err.message : 'Unknown error'}`)
+    }
+  }
 
   return res.status(200).json({
     ok: true,

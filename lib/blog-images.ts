@@ -132,39 +132,66 @@ export interface HeroImageResult {
   externalUrl: string | null
 }
 
+// Wraps the AI image generation steps with a hard timeout so they
+// never stall the publish function. Falls through to static fallback.
+async function tryAiImageGeneration(
+  title: string,
+  whyItMatters: string,
+  category: string,
+  sourceUrl: string,
+  timeoutMs = 20000
+): Promise<HeroImageResult | null> {
+  return new Promise((resolve) => {
+    const timer = setTimeout(() => resolve(null), timeoutMs)
+
+    ;(async () => {
+      try {
+        const prompt = await buildImagePrompt(title, whyItMatters, category).catch(
+          () => `Cinematic Coachella Valley desert real estate scene, photorealistic, 16:9`
+        )
+
+        // Try Gemini
+        const geminiResult = await generateWithGemini(prompt)
+        if (geminiResult) {
+          const assetId = await uploadToSanity(geminiResult.base64, geminiResult.mimeType)
+          if (assetId) { clearTimeout(timer); resolve({ sanityAssetId: assetId, externalUrl: null }); return }
+        }
+
+        // Try DALL-E 3
+        const dalleResult = await generateWithDallE(prompt)
+        if (dalleResult) {
+          const assetId = await uploadToSanity(dalleResult.base64, dalleResult.mimeType)
+          if (assetId) { clearTimeout(timer); resolve({ sanityAssetId: assetId, externalUrl: null }); return }
+        }
+
+        // Try OG scrape
+        const ogUrl = await scrapeOgImage(sourceUrl)
+        if (ogUrl) { clearTimeout(timer); resolve({ sanityAssetId: null, externalUrl: ogUrl }); return }
+
+        clearTimeout(timer)
+        resolve(null)
+      } catch {
+        clearTimeout(timer)
+        resolve(null)
+      }
+    })()
+  })
+}
+
 export async function generateHeroImage(
   title: string,
   whyItMatters: string,
   category: string,
   sourceUrl: string
 ): Promise<HeroImageResult> {
-  // Step 1: Build cinematic prompt
-  const prompt = await buildImagePrompt(title, whyItMatters, category).catch(
-    () => `Cinematic Coachella Valley desert real estate scene, photorealistic, 16:9`
-  )
+  // Attempt AI generation with a 20-second cap so publish never hangs
+  const aiResult = await tryAiImageGeneration(title, whyItMatters, category, sourceUrl)
+  if (aiResult) return aiResult
 
-  // Step 2: Try Gemini
-  const geminiResult = await generateWithGemini(prompt)
-  if (geminiResult) {
-    const assetId = await uploadToSanity(geminiResult.base64, geminiResult.mimeType)
-    if (assetId) return { sanityAssetId: assetId, externalUrl: null }
-  }
-
-  // Step 3: Try DALL-E 3
-  const dalleResult = await generateWithDallE(prompt)
-  if (dalleResult) {
-    const assetId = await uploadToSanity(dalleResult.base64, dalleResult.mimeType)
-    if (assetId) return { sanityAssetId: assetId, externalUrl: null }
-  }
-
-  // Step 4: Try OG image from source
-  const ogUrl = await scrapeOgImage(sourceUrl)
-  if (ogUrl) return { sanityAssetId: null, externalUrl: ogUrl }
-
-  // Step 5: Try Unsplash API
+  // Try Unsplash API (fast)
   const unsplashUrl = await fetchUnsplash(category)
   if (unsplashUrl) return { sanityAssetId: null, externalUrl: unsplashUrl }
 
-  // Step 6: Deterministic fallback pool
+  // Deterministic fallback pool — always succeeds
   return { sanityAssetId: null, externalUrl: deterministicFallback(sourceUrl || title, category) }
 }

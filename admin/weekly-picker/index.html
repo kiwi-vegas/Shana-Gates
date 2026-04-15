@@ -392,7 +392,12 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ topicIds: [...selectedIds] }),
         })
-        const data = await res.json()
+        let data
+        try {
+          data = await res.json()
+        } catch {
+          throw new Error(`Server error (${res.status}) — check Vercel function logs for details.`)
+        }
         if (!res.ok) throw new Error(data.error || 'Publish failed')
 
         status.textContent = `✓ Published ${data.published} post${data.published !== 1 ? 's' : ''}!`
