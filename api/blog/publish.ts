@@ -50,7 +50,14 @@ export default async function handler(req: any, res: any) {
   }
 
   // Load stored articles for this date
-  const allArticles = await getDailyArticles(date)
+  let allArticles: Awaited<ReturnType<typeof getDailyArticles>>
+  try {
+    allArticles = await getDailyArticles(date)
+  } catch (err) {
+    console.error('[publish] Redis error loading articles:', err)
+    return res.status(500).json({ error: 'Could not load articles from cache. Try again.' })
+  }
+
   const selected = allArticles.filter((a) => articleIds.includes(a.id))
 
   if (selected.length === 0) {
