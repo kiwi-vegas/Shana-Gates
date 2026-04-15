@@ -540,6 +540,74 @@ nav {
 }
 
 /* ============================================================
+   NEIGHBORHOODS GRID
+============================================================ */
+#neighborhoods {
+  background: var(--cream-2);
+  padding: 96px 80px;
+}
+
+#neighborhoods .section-eyebrow { color: var(--bronze); }
+
+#neighborhoods .section-title {
+  color: var(--text-dark);
+  margin-bottom: 48px;
+}
+
+.neighborhoods-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.neighborhood-card {
+  background: var(--cream);
+  border: 1px solid rgba(26,24,20,0.1);
+  border-radius: 8px;
+  padding: 18px 20px 16px;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+
+.neighborhood-card:hover {
+  border-color: rgba(184,151,90,0.5);
+  box-shadow: 0 2px 18px rgba(26,24,20,0.09);
+}
+
+.neighborhood-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 5px;
+}
+
+.neighborhood-name {
+  font-family: var(--sans);
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text-dark);
+  line-height: 1.3;
+}
+
+.neighborhood-price {
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--bronze);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.neighborhood-tags {
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 300;
+  color: var(--text-mid);
+  opacity: 0.65;
+  letter-spacing: 0.03em;
+}
+
+/* ============================================================
    LISTINGS / YLOPO
 ============================================================ */
 #listings {
@@ -895,6 +963,9 @@ footer {
   #highlights { padding: 72px 48px; }
   .highlights-grid { grid-template-columns: repeat(2, 1fr); }
 
+  #neighborhoods { padding: 72px 48px; }
+  .neighborhoods-grid { grid-template-columns: repeat(3, 1fr); }
+
   #listings { padding: 72px 32px; }
   .listings-header { flex-direction: column; align-items: flex-start; gap: 12px; }
 
@@ -956,6 +1027,10 @@ footer {
   .highlights-grid { grid-template-columns: 1fr; gap: 3px; }
   .section-title { margin-bottom: 36px; }
 
+  /* NEIGHBORHOODS */
+  #neighborhoods { padding: 56px 20px; }
+  .neighborhoods-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+
   /* LISTINGS */
   #listings { padding: 56px 20px; }
   .listings-header { flex-direction: column; align-items: flex-start; gap: 12px; margin-bottom: 32px; }
@@ -992,6 +1067,7 @@ footer {
   .demo-stats { grid-template-columns: repeat(2, 1fr); gap: 22px 0; }
   #overview { padding: 48px 16px; }
   #highlights { padding: 48px 16px; }
+  #neighborhoods { padding: 48px 16px; }
   #listings { padding: 48px 16px; }
   #lifestyle { padding: 48px 16px; }
   #community-cta { padding: 52px 16px; }
