@@ -1354,7 +1354,7 @@
       </div>
     </div>
     <div class="about-image-col">
-      <img src="images/shana-lifestyle.JPG" alt="Shana Gates — Coachella Valley Real Estate" />
+      <img id="shana-photo" src="images/shana-lifestyle.JPG" alt="Shana Gates — Coachella Valley Real Estate" />
     </div>
   </section>
 
@@ -1840,6 +1840,12 @@
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape') closeVideoModal();
     });
+  </script>
+
+  <script>
+    // Randomly rotate Shana's photo on each page load
+    var shanaPhotos = ['images/shana-lifestyle.JPG', 'images/Shana Gates Green.jpeg'];
+    document.getElementById('shana-photo').src = shanaPhotos[Math.floor(Math.random() * shanaPhotos.length)];
   </script>
 
 </body>
