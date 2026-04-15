@@ -1,5 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk'
-import { tavily } from 'tavily'
+import { tavily } from '@tavily/core'
 import type { WeeklyTopic } from './blog-store'
 
 // ── Categories for weekly original content ────────────────────────────────

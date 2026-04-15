@@ -8,7 +8,7 @@
     "@upstash/redis": "^1.34.0",
     "openai": "^4.77.0",
     "resend": "^4.0.0",
-    "tavily": "^0.0.3"
+    "@tavily/core": "^0.7.2"
   },
   "devDependencies": {
     "@vercel/node": "^5.0.0",

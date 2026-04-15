@@ -1,5 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk'
-import { tavily } from 'tavily'
+import { tavily } from '@tavily/core'
 import type { ScoredArticle } from './blog-store'
 
 // ── Coachella Valley topic queries (rotate 8 of 25 per day) ───────────────
