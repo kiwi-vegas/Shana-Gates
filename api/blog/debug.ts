@@ -83,7 +83,51 @@ export default async function handler(req: any, res: any) {
     }
   }
 
-  // ── 5. Env var presence check ─────────────────────────────────────────
+  // ── 5. Full research trace (Tavily → scoring) ────────────────────────
+  if (step === 'research') {
+    try {
+      const client = tavily({ apiKey: process.env.TAVILY_API_KEY! })
+      const tavilyResult = await client.search('Coachella Valley real estate market 2026', {
+        searchDepth: 'basic',
+        maxResults: 5,
+      })
+      const rawArticles = tavilyResult.results ?? []
+      results.tavily_raw = { count: rawArticles.length, titles: rawArticles.map((r: any) => r.title) }
+
+      // Try scoring
+      const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
+      const toScore = rawArticles.slice(0, 5).map((a: any, i: number) => ({
+        id: i,
+        title: a.title,
+        url: a.url,
+        content: (a.content ?? '').slice(0, 300),
+      }))
+
+      const prompt = `Score these articles (1-10) for Coachella Valley real estate relevance. Return ONLY a JSON array: [{"id":"article-0","url":"...","title":"...","source":"domain","publishedDate":"","summary":"...","score":8,"category":"market-update","whyItMatters":"..."}]. Articles:\n${JSON.stringify(toScore)}`
+
+      const response = await anthropic.messages.create({
+        model: 'claude-opus-4-6',
+        max_tokens: 2000,
+        messages: [{ role: 'user', content: prompt }],
+      })
+      const rawText = response.content[0]?.type === 'text' ? response.content[0].text : ''
+      results.claude_raw = rawText.slice(0, 500)
+
+      // Try parse
+      try {
+        const match = rawText.match(/\[[\s\S]*\]/)
+        const parsed = match ? JSON.parse(match[0]) : JSON.parse(rawText)
+        results.scored = { count: parsed.length, first: parsed[0] }
+      } catch (pe: any) {
+        results.parse_error = pe.message
+      }
+    } catch (e: any) {
+      results.research_error = e.message
+    }
+    return res.status(200).json(results)
+  }
+
+  // ── 6. Env var presence check ─────────────────────────────────────────
   if (step === 'all' || step === 'env') {
     const vars = [
       'TAVILY_API_KEY', 'UPSTASH_REDIS_REST_URL', 'UPSTASH_REDIS_REST_TOKEN',
