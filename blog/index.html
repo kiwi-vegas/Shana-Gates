@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Coachella Valley Real Estate Blog — Shana Gates</title>
+  <meta name="description" content="Expert insights on the Coachella Valley real estate market from Shana Gates, REALTOR® at Craft & Bauer | Real Broker." />
+  <link rel="icon" type="image/png" href="/images/gates-sign-black.png" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bronze: #B8975A;
+      --bg: #0a0a0a;
+      --surface: #141414;
+      --border: rgba(255,255,255,0.08);
+      --text: #fff;
+      --muted: rgba(255,255,255,0.45);
+      --font: system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10,10,10,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+    .nav-logo img { height: 32px; }
+    .nav-logo-text { color: var(--bronze); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; }
+    .nav-links { display: flex; gap: 28px; }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.15s;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--text); }
+    .nav-cta {
+      background: var(--bronze);
+      color: #000;
+      padding: 8px 20px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: opacity 0.15s;
+    }
+    .nav-cta:hover { opacity: 0.85; }
+
+    /* ── Page hero ── */
+    .page-hero {
+      padding: 80px 32px 48px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+    .page-hero .overline {
+      color: var(--bronze);
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .page-hero h1 {
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+    .page-hero p {
+      color: var(--muted);
+      font-size: 17px;
+      max-width: 480px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    /* ── Category filter ── */
+    .filter-bar {
+      padding: 24px 32px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .filter-btn {
+      padding: 7px 16px;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      transition: all 0.15s;
+      font-family: var(--font);
+    }
+    .filter-btn:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+    .filter-btn.active {
+      background: var(--bronze);
+      border-color: var(--bronze);
+      color: #000;
+      font-weight: 700;
+    }
+
+    /* ── Blog grid ── */
+    .blog-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 48px 32px 80px;
+    }
+    .blog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 24px;
+    }
+    .post-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.2s, transform 0.2s;
+      display: flex;
+      flex-direction: column;
+    }
+    .post-card:hover {
+      border-color: rgba(184,151,90,0.4);
+      transform: translateY(-2px);
+    }
+    .post-card-image {
+      width: 100%;
+      aspect-ratio: 16/9;
+      object-fit: cover;
+      display: block;
+      background: #1a1a1a;
+    }
+    .post-card-image.placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.1);
+      font-size: 32px;
+    }
+    .post-card-body {
+      padding: 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .post-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .category-badge {
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 100px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .post-date { color: var(--muted); font-size: 12px; }
+    .post-title {
+      font-size: 17px;
+      font-weight: 700;
+      line-height: 1.4;
+      margin-bottom: 10px;
+      color: var(--text);
+      flex: 1;
+    }
+    .post-excerpt {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .post-read-more {
+      margin-top: 16px;
+      color: var(--bronze);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    /* ── Empty state ── */
+    .empty-state {
+      text-align: center;
+      padding: 80px 32px;
+      color: var(--muted);
+    }
+    .empty-state h2 { font-size: 22px; margin-bottom: 12px; color: var(--text); }
+
+    /* ── Loading ── */
+    .loading-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 24px;
+    }
+    .skeleton {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .skeleton-image { width: 100%; aspect-ratio: 16/9; background: #1e1e1e; }
+    .skeleton-body { padding: 20px; }
+    .skeleton-line {
+      height: 12px;
+      background: #1e1e1e;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      animation: shimmer 1.5s ease-in-out infinite;
+    }
+    .skeleton-line.wide { width: 100%; }
+    .skeleton-line.medium { width: 70%; }
+    .skeleton-line.narrow { width: 45%; }
+    @keyframes shimmer {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 0.8; }
+    }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    footer a { color: var(--bronze); text-decoration: none; }
+
+    @media (max-width: 768px) {
+      nav { padding: 0 16px; }
+      .nav-links { display: none; }
+      .page-hero { padding: 48px 16px 32px; }
+      .filter-bar { padding: 16px; }
+      .blog-container { padding: 32px 16px 60px; }
+      .blog-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="/" class="nav-logo">
+      <img src="/images/gates-sign-black.png" alt="Shana Gates" />
+      <span class="nav-logo-text">Shana Gates</span>
+    </a>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/#communities">Communities</a>
+      <a href="/blog/" class="active">Blog</a>
+      <a href="/#about">About</a>
+    </div>
+    <a href="mailto:shana@craftbauer.com" class="nav-cta">Contact Shana</a>
+  </nav>
+
+  <div class="page-hero">
+    <div class="overline">Shana Gates · Craft &amp; Bauer</div>
+    <h1>Coachella Valley Real Estate Blog</h1>
+    <p>Market insights, buying tips, and local knowledge from a Coachella Valley expert.</p>
+  </div>
+
+  <div class="filter-bar" id="filterBar">
+    <button class="filter-btn active" data-category="">All</button>
+    <button class="filter-btn" data-category="market-update">Market Update</button>
+    <button class="filter-btn" data-category="market-insight">Market Insight</button>
+    <button class="filter-btn" data-category="local-area">Local Area</button>
+    <button class="filter-btn" data-category="buying-tips">Buying Tips</button>
+    <button class="filter-btn" data-category="selling-tips">Selling Tips</button>
+    <button class="filter-btn" data-category="community-spotlight">Community</button>
+    <button class="filter-btn" data-category="investment">Investment</button>
+    <button class="filter-btn" data-category="news">News</button>
+  </div>
+
+  <div class="blog-container">
+    <div class="loading-grid" id="loadingGrid">
+      ${Array(6).fill(0).map(() => `
+      <div class="skeleton">
+        <div class="skeleton-image"></div>
+        <div class="skeleton-body">
+          <div class="skeleton-line narrow"></div>
+          <div class="skeleton-line wide"></div>
+          <div class="skeleton-line medium"></div>
+          <div class="skeleton-line wide"></div>
+          <div class="skeleton-line medium"></div>
+        </div>
+      </div>`).join('')}
+    </div>
+    <div class="blog-grid" id="blogGrid" style="display:none;"></div>
+    <div class="empty-state" id="emptyState" style="display:none;">
+      <h2>No posts yet</h2>
+      <p>Check back soon — new articles are published daily.</p>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2026 Shana Gates · Craft &amp; Bauer | Real Broker · Coachella Valley, CA</p>
+    <p style="margin-top:8px;">DRE # — All content for informational purposes. Not legal or financial advice. <a href="/">shana-gates.vercel.app</a></p>
+  </footer>
+
+  <script>
+    const SANITY_PROJECT = 'll3zy5cp'
+    const SANITY_DATASET = 'production'
+    const CDN = `https://${SANITY_PROJECT}.apicdn.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}`
+
+    const CATEGORY_COLORS = {
+      'market-update': '#2563eb',
+      'buying-tips': '#4CAF50',
+      'selling-tips': '#0ea5e9',
+      'community-spotlight': '#9C27B0',
+      'investment': '#FF9800',
+      'news': '#607D8B',
+      'local-area': '#D97706',
+      'market-insight': '#4338CA',
+    }
+
+    const CATEGORY_LABELS = {
+      'market-update': 'Market Update',
+      'buying-tips': 'Buying Tips',
+      'selling-tips': 'Selling Tips',
+      'community-spotlight': 'Community Spotlight',
+      'investment': 'Investment',
+      'news': 'News',
+      'local-area': 'Local Area',
+      'market-insight': 'Market Insight',
+    }
+
+    let allPosts = []
+    let activeCategory = ''
+
+    async function fetchPosts() {
+      const query = encodeURIComponent(`*[_type == "blogPost"] | order(publishedAt desc) [0...48] {
+        _id,
+        title,
+        "slug": slug.current,
+        publishedAt,
+        category,
+        excerpt,
+        "heroImageUrl": select(
+          defined(heroImage) => heroImage.asset->url,
+          heroImageUrl
+        )
+      }`)
+      const res = await fetch(`${CDN}?query=${query}`)
+      const data = await res.json()
+      return data.result ?? []
+    }
+
+    function formatDate(iso) {
+      return new Date(iso).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+    }
+
+    function renderPosts(posts) {
+      const grid = document.getElementById('blogGrid')
+      const empty = document.getElementById('emptyState')
+
+      if (!posts.length) {
+        grid.style.display = 'none'
+        empty.style.display = 'block'
+        return
+      }
+
+      empty.style.display = 'none'
+      grid.style.display = 'grid'
+      grid.innerHTML = posts.map(post => {
+        const color = CATEGORY_COLORS[post.category] || '#607D8B'
+        const label = CATEGORY_LABELS[post.category] || post.category
+        const imageHtml = post.heroImageUrl
+          ? `<img class="post-card-image" src="${post.heroImageUrl}" alt="${post.title}" loading="lazy">`
+          : `<div class="post-card-image placeholder">🌵</div>`
+
+        return `
+          <a class="post-card" href="/blog/post.html?slug=${encodeURIComponent(post.slug)}">
+            ${imageHtml}
+            <div class="post-card-body">
+              <div class="post-meta">
+                <span class="category-badge" style="background:${color}22; color:${color};">${label}</span>
+                <span class="post-date">${formatDate(post.publishedAt)}</span>
+              </div>
+              <div class="post-title">${post.title}</div>
+              <div class="post-excerpt">${post.excerpt || ''}</div>
+              <div class="post-read-more">Read more →</div>
+            </div>
+          </a>`
+      }).join('')
+    }
+
+    function filterPosts() {
+      if (!activeCategory) return renderPosts(allPosts)
+      renderPosts(allPosts.filter(p => p.category === activeCategory))
+    }
+
+    // Filter buttons
+    document.getElementById('filterBar').addEventListener('click', (e) => {
+      const btn = e.target.closest('.filter-btn')
+      if (!btn) return
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'))
+      btn.classList.add('active')
+      activeCategory = btn.dataset.category
+      filterPosts()
+    })
+
+    // Initial load
+    fetchPosts().then(posts => {
+      allPosts = posts
+      document.getElementById('loadingGrid').style.display = 'none'
+      filterPosts()
+    }).catch(() => {
+      document.getElementById('loadingGrid').style.display = 'none'
+      document.getElementById('emptyState').style.display = 'block'
+    })
+  </script>
+
+</body>
+</html>

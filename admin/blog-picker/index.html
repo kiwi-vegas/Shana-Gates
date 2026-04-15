@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daily Blog Picker — Shana Gates</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bronze: #B8975A;
+      --bg: #0a0a0a;
+      --surface: #141414;
+      --surface2: #1a1a1a;
+      --border: rgba(255,255,255,0.08);
+      --text: #fff;
+      --muted: rgba(255,255,255,0.45);
+      --font: system-ui, -apple-system, sans-serif;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header-brand { color: var(--bronze); font-size: 11px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 4px; }
+    .header-title { color: var(--text); font-size: 18px; font-weight: 700; }
+    .header-meta { color: var(--muted); font-size: 13px; }
+
+    /* ── Main ── */
+    main { max-width: 860px; margin: 0 auto; padding: 40px 24px 80px; }
+
+    /* ── Article card ── */
+    .article-card {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 16px;
+      cursor: pointer;
+      transition: border-color 0.15s;
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 16px;
+      align-items: flex-start;
+      user-select: none;
+    }
+    .article-card:hover { border-color: rgba(184,151,90,0.35); }
+    .article-card.selected {
+      border-color: var(--bronze);
+      background: rgba(184,151,90,0.06);
+    }
+
+    .checkbox {
+      width: 22px;
+      height: 22px;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-radius: 6px;
+      flex-shrink: 0;
+      margin-top: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+    .article-card.selected .checkbox {
+      background: var(--bronze);
+      border-color: var(--bronze);
+    }
+    .checkbox-check { display: none; }
+    .article-card.selected .checkbox-check { display: block; }
+
+    .article-content {}
+    .article-top { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+    .category-badge {
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 100px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .score-badge {
+      font-size: 12px;
+      color: var(--muted);
+      padding: 2px 8px;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+    }
+    .article-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; line-height: 1.4; }
+    .article-summary { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 8px; }
+    .article-why {
+      font-size: 13px;
+      color: var(--bronze);
+      font-style: italic;
+      line-height: 1.5;
+    }
+    .article-source { font-size: 12px; color: rgba(255,255,255,0.25); margin-top: 6px; }
+    .article-source a { color: rgba(255,255,255,0.25); text-decoration: none; }
+    .article-source a:hover { color: var(--muted); }
+
+    /* ── Sticky footer bar ── */
+    .publish-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(10,10,10,0.95);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border);
+      padding: 16px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      z-index: 50;
+    }
+    .publish-count { color: var(--muted); font-size: 14px; }
+    .publish-count strong { color: var(--text); }
+    .publish-btn {
+      background: var(--bronze);
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      padding: 13px 32px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: var(--font);
+      transition: opacity 0.15s;
+    }
+    .publish-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .publish-btn:not(:disabled):hover { opacity: 0.85; }
+
+    /* ── States ── */
+    .state-msg {
+      text-align: center;
+      padding: 80px 24px;
+      color: var(--muted);
+    }
+    .state-msg h2 { color: var(--text); font-size: 22px; margin-bottom: 12px; }
+
+    .skeleton {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 16px;
+    }
+    .sk { background: #1e1e1e; border-radius: 6px; animation: shimmer 1.5s ease-in-out infinite; }
+    .sk-line { height: 12px; margin-bottom: 10px; }
+    .sk-line.narrow { width: 30%; }
+    .sk-line.wide { width: 100%; }
+    .sk-line.medium { width: 65%; }
+    @keyframes shimmer { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.8; } }
+
+    /* ── Publishing overlay ── */
+    .publish-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      display: none;
+    }
+    .publish-overlay.visible { display: flex; }
+    .publish-spinner {
+      width: 48px;
+      height: 48px;
+      border: 3px solid rgba(184,151,90,0.3);
+      border-top-color: var(--bronze);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 20px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .publish-overlay p { color: var(--text); font-size: 17px; font-weight: 600; margin-bottom: 8px; }
+    .publish-overlay small { color: var(--muted); font-size: 13px; }
+
+    @media (max-width: 640px) {
+      header { flex-direction: column; align-items: flex-start; gap: 8px; padding: 16px; }
+      main { padding: 24px 16px 100px; }
+      .publish-bar { padding: 12px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div>
+      <div class="header-brand">Shana Gates · Craft &amp; Bauer</div>
+      <div class="header-title">Daily Blog Picker</div>
+    </div>
+    <div class="header-meta" id="headerMeta">Loading today's articles…</div>
+  </header>
+
+  <main id="main">
+    <!-- Loading skeletons -->
+    <div id="loadingState">
+      ${Array(6).fill(0).map(() => `
+      <div class="skeleton">
+        <div class="sk sk-line narrow"></div>
+        <div class="sk sk-line wide" style="height:18px; margin-bottom:12px;"></div>
+        <div class="sk sk-line wide"></div>
+        <div class="sk sk-line medium"></div>
+      </div>`).join('')}
+    </div>
+    <div id="articlesContainer"></div>
+  </main>
+
+  <div class="publish-bar">
+    <div class="publish-count" id="publishCount"><strong>0</strong> articles selected</div>
+    <button class="publish-btn" id="publishBtn" disabled>Select articles to publish</button>
+  </div>
+
+  <div class="publish-overlay" id="publishOverlay">
+    <div class="publish-spinner"></div>
+    <p id="publishStatus">Writing posts…</p>
+    <small>This usually takes 30–60 seconds per post</small>
+  </div>
+
+  <script>
+    const CATEGORY_COLORS = {
+      'market-update': '#2563eb', 'buying-tips': '#4CAF50', 'selling-tips': '#0ea5e9',
+      'community-spotlight': '#9C27B0', 'investment': '#FF9800', 'news': '#607D8B',
+      'local-area': '#D97706', 'market-insight': '#4338CA',
+    }
+    const CATEGORY_LABELS = {
+      'market-update': 'Market Update', 'buying-tips': 'Buying Tips', 'selling-tips': 'Selling Tips',
+      'community-spotlight': 'Community Spotlight', 'investment': 'Investment', 'news': 'News',
+      'local-area': 'Local Area', 'market-insight': 'Market Insight',
+    }
+
+    // Auth check
+    if (!localStorage.getItem('sg_auth')) {
+      window.location.href = '/admin/assistant/login.html'
+    }
+
+    let articles = []
+    let selectedIds = new Set()
+    let currentDate = ''
+
+    const params = new URLSearchParams(window.location.search)
+    const dateParam = params.get('date') || ''
+
+    async function loadArticles() {
+      const url = `/api/blog/articles${dateParam ? `?date=${dateParam}` : ''}`
+      const res = await fetch(url)
+      if (!res.ok) throw new Error('Failed to load')
+      const data = await res.json()
+      return data
+    }
+
+    function renderArticles(data) {
+      articles = data.articles || []
+      currentDate = data.date || new Date().toISOString().split('T')[0]
+
+      document.getElementById('headerMeta').textContent =
+        `${articles.length} articles for ${new Date(currentDate + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}`
+
+      document.getElementById('loadingState').style.display = 'none'
+
+      if (!articles.length) {
+        document.getElementById('articlesContainer').innerHTML = `
+          <div class="state-msg">
+            <h2>No articles today</h2>
+            <p>The research cron may still be running, or no Coachella Valley articles were found. Check back in a few minutes.</p>
+          </div>`
+        return
+      }
+
+      document.getElementById('articlesContainer').innerHTML = articles.map(a => {
+        const color = CATEGORY_COLORS[a.category] || '#607D8B'
+        const label = CATEGORY_LABELS[a.category] || a.category
+        return `
+          <div class="article-card" data-id="${a.id}" onclick="toggleArticle('${a.id}')">
+            <div class="checkbox">
+              <svg class="checkbox-check" width="13" height="10" viewBox="0 0 13 10" fill="none">
+                <path d="M1.5 5L5 8.5L11.5 1.5" stroke="#000" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="article-content">
+              <div class="article-top">
+                <span class="category-badge" style="background:${color}22;color:${color};">${label}</span>
+                <span class="score-badge">Score ${a.score}/10</span>
+              </div>
+              <div class="article-title">${a.title}</div>
+              <div class="article-summary">${a.summary}</div>
+              <div class="article-why">${a.whyItMatters}</div>
+              <div class="article-source"><a href="${a.url}" target="_blank" rel="noopener">${a.source}</a></div>
+            </div>
+          </div>`
+      }).join('')
+    }
+
+    function toggleArticle(id) {
+      if (selectedIds.has(id)) {
+        selectedIds.delete(id)
+        document.querySelector(`[data-id="${id}"]`).classList.remove('selected')
+      } else if (selectedIds.size < 5) {
+        selectedIds.add(id)
+        document.querySelector(`[data-id="${id}"]`).classList.add('selected')
+      }
+      updatePublishBar()
+    }
+
+    function updatePublishBar() {
+      const count = selectedIds.size
+      const countEl = document.getElementById('publishCount')
+      const btn = document.getElementById('publishBtn')
+      countEl.innerHTML = `<strong>${count}</strong> article${count !== 1 ? 's' : ''} selected`
+      if (count === 0) {
+        btn.disabled = true
+        btn.textContent = 'Select articles to publish'
+      } else {
+        btn.disabled = false
+        btn.textContent = `Publish ${count} Post${count !== 1 ? 's' : ''} →`
+      }
+    }
+
+    async function publishSelected() {
+      if (!selectedIds.size) return
+      const overlay = document.getElementById('publishOverlay')
+      const status = document.getElementById('publishStatus')
+      overlay.classList.add('visible')
+      status.textContent = `Writing ${selectedIds.size} post${selectedIds.size !== 1 ? 's' : ''}…`
+
+      try {
+        const res = await fetch('/api/blog/publish', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ date: currentDate, articleIds: [...selectedIds] }),
+        })
+        const data = await res.json()
+        if (!res.ok) throw new Error(data.error || 'Publish failed')
+
+        status.textContent = `✓ Published ${data.published} post${data.published !== 1 ? 's' : ''}!`
+        setTimeout(() => {
+          window.location.href = '/blog/'
+        }, 2000)
+      } catch (err) {
+        overlay.classList.remove('visible')
+        alert(`Error: ${err.message}`)
+      }
+    }
+
+    document.getElementById('publishBtn').addEventListener('click', publishSelected)
+
+    loadArticles().then(renderArticles).catch((err) => {
+      document.getElementById('loadingState').style.display = 'none'
+      document.getElementById('articlesContainer').innerHTML = `
+        <div class="state-msg">
+          <h2>Couldn't load articles</h2>
+          <p>${err.message}</p>
+        </div>`
+    })
+  </script>
+
+</body>
+</html>

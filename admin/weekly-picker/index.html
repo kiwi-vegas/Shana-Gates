@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weekly Blog Topics — Shana Gates</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bronze: #B8975A;
+      --bg: #0a0a0a;
+      --surface: #141414;
+      --surface2: #1a1a1a;
+      --border: rgba(255,255,255,0.08);
+      --text: #fff;
+      --muted: rgba(255,255,255,0.45);
+      --font: system-ui, -apple-system, sans-serif;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 32px;
+    }
+    .header-brand { color: var(--bronze); font-size: 11px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 4px; }
+    .header-title { color: var(--text); font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+    .header-sub { color: var(--muted); font-size: 13px; }
+
+    /* ── Category tabs ── */
+    .tab-bar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      padding: 14px 20px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      border-bottom: 2px solid transparent;
+      font-family: var(--font);
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active { color: var(--text); border-bottom-color: var(--bronze); font-weight: 700; }
+    .tab-count {
+      display: inline-block;
+      background: rgba(255,255,255,0.1);
+      border-radius: 100px;
+      padding: 1px 7px;
+      font-size: 11px;
+      margin-left: 6px;
+    }
+    .tab-btn.active .tab-count { background: rgba(184,151,90,0.2); color: var(--bronze); }
+
+    /* ── Main ── */
+    main { max-width: 860px; margin: 0 auto; padding: 40px 24px 100px; }
+
+    /* ── Topic card ── */
+    .topic-card {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 14px;
+      cursor: pointer;
+      transition: border-color 0.15s;
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 16px;
+      align-items: flex-start;
+      user-select: none;
+    }
+    .topic-card:hover { border-color: rgba(184,151,90,0.35); }
+    .topic-card.selected {
+      border-color: var(--bronze);
+      background: rgba(184,151,90,0.06);
+    }
+
+    .checkbox {
+      width: 22px;
+      height: 22px;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-radius: 6px;
+      flex-shrink: 0;
+      margin-top: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+    .topic-card.selected .checkbox { background: var(--bronze); border-color: var(--bronze); }
+    .checkbox-check { display: none; }
+    .topic-card.selected .checkbox-check { display: block; }
+
+    .topic-content {}
+    .topic-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; line-height: 1.4; }
+    .topic-angle { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 8px; }
+    .topic-keywords {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .keyword-tag {
+      font-size: 11px;
+      padding: 2px 8px;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      color: var(--muted);
+    }
+
+    /* ── Category section header ── */
+    .category-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .category-stripe { width: 3px; height: 20px; border-radius: 2px; }
+    .category-label { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; }
+
+    /* ── Sticky bar ── */
+    .publish-bar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: rgba(10,10,10,0.95);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border);
+      padding: 16px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      z-index: 50;
+    }
+    .publish-count { color: var(--muted); font-size: 14px; }
+    .publish-count strong { color: var(--text); }
+    .publish-btn {
+      background: var(--bronze);
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      padding: 13px 32px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: var(--font);
+      transition: opacity 0.15s;
+    }
+    .publish-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .publish-btn:not(:disabled):hover { opacity: 0.85; }
+
+    /* ── States ── */
+    .state-msg { text-align: center; padding: 80px 24px; color: var(--muted); }
+    .state-msg h2 { color: var(--text); font-size: 22px; margin-bottom: 12px; }
+
+    .skeleton {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 14px;
+    }
+    .sk { background: #1e1e1e; border-radius: 6px; animation: shimmer 1.5s ease-in-out infinite; }
+    .sk-line { height: 12px; margin-bottom: 10px; }
+    .sk-line.wide { width: 100%; }
+    .sk-line.medium { width: 65%; }
+    .sk-line.narrow { width: 35%; }
+    @keyframes shimmer { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.8; } }
+
+    /* ── Publishing overlay ── */
+    .publish-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.85);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    .publish-overlay.visible { display: flex; }
+    .publish-spinner {
+      width: 48px; height: 48px;
+      border: 3px solid rgba(184,151,90,0.3);
+      border-top-color: var(--bronze);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 20px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .publish-overlay p { color: var(--text); font-size: 17px; font-weight: 600; margin-bottom: 8px; }
+    .publish-overlay small { color: var(--muted); font-size: 13px; }
+
+    @media (max-width: 640px) {
+      header { padding: 16px; }
+      .tab-bar { padding: 0 16px; }
+      main { padding: 24px 16px 100px; }
+      .publish-bar { padding: 12px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-brand">Shana Gates · Craft &amp; Bauer</div>
+    <div class="header-title">Weekly Blog Topics</div>
+    <div class="header-sub">Select topics to write and publish. Claude writes the full post once you choose.</div>
+  </header>
+
+  <div class="tab-bar" id="tabBar">
+    <button class="tab-btn active" data-cat="all">All <span class="tab-count" id="count-all">…</span></button>
+    <button class="tab-btn" data-cat="local-area">Local Area <span class="tab-count" id="count-local-area">0</span></button>
+    <button class="tab-btn" data-cat="market-insight">Market Insight <span class="tab-count" id="count-market-insight">0</span></button>
+    <button class="tab-btn" data-cat="buying-tips">Buyer/Seller <span class="tab-count" id="count-buying-tips">0</span></button>
+    <button class="tab-btn" data-cat="community-spotlight">Community <span class="tab-count" id="count-community-spotlight">0</span></button>
+    <button class="tab-btn" data-cat="investment">Investment <span class="tab-count" id="count-investment">0</span></button>
+  </div>
+
+  <main id="main">
+    <div id="loadingState">
+      ${Array(6).fill(0).map(() => `
+      <div class="skeleton">
+        <div class="sk sk-line medium" style="height:16px; margin-bottom:12px;"></div>
+        <div class="sk sk-line wide"></div>
+        <div class="sk sk-line medium"></div>
+      </div>`).join('')}
+    </div>
+    <div id="topicsContainer"></div>
+  </main>
+
+  <div class="publish-bar">
+    <div class="publish-count" id="publishCount"><strong>0</strong> topics selected</div>
+    <button class="publish-btn" id="publishBtn" disabled>Select topics to write</button>
+  </div>
+
+  <div class="publish-overlay" id="publishOverlay">
+    <div class="publish-spinner"></div>
+    <p id="publishStatus">Writing posts…</p>
+    <small>This usually takes 30–60 seconds per post</small>
+  </div>
+
+  <script>
+    const CATEGORY_COLORS = {
+      'local-area': '#D97706', 'market-insight': '#4338CA',
+      'buying-tips': '#4CAF50', 'community-spotlight': '#9C27B0', 'investment': '#FF9800',
+    }
+    const CATEGORY_LABELS = {
+      'local-area': 'Local Area Topic', 'market-insight': 'Market Insight',
+      'buying-tips': 'Buyer/Seller Advice', 'community-spotlight': 'Community Spotlight',
+      'investment': 'Investment',
+    }
+
+    // Auth check
+    if (!localStorage.getItem('sg_auth')) {
+      window.location.href = '/admin/assistant/login.html'
+    }
+
+    let allTopics = []
+    let selectedIds = new Set()
+    let activeTab = 'all'
+
+    async function loadTopics() {
+      const res = await fetch('/api/blog/weekly-topics')
+      if (!res.ok) throw new Error('Failed to load')
+      const data = await res.json()
+      return data.topics || []
+    }
+
+    function updateCounts() {
+      const cats = ['local-area', 'market-insight', 'buying-tips', 'community-spotlight', 'investment']
+      const total = allTopics.length
+      document.getElementById('count-all').textContent = total
+      cats.forEach(cat => {
+        const el = document.getElementById(`count-${cat}`)
+        if (el) el.textContent = allTopics.filter(t => t.category === cat).length
+      })
+    }
+
+    function renderTopics() {
+      const filtered = activeTab === 'all' ? allTopics : allTopics.filter(t => t.category === activeTab)
+
+      if (!filtered.length) {
+        document.getElementById('topicsContainer').innerHTML = `
+          <div class="state-msg">
+            <h2>No topics in this category</h2>
+            <p>The weekly research may still be running. Check back after Sunday morning.</p>
+          </div>`
+        return
+      }
+
+      // If showing all, group by category
+      if (activeTab === 'all') {
+        const cats = ['local-area', 'market-insight', 'buying-tips', 'community-spotlight', 'investment']
+        let html = ''
+        cats.forEach(cat => {
+          const topics = allTopics.filter(t => t.category === cat)
+          if (!topics.length) return
+          const color = CATEGORY_COLORS[cat] || '#607D8B'
+          const label = CATEGORY_LABELS[cat] || cat
+          html += `
+            <div class="category-header">
+              <div class="category-stripe" style="background:${color};"></div>
+              <span class="category-label" style="color:${color};">${label}</span>
+            </div>
+            ${topics.map(t => topicCardHtml(t)).join('')}`
+        })
+        document.getElementById('topicsContainer').innerHTML = html
+      } else {
+        document.getElementById('topicsContainer').innerHTML = filtered.map(topicCardHtml).join('')
+      }
+    }
+
+    function topicCardHtml(t) {
+      const isSelected = selectedIds.has(t.id)
+      return `
+        <div class="topic-card${isSelected ? ' selected' : ''}" data-id="${t.id}" onclick="toggleTopic('${t.id}')">
+          <div class="checkbox">
+            <svg class="checkbox-check" width="13" height="10" viewBox="0 0 13 10" fill="none">
+              <path d="M1.5 5L5 8.5L11.5 1.5" stroke="#000" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="topic-content">
+            <div class="topic-title">${t.title}</div>
+            <div class="topic-angle">${t.angle}</div>
+            <div class="topic-keywords">
+              ${(t.keywords || []).map(k => `<span class="keyword-tag">${k}</span>`).join('')}
+            </div>
+          </div>
+        </div>`
+    }
+
+    function toggleTopic(id) {
+      if (selectedIds.has(id)) {
+        selectedIds.delete(id)
+      } else {
+        selectedIds.add(id)
+      }
+      renderTopics()
+      updatePublishBar()
+    }
+
+    function updatePublishBar() {
+      const count = selectedIds.size
+      document.getElementById('publishCount').innerHTML = `<strong>${count}</strong> topic${count !== 1 ? 's' : ''} selected`
+      const btn = document.getElementById('publishBtn')
+      if (count === 0) {
+        btn.disabled = true
+        btn.textContent = 'Select topics to write'
+      } else {
+        btn.disabled = false
+        btn.textContent = `Write & Publish ${count} Post${count !== 1 ? 's' : ''} →`
+      }
+    }
+
+    // Tab switching
+    document.getElementById('tabBar').addEventListener('click', (e) => {
+      const btn = e.target.closest('.tab-btn')
+      if (!btn) return
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'))
+      btn.classList.add('active')
+      activeTab = btn.dataset.cat
+      renderTopics()
+    })
+
+    async function publishSelected() {
+      if (!selectedIds.size) return
+      const overlay = document.getElementById('publishOverlay')
+      const status = document.getElementById('publishStatus')
+      overlay.classList.add('visible')
+      status.textContent = `Writing ${selectedIds.size} post${selectedIds.size !== 1 ? 's' : ''}…`
+
+      try {
+        const res = await fetch('/api/blog/publish-weekly', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ topicIds: [...selectedIds] }),
+        })
+        const data = await res.json()
+        if (!res.ok) throw new Error(data.error || 'Publish failed')
+
+        status.textContent = `✓ Published ${data.published} post${data.published !== 1 ? 's' : ''}!`
+        setTimeout(() => { window.location.href = '/blog/' }, 2000)
+      } catch (err) {
+        overlay.classList.remove('visible')
+        alert(`Error: ${err.message}`)
+      }
+    }
+
+    document.getElementById('publishBtn').addEventListener('click', publishSelected)
+
+    loadTopics().then(topics => {
+      allTopics = topics
+      document.getElementById('loadingState').style.display = 'none'
+      updateCounts()
+      renderTopics()
+    }).catch(err => {
+      document.getElementById('loadingState').style.display = 'none'
+      document.getElementById('topicsContainer').innerHTML = `
+        <div class="state-msg">
+          <h2>Couldn't load topics</h2>
+          <p>${err.message}</p>
+        </div>`
+    })
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title id="pageTitle">Loading… — Shana Gates Blog</title>
+  <meta name="description" id="pageDesc" content="Coachella Valley real estate insights from Shana Gates, REALTOR® at Craft & Bauer." />
+  <link rel="icon" type="image/png" href="/images/gates-sign-black.png" />
+  <!-- marked.js for markdown rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bronze: #B8975A;
+      --bg: #0a0a0a;
+      --surface: #141414;
+      --border: rgba(255,255,255,0.08);
+      --text: #fff;
+      --muted: rgba(255,255,255,0.45);
+      --font: system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10,10,10,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+    .nav-logo img { height: 32px; }
+    .nav-logo-text { color: var(--bronze); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; }
+    .nav-links { display: flex; gap: 28px; }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.15s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta {
+      background: var(--bronze);
+      color: #000;
+      padding: 8px 20px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    /* ── Loading skeleton ── */
+    .post-loading {
+      max-width: 760px;
+      margin: 60px auto;
+      padding: 0 32px;
+    }
+    .sk { background: #1e1e1e; border-radius: 6px; animation: shimmer 1.5s ease-in-out infinite; }
+    .sk-hero { width: 100%; aspect-ratio: 16/9; margin-bottom: 40px; border-radius: 12px; }
+    .sk-line { height: 14px; margin-bottom: 12px; }
+    .sk-line.wide { width: 100%; }
+    .sk-line.medium { width: 70%; }
+    .sk-line.narrow { width: 40%; }
+    .sk-title { height: 44px; width: 90%; margin-bottom: 24px; }
+    @keyframes shimmer { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.8; } }
+
+    /* ── Post layout ── */
+    .post-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 32px 80px;
+      display: none;
+    }
+
+    .post-hero-image {
+      width: 100%;
+      aspect-ratio: 16/9;
+      object-fit: cover;
+      border-radius: 12px;
+      margin: 40px 0;
+      display: block;
+    }
+
+    .post-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .post-back {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 13px;
+      transition: color 0.15s;
+    }
+    .post-back:hover { color: var(--text); }
+    .category-badge {
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 100px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .post-date { color: var(--muted); font-size: 13px; margin-left: auto; }
+
+    /* ── Markdown body ── */
+    .post-body {
+      line-height: 1.8;
+      font-size: 17px;
+    }
+    .post-body h1 {
+      font-size: clamp(26px, 4vw, 38px);
+      font-weight: 800;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      margin-bottom: 28px;
+      color: var(--text);
+    }
+    .post-body h2 {
+      font-size: 22px;
+      font-weight: 700;
+      margin: 40px 0 16px;
+      color: var(--text);
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+    .post-body p {
+      margin-bottom: 20px;
+      color: rgba(255,255,255,0.82);
+    }
+    .post-body ul, .post-body ol {
+      margin: 0 0 20px 24px;
+      color: rgba(255,255,255,0.82);
+    }
+    .post-body li { margin-bottom: 8px; }
+    .post-body strong { color: var(--text); }
+    .post-body em { color: var(--bronze); font-style: italic; }
+    .post-body a { color: var(--bronze); }
+    .post-body blockquote {
+      border-left: 3px solid var(--bronze);
+      padding-left: 20px;
+      margin: 24px 0;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    /* ── Source attribution ── */
+    .source-credit {
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .source-credit a { color: var(--bronze); }
+
+    /* ── CTA card ── */
+    .cta-card {
+      margin-top: 48px;
+      background: var(--surface);
+      border: 1px solid rgba(184,151,90,0.25);
+      border-radius: 12px;
+      padding: 32px;
+      text-align: center;
+    }
+    .cta-card .overline {
+      color: var(--bronze);
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .cta-card h3 {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .cta-card p {
+      color: var(--muted);
+      font-size: 15px;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+    .cta-btn {
+      display: inline-block;
+      background: var(--bronze);
+      color: #000;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 14px 32px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: opacity 0.15s;
+    }
+    .cta-btn:hover { opacity: 0.85; }
+
+    /* ── Back to blog ── */
+    .back-bar {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 24px 32px 0;
+    }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 60px;
+    }
+    footer a { color: var(--bronze); text-decoration: none; }
+
+    @media (max-width: 768px) {
+      nav { padding: 0 16px; }
+      .nav-links { display: none; }
+      .post-wrap, .post-loading, .back-bar { padding-left: 16px; padding-right: 16px; }
+      .post-body h1 { font-size: 26px; }
+      .post-body h2 { font-size: 20px; }
+      .post-body { font-size: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="/" class="nav-logo">
+      <img src="/images/gates-sign-black.png" alt="Shana Gates" />
+      <span class="nav-logo-text">Shana Gates</span>
+    </a>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/#communities">Communities</a>
+      <a href="/blog/">Blog</a>
+      <a href="/#about">About</a>
+    </div>
+    <a href="mailto:shana@craftbauer.com" class="nav-cta">Contact Shana</a>
+  </nav>
+
+  <div class="back-bar">
+    <a href="/blog/" class="post-back">← Back to Blog</a>
+  </div>
+
+  <!-- Loading state -->
+  <div class="post-loading" id="loadingState">
+    <div class="sk sk-hero"></div>
+    <div class="sk sk-line narrow"></div>
+    <div class="sk sk-title sk"></div>
+    <div class="sk sk-line wide"></div>
+    <div class="sk sk-line wide"></div>
+    <div class="sk sk-line medium"></div>
+    <div class="sk sk-line wide"></div>
+    <div class="sk sk-line wide"></div>
+    <div class="sk sk-line narrow"></div>
+  </div>
+
+  <!-- Post content -->
+  <article class="post-wrap" id="postWrap">
+    <div class="post-meta" id="postMeta"></div>
+    <img id="heroImage" class="post-hero-image" style="display:none;" alt="" />
+    <div class="post-body" id="postBody"></div>
+    <div class="source-credit" id="sourceCredit" style="display:none;"></div>
+    <div class="cta-card">
+      <div class="overline">Ready to Buy or Sell?</div>
+      <h3>Let's Talk Coachella Valley</h3>
+      <p>Shana Gates knows this market inside and out. Whether you're buying your dream desert home or ready to sell, she's here to guide you every step of the way.</p>
+      <a href="mailto:shana@craftbauer.com" class="cta-btn">Contact Shana →</a>
+    </div>
+  </article>
+
+  <footer>
+    <p>© 2026 Shana Gates · Craft &amp; Bauer | Real Broker · Coachella Valley, CA</p>
+    <p style="margin-top:8px;">All content for informational purposes. Not legal or financial advice. <a href="/blog/">← Back to Blog</a></p>
+  </footer>
+
+  <script>
+    const SANITY_PROJECT = 'll3zy5cp'
+    const SANITY_DATASET = 'production'
+    const CDN = `https://${SANITY_PROJECT}.apicdn.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}`
+
+    const CATEGORY_COLORS = {
+      'market-update': '#2563eb',
+      'buying-tips': '#4CAF50',
+      'selling-tips': '#0ea5e9',
+      'community-spotlight': '#9C27B0',
+      'investment': '#FF9800',
+      'news': '#607D8B',
+      'local-area': '#D97706',
+      'market-insight': '#4338CA',
+    }
+
+    const CATEGORY_LABELS = {
+      'market-update': 'Market Update',
+      'buying-tips': 'Buying Tips',
+      'selling-tips': 'Selling Tips',
+      'community-spotlight': 'Community Spotlight',
+      'investment': 'Investment',
+      'news': 'News',
+      'local-area': 'Local Area',
+      'market-insight': 'Market Insight',
+    }
+
+    async function loadPost() {
+      const params = new URLSearchParams(window.location.search)
+      const slug = params.get('slug')
+
+      if (!slug) {
+        window.location.href = '/blog/'
+        return
+      }
+
+      const query = encodeURIComponent(`*[_type == "blogPost" && slug.current == "${slug}"][0] {
+        _id, title, "slug": slug.current,
+        publishedAt, category, excerpt, body, pipeline,
+        sourceUrl, sourceTitle,
+        "heroImageUrl": select(
+          defined(heroImage) => heroImage.asset->url,
+          heroImageUrl
+        )
+      }`)
+
+      const res = await fetch(`${CDN}?query=${query}`)
+      const data = await res.json()
+      const post = data.result
+
+      if (!post) {
+        document.getElementById('loadingState').innerHTML = '<div style="text-align:center;padding:80px 0;color:rgba(255,255,255,0.4)"><h2>Post not found</h2><p><a href="/blog/" style="color:#B8975A">← Back to Blog</a></p></div>'
+        return
+      }
+
+      // Update page metadata
+      document.title = `${post.title} — Shana Gates Blog`
+      document.getElementById('pageDesc').setAttribute('content', post.excerpt || '')
+
+      // Hero image
+      if (post.heroImageUrl) {
+        const img = document.getElementById('heroImage')
+        img.src = post.heroImageUrl
+        img.alt = post.title
+        img.style.display = 'block'
+      }
+
+      // Meta row
+      const color = CATEGORY_COLORS[post.category] || '#607D8B'
+      const label = CATEGORY_LABELS[post.category] || post.category
+      const date = new Date(post.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+      document.getElementById('postMeta').innerHTML = `
+        <span class="category-badge" style="background:${color}22;color:${color};">${label}</span>
+        <span class="post-date">${date}</span>
+      `
+
+      // Render markdown body
+      const bodyEl = document.getElementById('postBody')
+      bodyEl.innerHTML = marked.parse(post.body || '')
+
+      // Source credit for daily articles
+      if (post.sourceUrl && post.sourceTitle) {
+        const sc = document.getElementById('sourceCredit')
+        sc.innerHTML = `Source: <a href="${post.sourceUrl}" target="_blank" rel="noopener noreferrer">${post.sourceTitle}</a>`
+        sc.style.display = 'block'
+      }
+
+      // Show post, hide loader
+      document.getElementById('loadingState').style.display = 'none'
+      document.getElementById('postWrap').style.display = 'block'
+    }
+
+    loadPost().catch(() => {
+      document.getElementById('loadingState').innerHTML = '<div style="text-align:center;padding:80px 0;color:rgba(255,255,255,0.4)"><p>Failed to load post. <a href="/blog/" style="color:#B8975A">← Back to Blog</a></p></div>'
+    })
+  </script>
+
+</body>
+</html>

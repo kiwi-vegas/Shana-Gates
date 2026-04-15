@@ -2,6 +2,28 @@
   "functions": {
     "api/assistant/chat.ts": {
       "maxDuration": 120
+    },
+    "api/blog/publish.ts": {
+      "maxDuration": 120
+    },
+    "api/blog/publish-weekly.ts": {
+      "maxDuration": 120
+    },
+    "api/cron/research.ts": {
+      "maxDuration": 120
+    },
+    "api/cron/weekly.ts": {
+      "maxDuration": 120
     }
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/cron/research",
+      "schedule": "0 13 * * *"
+    },
+    {
+      "path": "/api/cron/weekly",
+      "schedule": "0 3 * * 0"
+    }
+  ]
 }
