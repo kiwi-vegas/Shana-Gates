@@ -419,7 +419,9 @@
         if (!res.ok) throw new Error(data.error || 'Publish failed')
 
         status.textContent = `✓ Published ${data.published} post${data.published !== 1 ? 's' : ''}!`
-        setTimeout(() => { window.location.href = '/blog/' }, 2000)
+        const firstSlug = data.posts?.[0]?.slug
+        const dest = firstSlug ? `/blog/post.html?slug=${encodeURIComponent(firstSlug)}` : '/blog/'
+        setTimeout(() => { window.location.href = dest }, 2000)
       } catch (err) {
         overlay.classList.remove('visible')
         alert(`Error: ${err.message}`)

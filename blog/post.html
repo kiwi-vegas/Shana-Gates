@@ -297,7 +297,8 @@
   <script>
     const SANITY_PROJECT = 'll3zy5cp'
     const SANITY_DATASET = 'production'
-    const CDN = `https://${SANITY_PROJECT}.apicdn.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}`
+    // Use non-CDN endpoint so posts are always fresh
+    const CDN = `https://${SANITY_PROJECT}.api.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}`
 
     const CATEGORY_COLORS = {
       'market-update': '#2563eb',
