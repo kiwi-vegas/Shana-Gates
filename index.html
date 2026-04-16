@@ -864,6 +864,21 @@
     }
     .card-city-link:hover { text-decoration: underline; }
 
+    /* Compass rose — top-right of map, rotates with bearing */
+    .map-compass {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 10;
+      pointer-events: none;
+    }
+    .compass-rose {
+      width: 88px;
+      height: 88px;
+      filter: drop-shadow(0 2px 14px rgba(0,0,0,0.18));
+      transition: transform 0.15s ease;
+    }
+
     /* City labels on the map — white chip style */
     .valley-city-label {
       background: #ffffff;
@@ -1613,6 +1628,31 @@
 
     <div class="valley-map-wrap reveal">
       <div id="valley-map"></div>
+
+      <!-- Compass rose — top-right, rotates with map bearing -->
+      <div class="map-compass" id="mapCompass">
+        <div class="compass-rose" id="compassRose">
+          <svg viewBox="0 0 88 88" width="88" height="88" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="44" cy="44" r="42" fill="rgba(255,255,255,0.93)" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>
+            <!-- Cardinal tick marks -->
+            <line x1="44" y1="4"  x2="44" y2="14" stroke="#1a1e3c" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="84" y1="44" x2="74" y2="44" stroke="#a0a0b8" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="44" y1="84" x2="44" y2="74" stroke="#a0a0b8" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="4"  y1="44" x2="14" y2="44" stroke="#a0a0b8" stroke-width="1.5" stroke-linecap="round"/>
+            <!-- Compass needle: N = navy, S = light gray -->
+            <polygon points="44,15 48.5,44 44,40 39.5,44" fill="#1a1e3c"/>
+            <polygon points="44,73 48.5,44 44,48 39.5,44" fill="#d0d0e0"/>
+            <!-- Center dot -->
+            <circle cx="44" cy="44" r="4"   fill="white"   stroke="#1a1e3c" stroke-width="2"/>
+            <!-- Cardinal labels — N prominent, others subtle -->
+            <text x="44" y="11"  text-anchor="middle" font-size="13" font-weight="700" fill="#1a1e3c" font-family="'Jost',sans-serif" letter-spacing="0.04em">N</text>
+            <text x="44" y="83"  text-anchor="middle" font-size="10" font-weight="500" fill="#9090a8" font-family="'Jost',sans-serif">S</text>
+            <text x="81" y="48"  text-anchor="middle" font-size="10" font-weight="500" fill="#9090a8" font-family="'Jost',sans-serif">E</text>
+            <text x="7"  y="48"  text-anchor="middle" font-size="10" font-weight="500" fill="#9090a8" font-family="'Jost',sans-serif">W</text>
+          </svg>
+        </div>
+      </div>
+
       <!-- Hover card — bottom-left, shows on community hover -->
       <div class="city-hover-card" id="city-hover-card">
         <div class="card-city-name" id="cardCityName"></div>
@@ -2270,7 +2310,17 @@
         })
         .catch(() => {}); // silent fail — labels keep showing city name only
 
+      // --- Set initial compass rotation ---
+      updateCompass();
+
     }); // map.on('load')
+
+    // Compass: rotate to match map bearing at all times
+    function updateCompass() {
+      const rose = document.getElementById('compassRose');
+      if (rose) rose.style.transform = `rotate(${-map.getBearing()}deg)`;
+    }
+    map.on('rotate', updateCompass);
 
     // Touch support: on mobile, tap navigates directly
     map.on('touchend', (e) => {
