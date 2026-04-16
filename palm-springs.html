@@ -695,6 +695,85 @@
   <!-- MAPBOX -->
   <script src="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.js"></script>
   <script>
+    window.CV_MAP_CONFIG = {
+    "city": "Palm Springs",
+    "subtitle": "Coachella Valley, CA",
+    "lng": -116.5453,
+    "lat": 33.8303,
+    "heroZoom": 11.5,
+    "lifestyleZoom": 11,
+    "boundary": [
+        [
+            -116.635,
+            33.885
+        ],
+        [
+            -116.51,
+            33.885
+        ],
+        [
+            -116.488,
+            33.862
+        ],
+        [
+            -116.484,
+            33.8
+        ],
+        [
+            -116.505,
+            33.773
+        ],
+        [
+            -116.56,
+            33.772
+        ],
+        [
+            -116.63,
+            33.796
+        ],
+        [
+            -116.645,
+            33.84
+        ],
+        [
+            -116.635,
+            33.885
+        ]
+    ],
+    "pois": [
+        {
+            "name": "Palm Springs Aerial Tramway",
+            "desc": "Iconic cable car to 8,516 ft",
+            "lng": -116.6348,
+            "lat": 33.8089,
+            "icon": "🚡"
+        },
+        {
+            "name": "Downtown Palm Canyon Drive",
+            "desc": "Historic shopping, dining and galleries",
+            "lng": -116.5455,
+            "lat": 33.8212,
+            "icon": "🛍️"
+        },
+        {
+            "name": "Palm Springs Art Museum",
+            "desc": "Architecture and modern art",
+            "lng": -116.5486,
+            "lat": 33.8268,
+            "icon": "🏛️"
+        },
+        {
+            "name": "PS International Airport",
+            "desc": "Regional gateway to the desert",
+            "lng": -116.5071,
+            "lat": 33.8258,
+            "icon": "✈️"
+        }
+    ]
+};
+  </script>
+  <script src="/community-map.js"></script>
+  <script>
     mapboxgl.accessToken = 'pk.eyJ1IjoidmVnYXMta2l3aSIsImEiOiJjbW8waXJoaWEwOHN2MnJxYTl2bWNlaGp0In0.C57V2IUuHiNKHn5LLlbXog';
     const BRONZE = '#B8975A';
     const LNG = -116.5453, LAT = 33.8303;
