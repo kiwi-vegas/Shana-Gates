@@ -221,6 +221,138 @@ Post structure:
 
 ---
 
+## Inline Image Pipeline (Article Body Images)
+
+> **Status: Planned — not yet built.**
+> This is separate from hero/thumbnail images (see `THUMBNAIL.md`).
+> These are contextual photos embedded *inside* the article body between sections.
+
+### Goal
+
+Every published blog post should contain 2–3 inline photos that visually reinforce what the article is discussing. If the article talks about a swimming pool, show a photo of a pool. If it covers mid-century architecture, show MCM homes. If it's about the Coachella Festival, show the festival grounds. Images are sourced from Unsplash with proper attribution embedded in the markdown — legally compliant and automatic.
+
+---
+
+### User Workflow (Updated Publish Flow)
+
+The image review step is inserted **between article/topic selection and the final publish button** in both picker UIs:
+
+```
+Daily picker:
+  Select 1–5 articles  →  [NEW] Review Images  →  Publish
+
+Weekly picker:
+  Select topics  →  [NEW] Review Images  →  Publish
+```
+
+**Review Images step:**
+1. For each selected article/topic, Claude writes the full post (preview, not yet published)
+2. Claude identifies 2–3 sections where an inline image would add value
+3. Unsplash is searched for each section concept — returns 3 image options per placement
+4. Shana sees a card per placement: the section heading, 3 photo thumbnails, photographer credit
+5. She picks one photo per placement (or skips any placement she doesn't want)
+6. Clicks "Publish with Images" — post is published to Sanity with images embedded
+
+---
+
+### Image Source: Unsplash
+
+**Why Unsplash:**
+- Free to use commercially with no royalty fees
+- High-quality photography that fits the aspirational real estate brand
+- Simple attribution requirement: credit the photographer and link back to Unsplash
+- API supports keyword search — returns relevant, licenseable photos
+
+**Attribution format (embedded in markdown):**
+```markdown
+![Alt text describing the photo](https://images.unsplash.com/photo-{id}?w=1200&q=80)
+*Photo by [Photographer Name](https://unsplash.com/@handle) on [Unsplash](https://unsplash.com)*
+```
+
+This renders as the photo followed by an italic credit line — clean, standard, legally correct.
+
+**Unsplash API endpoint used:**
+```
+GET https://api.unsplash.com/search/photos?query={search_term}&per_page=3&orientation=landscape
+Authorization: Client-ID {UNSPLASH_ACCESS_KEY}
+```
+
+---
+
+### How Claude Identifies Image Placements
+
+After writing the post body, Claude is given a second prompt:
+
+> *"Read this blog post. Identify 2–3 sections where an inline photo would make the reader pause, feel something, or understand the content better. For each placement, return: (1) the exact `## Section Heading` it belongs after, (2) a 3–5 word Unsplash search query that would find a relevant, high-quality photo, (3) a one-sentence alt text description."*
+
+Claude returns a structured list like:
+```json
+[
+  { "afterHeading": "## The Rise of Desert Modern Design", "query": "mid-century modern pool desert", "alt": "Sleek mid-century modern home with pool in the desert" },
+  { "afterHeading": "## What This Means For You", "query": "couple touring luxury home", "alt": "Couple walking through a bright open-plan home" }
+]
+```
+
+---
+
+### How Images Are Injected Into the Post Body
+
+After Shana approves images, each selected photo is inserted into the markdown body immediately after its target `## Section Heading`:
+
+```markdown
+## The Rise of Desert Modern Design
+
+![Sleek mid-century modern home with pool in the desert](https://images.unsplash.com/photo-xxx?w=1200&q=80)
+*Photo by Jane Doe on [Unsplash](https://unsplash.com)*
+
+Buyers across the Coachella Valley are increasingly drawn to...
+```
+
+---
+
+### New Files Required
+
+| File | Purpose |
+|---|---|
+| `lib/blog-inline-images.ts` | `extractImagePlacements()` (Claude) + `searchUnsplash()` + `injectImagesIntoBody()` |
+| `api/blog/suggest-images.ts` | `POST` — writes post, extracts placements, searches Unsplash, returns suggestions |
+
+### Changes to Existing Files
+
+| File | Change |
+|---|---|
+| `admin/blog-picker/index.html` | Add "Review Images" step between selection and publish |
+| `admin/weekly-picker/index.html` | Same |
+| `api/blog/publish.ts` | Accept `imageApprovals[]` in request body; pass approved images to writer |
+| `api/blog/publish-weekly.ts` | Same |
+| `lib/writer.ts` | `injectApprovedImages()` helper — inserts approved image markdown into post body |
+
+### New Environment Variable
+
+| Variable | Purpose |
+|---|---|
+| `UNSPLASH_ACCESS_KEY` | Unsplash API key for image search (already listed — activate it) |
+
+---
+
+### Picker UI — Image Review Card Design
+
+Each image placement shows as a card:
+
+```
+┌─────────────────────────────────────────────────────┐
+│ After: "## The Rise of Desert Modern Design"         │
+│                                                      │
+│  [Photo 1]    [Photo 2]    [Photo 3]                 │
+│  Jane Doe     Mark Smith   Alex Ray                  │
+│  ● Selected                                          │
+│                                                      │
+│  [ Skip this placement ]                             │
+└─────────────────────────────────────────────────────┘
+```
+
+---
+
 ## Compliance Guardrails (Hardcoded — Never Override)
 
 All writing tools must strictly avoid:
