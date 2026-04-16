@@ -669,6 +669,22 @@
 
     .btn-primary-dark:hover { background: var(--bronze-light); transform: translateY(-2px); }
 
+    .btn-outline-dark {
+      font-family: var(--sans);
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--bronze);
+      background: transparent;
+      border: 1.5px solid var(--bronze);
+      padding: 13px 32px;
+      text-decoration: none;
+      transition: background 0.3s, color 0.3s, transform 0.2s;
+      display: inline-block;
+    }
+    .btn-outline-dark:hover { background: var(--bronze); color: var(--dark); transform: translateY(-2px); }
+
     .btn-text-link {
       font-family: var(--sans);
       font-size: 10.5px;
@@ -1025,6 +1041,16 @@
       height: 30px;
       display: block;
       margin-bottom: 22px;
+    }
+
+    .footer-business-name {
+      font-family: var(--sans);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(242,237,228,0.45);
+      margin-bottom: 14px;
     }
 
     .footer-tagline {
@@ -1396,7 +1422,7 @@
       <li><a href="#about">About Shana</a></li>
       <li><a href="#search-listings">Search</a></li>
     </ul>
-    <a href="tel:7605484340" class="nav-cta">760.548.4340</a>
+    <a href="tel:7602324054" class="nav-cta">760.232.4054</a>
   </nav>
 
   <!-- ============================================================
@@ -1561,6 +1587,7 @@
       </p>
       <div class="about-cta-row">
         <a href="mailto:shana@craftbauer.com" class="btn-primary-dark">Work With Shana</a>
+        <a href="tel:7602324054" class="btn-outline-dark">Call 760.232.4054</a>
         <button class="btn-watch-video" onclick="openVideoModal()">
           <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9.25" stroke="currentColor" stroke-width="1.5"/><polygon points="10.5,8.5 16.5,12 10.5,15.5" fill="currentColor"/></svg>
           Watch Video
@@ -1937,10 +1964,11 @@
 
       <div class="footer-brand">
         <img src="images/C&B+logo.png" alt="Craft & Bauer" class="footer-logo" />
+        <p class="footer-business-name">Shana Gates — Craft &amp; Bauer Real Broker</p>
         <p class="footer-tagline">"Your trusted guide to desert living in the Coachella Valley."</p>
         <div class="footer-contact-info">
           74-710 CA-111 #102, Palm Desert, CA 92260<br />
-          <a href="tel:7605484340">760.548.4340</a><br />
+          <a href="tel:7602324054">760.232.4054</a><br />
           <a href="mailto:shana@craftbauer.com">shana@craftbauer.com</a>
         </div>
       </div>

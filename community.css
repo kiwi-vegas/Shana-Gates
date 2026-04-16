@@ -854,6 +854,16 @@ footer {
   margin-bottom: 22px;
 }
 
+.footer-business-name {
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(242,237,228,0.45);
+  margin-bottom: 14px;
+}
+
 .footer-tagline {
   font-family: var(--serif);
   font-size: 18px;
