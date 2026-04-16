@@ -1,6 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk'
 import type { ScoredArticle } from './blog-store'
 import type { WeeklyTopic } from './blog-store'
+import { detectCity } from './blog-image-gen'
 
 // ── Shared post structure ─────────────────────────────────────────────────
 
@@ -47,6 +48,13 @@ export interface BlogPostOutput {
   sourceUrl: string
   sourceTitle: string
   pipeline: 'daily' | 'weekly'
+  city?: string  // city slug e.g. 'palm-springs'; undefined for general CV posts
+}
+
+// Converts detectCity() result to a URL slug, or undefined for general CV posts
+function cityToSlug(cityName: string): string | undefined {
+  if (!cityName || cityName === 'Coachella Valley') return undefined
+  return cityName.toLowerCase().replace(/\s+/g, '-')
 }
 
 function slugify(text: string): string {
@@ -97,6 +105,7 @@ Write the full blog post now. Make it 600–800 words. Follow the post structure
     .join('')
 
   const title = extractTitle(body, article.title)
+  const city = cityToSlug(detectCity(title + ' ' + article.title + ' ' + article.summary + ' ' + (article.whyItMatters || '')))
 
   return {
     title,
@@ -107,6 +116,7 @@ Write the full blog post now. Make it 600–800 words. Follow the post structure
     sourceUrl: article.url,
     sourceTitle: article.title,
     pipeline: 'daily',
+    city,
   }
 }
 
@@ -139,6 +149,7 @@ Use the target keywords naturally in the title, first paragraph, subheadings, an
     .join('')
 
   const title = extractTitle(body, topic.title)
+  const city = cityToSlug(detectCity(title + ' ' + topic.title + ' ' + (topic.angle || '') + ' ' + (topic.researchContext || '')))
 
   return {
     title,
@@ -149,5 +160,6 @@ Use the target keywords naturally in the title, first paragraph, subheadings, an
     sourceUrl: '',
     sourceTitle: '',
     pipeline: 'weekly',
+    city,
   }
 }

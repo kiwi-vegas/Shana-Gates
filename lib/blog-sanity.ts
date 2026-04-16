@@ -19,6 +19,7 @@ export async function publishBlogPost(
     pipeline: post.pipeline,
     sourceUrl: post.sourceUrl || '',
     sourceTitle: post.sourceTitle || '',
+    ...(post.city ? { city: post.city } : {}),
   }
 
   // Attach hero image
@@ -75,6 +76,7 @@ export async function getPostBySlug(slug: string): Promise<Record<string, any> |
     excerpt,
     body,
     pipeline,
+    city,
     sourceUrl,
     sourceTitle,
     "heroImageUrl": select(

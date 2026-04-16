@@ -353,6 +353,87 @@ Each image placement shows as a card:
 
 ---
 
+## Internal Linking System
+
+Blog posts and community pages link back and forth automatically. No manual work required once a post is published.
+
+### How City Detection Works
+
+At write time, `lib/writer.ts` calls `detectCity()` on the post title + source article text. The result is a URL slug stored as the `city` field on the Sanity `blogPost` document.
+
+| City name | Stored as `city` field |
+|---|---|
+| Palm Springs | `palm-springs` |
+| Palm Desert | `palm-desert` |
+| Rancho Mirage | `rancho-mirage` |
+| Indian Wells | `indian-wells` |
+| La Quinta | `la-quinta` |
+| Indio | `indio` |
+| Cathedral City | `cathedral-city` |
+| Desert Hot Springs | `desert-hot-springs` |
+| Coachella | `coachella` |
+
+Posts that don't match a specific city (general Coachella Valley content) have `city: undefined` and do not generate community links.
+
+---
+
+### Blog Post → Community Page
+
+Every blog post page (`/blog/post.html`) automatically shows a **community link card** between the post body and the "Contact Shana" CTA whenever `post.city` is set.
+
+The card contains:
+- **Community Guide →** — links to the city's community page (`/palm-springs.html`, etc.)
+- **Search Active Listings →** — links to the YLOPO search filtered to that city
+
+Example for a post tagged `city: 'la-quinta'`:
+```
+┌──────────────────────────────────────────────────────────────┐
+│ EXPLORE LA QUINTA                                            │
+│ Homes for Sale in La Quinta                                  │
+│                              [Community Guide →] [Search →]  │
+└──────────────────────────────────────────────────────────────┘
+```
+
+**Files involved:**
+- `blog/post.html` — `renderCityLinkCard()` function + `#cityLinkCard` placeholder div
+- `lib/blog-sanity.ts` — `getPostBySlug()` returns `city` field
+- `api/blog/post.ts` — proxies the Sanity query (no change needed)
+
+---
+
+### Community Page → Blog Posts
+
+Each of the 9 community pages automatically shows a **"From the Blog"** section that populates with up to 3 recent blog posts tagged with that city.
+
+The section is injected dynamically **before `#community-cta`** by a shared script included on every community page.
+
+**How it works:**
+1. `/blog/community-posts.js` is included on all 9 community pages (added with `defer`)
+2. The script detects the current city from the URL pathname (e.g. `/la-quinta.html` → `la-quinta`)
+3. Queries Sanity CDN: `*[_type=="blogPost" && city=="la-quinta"] | order(publishedAt desc)[0...3]`
+4. If posts are found, inserts the section. If none, does nothing silently — the page looks unchanged until posts exist.
+
+**Files involved:**
+- `blog/community-posts.js` — shared IIFE script
+- `community.css` — `#community-blog-posts`, `.cbp-*` styles
+- All 9 community pages — `<script src="/blog/community-posts.js" defer></script>`
+
+**Note:** The section only appears once blog posts tagged to that city have been published. Existing posts published before this feature was added will not appear — only new posts going forward.
+
+---
+
+### Sanity `blogPost` Schema — `city` Field
+
+```typescript
+city?: string  // one of the 9 city slugs above, or absent for general CV posts
+```
+
+Written at publish time by `publishBlogPost()` in `lib/blog-sanity.ts`. Read by:
+- `getPostBySlug()` — for blog post pages (community link card)
+- Community pages — via direct Sanity CDN query in `community-posts.js`
+
+---
+
 ## Compliance Guardrails (Hardcoded — Never Override)
 
 All writing tools must strictly avoid:
@@ -384,6 +465,7 @@ All writing tools must strictly avoid:
   sourceUrl: string,                // original article URL (daily pipeline only)
   sourceTitle: string,              // original article title
   pipeline: 'daily' | 'weekly',
+  city?: string,                    // city slug e.g. 'palm-springs' — absent for general CV posts
 }
 ```
 
