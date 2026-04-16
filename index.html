@@ -803,154 +803,50 @@
       height: 100%;
     }
 
-    /* Hover tooltip */
-    .valley-tooltip {
+    /* Hover card — fixed bottom-left of map, appears on community hover */
+    .city-hover-card {
       position: absolute;
-      top: 0;
-      left: 0;
-      pointer-events: none;
-      background: rgba(13,13,13,0.92);
-      border: 1px solid rgba(184,151,90,0.45);
-      backdrop-filter: blur(12px);
-      padding: 16px 22px;
-      min-width: 200px;
+      bottom: 28px;
+      left: 24px;
+      background: #ffffff;
+      border-left: 4px solid #4864c8;
+      border-radius: 4px;
+      padding: 16px 20px 16px 18px;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.14);
+      min-width: 260px;
+      max-width: 300px;
       opacity: 0;
-      transform: translate(16px, 16px);
-      transition: opacity 0.18s ease;
-      z-index: 10;
-    }
-
-    .valley-tooltip.visible {
-      opacity: 1;
-    }
-
-    /* Road legend */
-    .map-road-legend {
-      position: absolute;
-      bottom: 14px;
-      left: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-      z-index: 10;
       pointer-events: none;
-      background: rgba(255,255,255,0.82);
-      border: 1px solid rgba(0,0,0,0.08);
-      border-radius: 4px;
-      padding: 8px 12px;
+      transition: opacity 0.20s ease;
+      z-index: 10;
     }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    .city-hover-card.visible {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .card-city-name {
       font-family: var(--sans);
-      font-size: 9px;
-      font-weight: 500;
-      letter-spacing: 0.10em;
-      text-transform: uppercase;
-      color: rgba(30,30,50,0.65);
+      font-size: 16px;
+      font-weight: 700;
+      color: #1a1e3c;
+      margin-bottom: 6px;
     }
-
-    .legend-line {
-      display: block;
-      width: 28px;
-      height: 2px;
-      border-radius: 2px;
-    }
-
-    .legend-i10    { background: #5ba4ff; }
-    .legend-bronze { background: #B8975A; }
-
-    .legend-airport {
+    .card-city-desc {
+      font-family: var(--sans);
       font-size: 13px;
-      line-height: 1;
-      display: block;
-      width: 28px;
-      text-align: center;
+      color: #5a5a6e;
+      line-height: 1.55;
+      margin-bottom: 12px;
     }
-
-    /* Airport marker on the map */
-    .valley-airport-marker {
-      font-size: 18px;
-      line-height: 1;
+    .card-city-link {
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 600;
+      color: #4864c8;
+      text-decoration: none;
       cursor: pointer;
-      filter: drop-shadow(0 1px 4px rgba(0,0,0,0.5));
-      transition: transform 0.2s;
     }
-
-    .valley-airport-marker:hover { transform: scale(1.2); }
-
-    .valley-airport-popup .mapboxgl-popup-content {
-      background: rgba(13,13,13,0.92);
-      border: 1px solid rgba(184,151,90,0.35);
-      border-radius: 4px;
-      padding: 8px 13px;
-      color: var(--text-light);
-      font-family: var(--sans);
-      box-shadow: none;
-    }
-
-    .vap-name {
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--bronze);
-    }
-
-    .vap-sub {
-      font-size: 10px;
-      color: rgba(242,237,228,0.5);
-      margin-top: 2px;
-    }
-
-    .tooltip-num {
-      font-family: var(--sans);
-      font-size: 9px;
-      font-weight: 500;
-      letter-spacing: 0.28em;
-      color: rgba(184,151,90,0.5);
-      margin-bottom: 6px;
-    }
-
-    .tooltip-name {
-      font-family: var(--serif);
-      font-size: 22px;
-      font-weight: 400;
-      color: var(--text-light);
-      line-height: 1.1;
-      margin-bottom: 6px;
-    }
-
-    .tooltip-tag {
-      font-family: var(--sans);
-      font-size: 10px;
-      font-weight: 300;
-      letter-spacing: 0.1em;
-      color: rgba(242,237,228,0.45);
-      margin-bottom: 14px;
-    }
-
-    .tooltip-cta {
-      font-family: var(--sans);
-      font-size: 9.5px;
-      font-weight: 500;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--bronze);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .tooltip-cta::after {
-      content: '';
-      display: block;
-      width: 18px;
-      height: 1px;
-      background: var(--bronze);
-    }
+    .card-city-link:hover { text-decoration: underline; }
 
     /* City labels on the map — white chip style */
     .valley-city-label {
@@ -1690,18 +1586,11 @@
 
     <div class="valley-map-wrap reveal">
       <div id="valley-map"></div>
-      <!-- Hover tooltip -->
-      <div class="valley-tooltip" id="valley-tooltip">
-        <div class="tooltip-num" id="tooltip-num"></div>
-        <div class="tooltip-name" id="tooltip-name"></div>
-        <div class="tooltip-tag" id="tooltip-tag"></div>
-        <div class="tooltip-cta">Explore Community</div>
-      </div>
-      <!-- Map legend -->
-      <div class="map-road-legend">
-        <div class="legend-item"><span class="legend-line legend-i10"></span> I-10</div>
-        <div class="legend-item"><span class="legend-line legend-bronze"></span> Hwy 111 · Monterey · Ramon</div>
-        <div class="legend-item"><span class="legend-airport">✈</span> PSP Airport</div>
+      <!-- Hover card — bottom-left, shows on community hover -->
+      <div class="city-hover-card" id="city-hover-card">
+        <div class="card-city-name" id="cardCityName"></div>
+        <div class="card-city-desc" id="cardCityDesc"></div>
+        <a class="card-city-link" id="cardCityLink" href="#">Click to explore →</a>
       </div>
     </div>
 
@@ -2124,6 +2013,7 @@
         num: '01',
         name: 'Palm Springs',
         tag: 'Iconic · Mid-Century Modern',
+        desc: 'Iconic mid-century architecture, world-class spas, and a legendary resort lifestyle.',
         url: 'palm-springs.html',
         center: [-116.5453, 33.8303],
         boundary: [[-116.635,33.885],[-116.510,33.885],[-116.488,33.862],[-116.484,33.800],[-116.505,33.773],[-116.560,33.772],[-116.630,33.796],[-116.645,33.840],[-116.635,33.885]],
@@ -2133,6 +2023,7 @@
         num: '02',
         name: 'Palm Desert',
         tag: 'Shopping · Dining · Arts',
+        desc: 'Premier shopping on El Paseo, acclaimed dining, and a thriving arts and culture scene.',
         url: 'palm-desert.html',
         center: [-116.3744, 33.7222],
         boundary: [[-116.452,33.782],[-116.362,33.782],[-116.295,33.754],[-116.285,33.700],[-116.305,33.660],[-116.382,33.648],[-116.458,33.668],[-116.470,33.726],[-116.452,33.782]],
@@ -2142,6 +2033,7 @@
         num: '03',
         name: 'Rancho Mirage',
         tag: 'Luxury · Privacy · Estates',
+        desc: 'Exclusive gated estates, celebrity heritage, and impeccably manicured private fairways.',
         url: 'rancho-mirage.html',
         center: [-116.4125, 33.7395],
         boundary: [[-116.462,33.774],[-116.400,33.776],[-116.358,33.764],[-116.342,33.732],[-116.350,33.710],[-116.400,33.703],[-116.462,33.712],[-116.480,33.742],[-116.462,33.774]],
@@ -2151,6 +2043,7 @@
         num: '04',
         name: 'Indian Wells',
         tag: 'Luxury · Tennis · Golf',
+        desc: 'Ultra-luxury living defined by championship tennis, pristine golf, and elite resort amenities.',
         url: 'indian-wells.html',
         center: [-116.3417, 33.7175],
         boundary: [[-116.372,33.740],[-116.330,33.741],[-116.300,33.732],[-116.290,33.713],[-116.298,33.700],[-116.330,33.694],[-116.370,33.700],[-116.383,33.718],[-116.372,33.740]],
@@ -2160,6 +2053,7 @@
         num: '05',
         name: 'La Quinta',
         tag: 'Golf · Resort Living',
+        desc: 'Golf resort communities, charming Old Town boutiques, and breathtaking mountain scenery.',
         url: 'la-quinta.html',
         center: [-116.3100, 33.6634],
         boundary: [[-116.385,33.720],[-116.290,33.720],[-116.247,33.700],[-116.238,33.635],[-116.260,33.595],[-116.313,33.585],[-116.375,33.608],[-116.395,33.658],[-116.385,33.720]],
@@ -2169,6 +2063,7 @@
         num: '06',
         name: 'Indio',
         tag: 'Festivals · Community',
+        desc: "The valley's festival capital — rich culture, a growing economy, and an approachable lifestyle.",
         url: 'indio.html',
         center: [-116.2156, 33.7206],
         boundary: [[-116.305,33.773],[-116.180,33.773],[-116.130,33.750],[-116.120,33.700],[-116.140,33.660],[-116.192,33.648],[-116.285,33.655],[-116.315,33.700],[-116.305,33.773]],
@@ -2178,6 +2073,7 @@
         num: '07',
         name: 'Cathedral City',
         tag: 'Vibrant · Accessible',
+        desc: 'A vibrant, welcoming community at the heart of the valley with big-city amenities.',
         url: 'cathedral-city.html',
         center: [-116.4653, 33.7797],
         boundary: [[-116.512,33.815],[-116.454,33.818],[-116.420,33.803],[-116.402,33.773],[-116.410,33.750],[-116.450,33.742],[-116.502,33.752],[-116.522,33.780],[-116.512,33.815]],
@@ -2187,6 +2083,7 @@
         num: '08',
         name: 'Desert Hot Springs',
         tag: 'Wellness · Views · Value',
+        desc: 'Famous therapeutic hot springs, sweeping valley views, and exceptional real estate value.',
         url: 'desert-hot-springs.html',
         center: [-116.5014, 33.9611],
         boundary: [[-116.558,33.998],[-116.475,33.998],[-116.445,33.975],[-116.438,33.940],[-116.458,33.918],[-116.500,33.915],[-116.548,33.935],[-116.568,33.968],[-116.558,33.998]],
@@ -2196,34 +2093,11 @@
         num: '09',
         name: 'Coachella',
         tag: 'Culture · Growth',
+        desc: 'A culturally rich, fast-growing city with exciting new development and a proud community spirit.',
         url: 'coachella.html',
         center: [-116.1739, 33.6803],
         boundary: [[-116.228,33.712],[-116.147,33.712],[-116.118,33.698],[-116.112,33.665],[-116.130,33.638],[-116.178,33.628],[-116.228,33.638],[-116.248,33.670],[-116.228,33.712]],
       },
-    ];
-
-    // --- Highlighted valley roads ---
-    const I10 = [
-      [-116.784,33.923],[-116.680,33.913],[-116.590,33.903],
-      [-116.520,33.892],[-116.457,33.878],[-116.418,33.869],
-      [-116.380,33.854],[-116.308,33.820],[-116.240,33.785],[-116.170,33.755]
-    ];
-    const HWY111 = [
-      [-116.550,33.822],[-116.520,33.812],[-116.468,33.803],
-      [-116.415,33.742],[-116.385,33.723],[-116.328,33.716],
-      [-116.301,33.708],[-116.243,33.720],[-116.175,33.705]
-    ];
-    // Monterey Ave — north–south spine from I-10 through Rancho Mirage / Palm Desert
-    const MONTEREY = [
-      [-116.397,33.865],[-116.397,33.845],[-116.398,33.820],
-      [-116.399,33.800],[-116.400,33.778],[-116.401,33.755],
-      [-116.403,33.730],[-116.404,33.708],[-116.406,33.685]
-    ];
-    // Ramon Road / Dinah Shore Drive — east–west through Palm Springs & Cathedral City
-    const RAMON = [
-      [-116.545,33.808],[-116.520,33.806],[-116.498,33.802],
-      [-116.472,33.796],[-116.450,33.789],[-116.425,33.782],
-      [-116.400,33.776],[-116.375,33.770],[-116.350,33.765]
     ];
 
     // --- Map init ---
@@ -2231,7 +2105,7 @@
 
     const map = new mapboxgl.Map({
       container: 'valley-map',
-      style: 'mapbox://styles/mapbox/standard',
+      style: 'mapbox://styles/mapbox/light-v11',
       center: [-116.37, 33.785],
       zoom: 9.6,
       minZoom: 8,
@@ -2240,72 +2114,20 @@
       attributionControl: false,
     });
 
-    const tooltip    = document.getElementById('valley-tooltip');
-    const tipNum     = document.getElementById('tooltip-num');
-    const tipName    = document.getElementById('tooltip-name');
-    const tipTag     = document.getElementById('tooltip-tag');
-    const mapWrap    = document.querySelector('.valley-map-wrap');
+    const card     = document.getElementById('city-hover-card');
+    const cardName = document.getElementById('cardCityName');
+    const cardDesc = document.getElementById('cardCityDesc');
+    const cardLink = document.getElementById('cardCityLink');
 
     let hoveredId = null;
-    let currentUrl = null;
 
     map.on('load', () => {
-
-      // Standard style — default day light preset (clean, readable)
 
       // Fit to show the full valley with padding
       map.fitBounds(
         [[-116.68, 33.56], [-116.08, 34.02]],
         { padding: { top: 60, bottom: 60, left: 60, right: 60 }, duration: 0 }
       );
-
-      // --- World fade — mutes base map so community outlines read clearly ---
-      map.addSource('world-fade', {
-        type: 'geojson',
-        data: { type: 'Feature', geometry: {
-          type: 'Polygon',
-          coordinates: [[[-180,-85],[-180,85],[180,85],[180,-85],[-180,-85]]]
-        }, properties: {} }
-      });
-      map.addLayer({ id: 'world-fade', type: 'fill', source: 'world-fade',
-        paint: { 'fill-color': '#ffffff', 'fill-opacity': 0.60 }
-      });
-
-      // Helper: add a glow + line pair for a highlighted road
-      function addRoad(id, coords, color, glowWidth, lineWidth, glowOpacity, lineOpacity) {
-        map.addSource(id, {
-          type: 'geojson',
-          data: { type: 'Feature', geometry: { type: 'LineString', coordinates: coords }, properties: {} }
-        });
-        map.addLayer({ id: id + '-glow', type: 'line', source: id,
-          paint: { 'line-color': color, 'line-width': glowWidth, 'line-opacity': glowOpacity, 'line-blur': 5 }
-        });
-        map.addLayer({ id: id + '-line', type: 'line', source: id,
-          paint: { 'line-color': color, 'line-width': lineWidth, 'line-opacity': lineOpacity }
-        });
-      }
-
-      // I-10 — blue freeway
-      addRoad('val-i10',      I10,      '#5ba4ff', 8, 2.5, 0.30, 0.85);
-      // Hwy 111 — bronze commercial corridor
-      addRoad('val-hwy111',   HWY111,   BRONZE,    7, 2.0, 0.25, 0.80);
-      // Monterey Ave — bronze north–south spine
-      addRoad('val-monterey', MONTEREY, BRONZE,    6, 1.8, 0.22, 0.75);
-      // Ramon Rd / Dinah Shore Dr — bronze east–west connector
-      addRoad('val-ramon',    RAMON,    BRONZE,    6, 1.8, 0.22, 0.75);
-
-      // --- Palm Springs International Airport (only landmark marker) ---
-      const airportEl = document.createElement('div');
-      airportEl.className = 'valley-airport-marker';
-      airportEl.textContent = '✈';
-      airportEl.title = 'Palm Springs International Airport';
-      new mapboxgl.Marker({ element: airportEl, anchor: 'center' })
-        .setLngLat([-116.5071, 33.8258])
-        .setPopup(
-          new mapboxgl.Popup({ closeButton: false, offset: 22, className: 'valley-airport-popup' })
-            .setHTML('<div class="vap-name">Palm Springs Airport</div><div class="vap-sub">PSP — International</div>')
-        )
-        .addTo(map);
 
       // Add each community as its own source + layers
       COMMUNITIES.forEach((c) => {
@@ -2356,7 +2178,7 @@
         });
 
         // --- Hover events ---
-        map.on('mousemove', c.id + '-fill', (e) => {
+        map.on('mousemove', c.id + '-fill', () => {
           map.getCanvas().style.cursor = 'pointer';
 
           if (hoveredId !== c.id) {
@@ -2372,30 +2194,11 @@
             if (label) label.classList.add('hovered');
           }
 
-          currentUrl = c.url;
-
-          // Update tooltip content
-          tipNum.textContent  = c.num;
-          tipName.textContent = c.name;
-          tipTag.textContent  = c.tag;
-
-          // Position tooltip relative to map container, following cursor
-          const rect   = mapWrap.getBoundingClientRect();
-          const mouseX = e.originalEvent.clientX - rect.left;
-          const mouseY = e.originalEvent.clientY - rect.top;
-
-          // Keep tooltip inside the map bounds
-          const ttW = tooltip.offsetWidth  || 220;
-          const ttH = tooltip.offsetHeight || 110;
-          const pad = 20;
-          let tx = mouseX + 18;
-          let ty = mouseY - ttH / 2;
-          if (tx + ttW > mapWrap.offsetWidth  - pad) tx = mouseX - ttW - 18;
-          if (ty < pad) ty = pad;
-          if (ty + ttH > mapWrap.offsetHeight - pad) ty = mapWrap.offsetHeight - ttH - pad;
-
-          tooltip.style.transform = `translate(${tx}px, ${ty}px)`;
-          tooltip.classList.add('visible');
+          // Update fixed bottom-left hover card
+          cardName.textContent = c.name;
+          cardDesc.textContent = c.desc;
+          cardLink.href        = c.url;
+          card.classList.add('visible');
         });
 
         map.on('mouseleave', c.id + '-fill', () => {
@@ -2404,10 +2207,9 @@
             map.setFeatureState({ source: c.id, id: 0 }, { hovered: false });
             const label = document.getElementById('label-' + c.id);
             if (label) label.classList.remove('hovered');
-            hoveredId  = null;
-            currentUrl = null;
+            hoveredId = null;
           }
-          tooltip.classList.remove('visible');
+          card.classList.remove('visible');
         });
 
         map.on('click', c.id + '-fill', () => {
