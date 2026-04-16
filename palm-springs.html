@@ -773,60 +773,6 @@
 };
   </script>
   <script src="/community-map.js"></script>
-  <script>
-    mapboxgl.accessToken = 'pk.eyJ1IjoidmVnYXMta2l3aSIsImEiOiJjbW8waXJoaWEwOHN2MnJxYTl2bWNlaGp0In0.C57V2IUuHiNKHn5LLlbXog';
-    const BRONZE = '#B8975A';
-    const LNG = -116.5453, LAT = 33.8303;
-    const CITY = 'Palm Springs';
-    const SUBTITLE = 'Coachella Valley, CA';
-
-    // Approximate city boundary polygon
-    const BOUNDARY = [
-      [-116.635, 33.885], [-116.510, 33.885], [-116.488, 33.862],
-      [-116.484, 33.800], [-116.505, 33.773], [-116.560, 33.772],
-      [-116.630, 33.796], [-116.645, 33.840], [-116.635, 33.885]
-    ];
-
-    function addBoundary(map, id) {
-      map.addSource(id + '-boundary', {
-        type: 'geojson',
-        data: { type: 'Feature', geometry: { type: 'Polygon', coordinates: [BOUNDARY] }, properties: {} }
-      });
-      map.addLayer({ id: id + '-fill', type: 'fill', source: id + '-boundary', paint: { 'fill-color': BRONZE, 'fill-opacity': 0.12 } });
-      map.addLayer({ id: id + '-line', type: 'line', source: id + '-boundary', paint: { 'line-color': BRONZE, 'line-width': 2, 'line-opacity': 0.85 } });
-    }
-
-    function addMarkerAndLabel(map, containerId) {
-      const el = document.createElement('div');
-      el.style.cssText = `width:14px;height:14px;background:${BRONZE};border:2px solid #fff;border-radius:50%;box-shadow:0 0 14px ${BRONZE}bb;`;
-      new mapboxgl.Marker({ element: el }).setLngLat([LNG, LAT]).addTo(map);
-      const label = document.createElement('div');
-      label.style.cssText = `position:absolute;bottom:40px;left:16px;background:rgba(10,10,10,0.88);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(184,151,90,0.35);border-radius:4px;padding:8px 14px;pointer-events:none;z-index:10;`;
-      label.innerHTML = `<div style="font-size:10px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:#B8975A;font-family:'Jost',sans-serif;">${CITY}</div><div style="font-size:10px;color:rgba(255,255,255,0.45);margin-top:3px;font-family:'Jost',sans-serif;">${SUBTITLE}</div>`;
-      document.getElementById(containerId).appendChild(label);
-    }
-
-    // Hero map
-    const heroMap = new mapboxgl.Map({ container: 'hero-map', style: 'mapbox://styles/mapbox/dark-v11', center: [LNG, LAT], zoom: 11.5, interactive: false, attributionControl: false });
-    heroMap.on('load', () => addBoundary(heroMap, 'hero'));
-
-    // Lifestyle map (lazy)
-    let lifestyleMapInit = false;
-    new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && !lifestyleMapInit) {
-        lifestyleMapInit = true;
-        const lmap = new mapboxgl.Map({ container: 'lifestyle-map', style: 'mapbox://styles/mapbox/dark-v11', center: [LNG, LAT], zoom: 11, interactive: true, attributionControl: false });
-        lmap.on('load', () => { addBoundary(lmap, 'lifestyle'); addMarkerAndLabel(lmap, 'lifestyle-map'); });
-      }
-    }, { threshold: 0.1 }).observe(document.getElementById('lifestyle-map'));
-
-    // Scroll reveal
-    document.querySelectorAll('.reveal').forEach(el => {
-      new IntersectionObserver((entries) => {
-        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
-      }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }).observe(el);
-    });
-  </script>
 
 
   <!-- FAQ + Schools tab JS -->
