@@ -151,40 +151,7 @@ For each category, Claude generates 2–3 original blog topic ideas based on cur
 
 ## Image Generation Pipeline
 
-### Primary: Gemini (requires `GOOGLE_API_KEY`)
-
-Every hero image is built using **3-step thumbnail psychology**:
-
-1. **Visual Stun Gun** — The image stops the scroll. Would someone slow their thumb for this?
-2. **Title Value Hunt** — After stopping, the reader scans the headline. The image makes it feel MORE urgent and relevant.
-3. **Visual Validation** — The reader returns to the image to confirm the article is worth reading.
-
-**Step 1 — Claude builds the prompt**
-Claude Sonnet analyzes the article's title, `whyItMatters`, and category, then writes a cinematic image prompt using Coachella Valley visual anchors and a desire loop for the article's category. Returns ONLY the prompt, 5–8 sentences.
-
-**Coachella Valley visual anchors:**
-- Palm Springs hillside homes at golden hour — warmth, luxury, aspiration
-- Palm tree-lined streets under a deep blue sky — iconic desert lifestyle
-- San Jacinto Mountains framing a valley neighborhood — scale, natural grandeur
-- Mid-century modern architecture with a pool — style, heritage, investment appeal
-- Desert sunset with dramatic gradient sky — aspirational, escapism
-- Luxury backyard pool with mountain backdrop — high-end resort living
-- Golf course fairway with mountain views — affluence, lifestyle
-- Aerial view of the Coachella Valley with mountain borders — unique geography, scale
-- Joshua trees and desert flora — natural identity, Californian character
-
-**Step 2 — Gemini generates the image** — `gemini-3-pro-image-preview`, 16:9, base64 PNG inline
-
-**Step 3 — Upload to Sanity CDN** — stored as `shana-blog-cover-{timestamp}.png`
-
-### Fallback Chain (if Gemini fails)
-
-1. **Imagen 4.0** (`imagen-4.0-generate-001`) — same prompt, 16:9
-2. **Gemini 2.5 Flash Image** (`gemini-2.5-flash-image`)
-3. **DALL-E 3** (requires `OPENAI_API_KEY`) — 1792×1024 HD
-4. **OG image** scraped from the source article URL
-5. **Unsplash API** (requires `UNSPLASH_ACCESS_KEY`) — category-matched query
-6. **Fallback image pool** — pre-curated Unsplash URLs per category, deterministic pick by article URL hash
+See **[THUMBNAIL.md](./THUMBNAIL.md)** for the full thumbnail spec — city detection, sentiment detection, city-specific visual anchors, fallback chain, known issues, and improvement notes.
 
 ---
 
