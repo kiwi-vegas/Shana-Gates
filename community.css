@@ -52,7 +52,6 @@ nav {
 .nav-logo img {
   height: 30px;
   width: auto;
-  filter: brightness(0) invert(1);
   display: block;
 }
 
@@ -837,7 +836,6 @@ footer {
 
 .footer-brand .footer-logo {
   height: 30px;
-  filter: brightness(0) invert(1);
   display: block;
   margin-bottom: 22px;
 }
