@@ -3,6 +3,7 @@ import { getDailyArticles } from '../../lib/blog-store'
 import { writeFromArticle } from '../../lib/writer'
 import { generateHeroImage } from '../../lib/blog-images'
 import { publishBlogPost } from '../../lib/blog-sanity'
+import { injectImagesIntoBody, type ApprovedSelection } from '../../lib/blog-inline-images'
 
 const COOKIE_NAME = 'sg_assistant_session'
 const MAX_ARTICLES = 5
@@ -39,7 +40,15 @@ export default async function handler(req: any, res: any) {
     return res.status(401).json({ error: 'Unauthorized' })
   }
 
-  const { date, articleIds } = req.body ?? {}
+  const { date, articleIds, imageSelections } = req.body ?? {}
+  const imageSelectionsMap: Record<string, ApprovedSelection[]> = {}
+  if (Array.isArray(imageSelections)) {
+    for (const entry of imageSelections) {
+      if (entry.itemId && Array.isArray(entry.placements)) {
+        imageSelectionsMap[entry.itemId] = entry.placements
+      }
+    }
+  }
 
   if (!date || !Array.isArray(articleIds) || articleIds.length === 0) {
     return res.status(400).json({ error: 'date and articleIds[] required' })
@@ -68,6 +77,10 @@ export default async function handler(req: any, res: any) {
   const results = await Promise.allSettled(
     selected.map(async (article) => {
       const post = await writeFromArticle(article)
+      const approvedPlacements = imageSelectionsMap[article.id]
+      if (approvedPlacements?.length) {
+        post.body = injectImagesIntoBody(post.body, approvedPlacements)
+      }
       const heroImage = await generateHeroImage(
         post.title,
         article.whyItMatters,

@@ -3,6 +3,7 @@ import { getWeeklyTopics } from '../../lib/blog-store'
 import { writeFromTopic } from '../../lib/writer'
 import { generateHeroImage } from '../../lib/blog-images'
 import { publishBlogPost } from '../../lib/blog-sanity'
+import { injectImagesIntoBody, type ApprovedSelection } from '../../lib/blog-inline-images'
 
 const COOKIE_NAME = 'sg_assistant_session'
 
@@ -37,7 +38,15 @@ export default async function handler(req: any, res: any) {
     return res.status(401).json({ error: 'Unauthorized' })
   }
 
-  const { topicIds } = req.body ?? {}
+  const { topicIds, imageSelections } = req.body ?? {}
+  const imageSelectionsMap: Record<string, ApprovedSelection[]> = {}
+  if (Array.isArray(imageSelections)) {
+    for (const entry of imageSelections) {
+      if (entry.itemId && Array.isArray(entry.placements)) {
+        imageSelectionsMap[entry.itemId] = entry.placements
+      }
+    }
+  }
 
   if (!Array.isArray(topicIds) || topicIds.length === 0) {
     return res.status(400).json({ error: 'topicIds[] required' })
@@ -64,6 +73,10 @@ export default async function handler(req: any, res: any) {
   for (const topic of selected) {
     try {
       const post = await writeFromTopic(topic)
+      const approvedPlacements = imageSelectionsMap[topic.id]
+      if (approvedPlacements?.length) {
+        post.body = injectImagesIntoBody(post.body, approvedPlacements)
+      }
       const heroImage = await generateHeroImage(
         post.title,
         topic.angle,

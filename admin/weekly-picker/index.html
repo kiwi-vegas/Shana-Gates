@@ -227,11 +227,78 @@
     .publish-overlay p { color: var(--text); font-size: 17px; font-weight: 600; margin-bottom: 8px; }
     .publish-overlay small { color: var(--muted); font-size: 13px; }
 
+    /* ── Image review ── */
+    .image-review-section { margin-bottom: 32px; }
+    .review-article-header {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .placement-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 14px;
+    }
+    .placement-concept {
+      color: var(--bronze);
+      font-style: italic;
+      font-size: 13px;
+      margin-bottom: 14px;
+    }
+    .photo-grid {
+      display: flex;
+      gap: 10px;
+    }
+    .photo-thumb {
+      flex: 1;
+      border-radius: 8px;
+      overflow: hidden;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: border-color 0.15s;
+    }
+    .photo-thumb.active { border-color: var(--bronze); }
+    .photo-thumb img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
+    .photo-credit { font-size: 11px; color: var(--muted); margin-top: 6px; text-align: center; }
+    .skip-placement {
+      font-size: 12px;
+      color: var(--muted);
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+      margin-top: 10px;
+      text-decoration: underline;
+      font-family: var(--font);
+    }
+    .placement-card.skipped { opacity: 0.4; }
+    .review-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      margin-top: 32px;
+    }
+    .skip-images-link {
+      color: var(--muted);
+      font-size: 13px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      text-decoration: underline;
+      font-family: var(--font);
+    }
+
     @media (max-width: 640px) {
       header { padding: 16px; }
       .tab-bar { padding: 0 16px; }
       main { padding: 24px 16px 100px; }
       .publish-bar { padding: 12px 16px; }
+      .photo-grid { gap: 6px; }
     }
   </style>
 </head>
@@ -262,6 +329,7 @@
       <div class="skeleton"><div class="sk sk-line medium" style="height:16px;margin-bottom:12px;"></div><div class="sk sk-line wide"></div><div class="sk sk-line medium"></div></div>
     </div>
     <div id="topicsContainer"></div>
+    <div id="imageReviewContainer" style="display:none;"></div>
   </main>
 
   <div class="publish-bar">
@@ -294,6 +362,9 @@
     let allTopics = []
     let selectedIds = new Set()
     let activeTab = 'all'
+    let step = 'selecting'          // 'selecting' | 'reviewing'
+    let imageSuggestions = []
+    let imageApprovals = {}         // key: "${itemId}_${sectionIndex}", value: {sectionIndex, altText, photo} | null
 
     async function loadTopics() {
       const res = await fetch('/api/blog/weekly-topics')
@@ -384,7 +455,7 @@
         btn.textContent = 'Select topics to write'
       } else {
         btn.disabled = false
-        btn.textContent = `Write & Publish ${count} Post${count !== 1 ? 's' : ''} →`
+        btn.textContent = `Add Photos + Publish →`
       }
     }
 
@@ -398,25 +469,161 @@
       renderTopics()
     })
 
-    async function publishSelected() {
+    // ── Image review step ──
+
+    async function startImageReview() {
       if (!selectedIds.size) return
       const overlay = document.getElementById('publishOverlay')
       const status = document.getElementById('publishStatus')
+      const overlaySmall = document.querySelector('#publishOverlay small')
       overlay.classList.add('visible')
-      status.textContent = `Writing ${selectedIds.size} post${selectedIds.size !== 1 ? 's' : ''}…`
+      status.textContent = 'Finding the best images…'
+      overlaySmall.textContent = 'Analyzing your topics with local Coachella Valley expertise'
+
+      try {
+        const selectedTopics = allTopics.filter(t => selectedIds.has(t.id))
+        const items = selectedTopics.map(t => ({
+          id: t.id,
+          title: t.title,
+          category: t.category,
+          angle: t.angle,
+          researchContext: t.researchContext,
+        }))
+        const res = await fetch('/api/blog/suggest-images', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ items }),
+        })
+        let data
+        try { data = await res.json() } catch { throw new Error(`Server error (${res.status})`) }
+        if (!res.ok) throw new Error(data.error || 'Image suggestion failed')
+
+        overlay.classList.remove('visible')
+        step = 'reviewing'
+        imageSuggestions = data.suggestions || []
+        document.getElementById('topicsContainer').style.display = 'none'
+        document.getElementById('imageReviewContainer').style.display = 'block'
+        renderImageReview(imageSuggestions)
+      } catch (err) {
+        overlay.classList.remove('visible')
+        const ok = confirm(`Couldn't load image suggestions: ${err.message}\n\nPublish without inline photos?`)
+        if (ok) publishWithoutPhotos()
+      }
+    }
+
+    function renderImageReview(suggestions) {
+      imageApprovals = {}
+      const container = document.getElementById('imageReviewContainer')
+
+      let html = ''
+      for (const suggestion of suggestions) {
+        html += `<div class="image-review-section">`
+        html += `<div class="review-article-header">${suggestion.title}</div>`
+
+        for (const placement of suggestion.placements) {
+          const key = `${suggestion.itemId}_${placement.sectionIndex}`
+
+          if (placement.photos.length > 0) {
+            imageApprovals[key] = {
+              sectionIndex: placement.sectionIndex,
+              altText: placement.altText,
+              photo: {
+                regularUrl: placement.photos[0].regularUrl,
+                authorName: placement.photos[0].authorName,
+                authorUrl: placement.photos[0].authorUrl,
+              },
+            }
+          }
+
+          html += `<div class="placement-card" id="pc_${key}" data-key="${key}" data-item="${suggestion.itemId}" data-section="${placement.sectionIndex}" data-alt="${encodeURIComponent(placement.altText)}">`
+          html += `<div class="placement-concept">${placement.concept}</div>`
+          html += `<div class="photo-grid">`
+
+          placement.photos.forEach((photo, photoIdx) => {
+            const isFirst = photoIdx === 0
+            html += `<div class="photo-thumb${isFirst ? ' active' : ''}" data-key="${key}" data-photo-idx="${photoIdx}" data-item="${suggestion.itemId}" data-section="${placement.sectionIndex}" data-regular="${encodeURIComponent(photo.regularUrl)}" data-author="${encodeURIComponent(photo.authorName)}" data-author-url="${encodeURIComponent(photo.authorUrl)}" onclick="selectPhoto(this)">`
+            html += `<img src="${photo.thumbUrl}" alt="${photo.authorName}" loading="lazy">`
+            html += `</div>`
+          })
+
+          if (!placement.photos.length) {
+            html += `<div style="color:var(--muted);font-size:13px;padding:12px 0;">No photos found for this placement.</div>`
+          }
+
+          html += `</div>` // photo-grid
+
+          if (placement.photos.length > 0) {
+            html += `<div class="photo-credit" id="credit_${key}">${placement.photos[0].authorName}</div>`
+          }
+
+          html += `<button class="skip-placement" onclick="skipPlacement('${key}')">Skip this image</button>`
+          html += `</div>` // placement-card
+        }
+
+        html += `</div>` // image-review-section
+      }
+
+      html += `<div class="review-actions">`
+      html += `<button class="publish-btn" onclick="publishWithPhotos()">Publish with Photos →</button>`
+      html += `<button class="skip-images-link" onclick="publishWithoutPhotos()">Skip → Publish without photos</button>`
+      html += `</div>`
+
+      container.innerHTML = html
+    }
+
+    function selectPhoto(thumbEl) {
+      const key = thumbEl.dataset.key
+      const sectionIndex = parseInt(thumbEl.dataset.section)
+      const altText = decodeURIComponent(document.querySelector(`[data-key="${key}"].placement-card`).dataset.alt)
+      const regularUrl = decodeURIComponent(thumbEl.dataset.regular)
+      const authorName = decodeURIComponent(thumbEl.dataset.author)
+      const authorUrl = decodeURIComponent(thumbEl.dataset.authorUrl)
+
+      document.querySelectorAll(`.photo-thumb[data-key="${key}"]`).forEach(el => el.classList.remove('active'))
+      thumbEl.classList.add('active')
+
+      const creditEl = document.getElementById(`credit_${key}`)
+      if (creditEl) creditEl.textContent = authorName
+
+      const card = document.getElementById(`pc_${key}`)
+      if (card) card.classList.remove('skipped')
+
+      imageApprovals[key] = { sectionIndex, altText, photo: { regularUrl, authorName, authorUrl } }
+    }
+
+    function skipPlacement(key) {
+      imageApprovals[key] = null
+      const card = document.getElementById(`pc_${key}`)
+      if (card) {
+        card.classList.add('skipped')
+        document.querySelectorAll(`.photo-thumb[data-key="${key}"]`).forEach(el => el.classList.remove('active'))
+      }
+    }
+
+    async function publishWithPhotos() {
+      const byItem = {}
+      for (const [key, approval] of Object.entries(imageApprovals)) {
+        if (!approval) continue
+        const itemId = key.split('_')[0]
+        if (!byItem[itemId]) byItem[itemId] = []
+        byItem[itemId].push(approval)
+      }
+      const imageSelections = Object.entries(byItem).map(([itemId, placements]) => ({ itemId, placements }))
+
+      const overlay = document.getElementById('publishOverlay')
+      const status = document.getElementById('publishStatus')
+      document.querySelector('#publishOverlay small').textContent = 'Writing posts with inline photos…'
+      overlay.classList.add('visible')
+      status.textContent = 'Writing & publishing with photos…'
 
       try {
         const res = await fetch('/api/blog/publish-weekly', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ topicIds: [...selectedIds] }),
+          body: JSON.stringify({ topicIds: [...selectedIds], imageSelections }),
         })
         let data
-        try {
-          data = await res.json()
-        } catch {
-          throw new Error(`Server error (${res.status}) — check Vercel function logs for details.`)
-        }
+        try { data = await res.json() } catch { throw new Error(`Server error (${res.status}) — check Vercel function logs for details.`) }
         if (!res.ok) throw new Error(data.error || 'Publish failed')
 
         status.textContent = `✓ Published ${data.published} post${data.published !== 1 ? 's' : ''}!`
@@ -429,14 +636,42 @@
       }
     }
 
-    document.getElementById('publishBtn').addEventListener('click', publishSelected)
+    async function publishWithoutPhotos() {
+      if (!selectedIds.size) return
+      const overlay = document.getElementById('publishOverlay')
+      const status = document.getElementById('publishStatus')
+      overlay.classList.add('visible')
+      status.textContent = `Writing ${selectedIds.size} post${selectedIds.size !== 1 ? 's' : ''}…`
+      document.querySelector('#publishOverlay small').textContent = 'This usually takes 30–60 seconds per post'
+
+      try {
+        const res = await fetch('/api/blog/publish-weekly', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ topicIds: [...selectedIds] }),
+        })
+        let data
+        try { data = await res.json() } catch { throw new Error(`Server error (${res.status}) — check Vercel function logs for details.`) }
+        if (!res.ok) throw new Error(data.error || 'Publish failed')
+
+        status.textContent = `✓ Published ${data.published} post${data.published !== 1 ? 's' : ''}!`
+        const firstSlug = data.posts?.[0]?.slug
+        const dest = firstSlug ? `/blog/post.html?slug=${encodeURIComponent(firstSlug)}` : '/blog/'
+        setTimeout(() => { window.location.href = dest }, 2000)
+      } catch (err) {
+        overlay.classList.remove('visible')
+        alert(`Error: ${err.message}`)
+      }
+    }
+
+    document.getElementById('publishBtn').addEventListener('click', startImageReview)
 
     async function runWeeklyResearch() {
       const overlay = document.getElementById('publishOverlay')
       const status = document.getElementById('publishStatus')
       overlay.classList.add('visible')
       status.textContent = 'Running weekly research…'
-      document.querySelector('small').textContent = 'Claude is generating topic ideas for each category. This takes 60–90 seconds.'
+      document.querySelector('#publishOverlay small').textContent = 'Claude is generating topic ideas for each category. This takes 60–90 seconds.'
 
       try {
         const res = await fetch('/api/blog/run-research?type=weekly', { method: 'POST' })

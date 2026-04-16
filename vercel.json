@@ -12,6 +12,9 @@
     "api/blog/run-research.ts": {
       "maxDuration": 120
     },
+    "api/blog/suggest-images.ts": {
+      "maxDuration": 30
+    },
     "api/cron/research.ts": {
       "maxDuration": 120
     },
