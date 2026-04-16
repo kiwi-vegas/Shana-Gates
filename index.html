@@ -834,6 +834,11 @@
       gap: 5px;
       z-index: 10;
       pointer-events: none;
+      background: rgba(255,255,255,0.75);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border-radius: 4px;
+      padding: 8px 12px;
     }
 
     .legend-item {
@@ -842,10 +847,10 @@
       gap: 8px;
       font-family: var(--sans);
       font-size: 9px;
-      font-weight: 500;
-      letter-spacing: 0.15em;
+      font-weight: 600;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: rgba(242,237,228,0.55);
+      color: rgba(40,32,10,0.75);
     }
 
     .legend-line {
@@ -857,6 +862,19 @@
 
     .legend-i10    { background: #5ba4ff; }
     .legend-bronze { background: #B8975A; }
+
+    .legend-dot {
+      display: block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .legend-gold {
+      background: #FFD449;
+      box-shadow: 0 0 6px rgba(255,212,73,0.9);
+    }
 
     .legend-airport {
       font-size: 13px;
@@ -963,9 +981,9 @@
       width: 7px;
       height: 7px;
       border-radius: 50%;
-      background: var(--bronze);
-      border: 1.5px solid rgba(13,13,13,0.8);
-      box-shadow: 0 0 8px rgba(184,151,90,0.6);
+      background: #FFD449;
+      border: 1.5px solid rgba(255,255,255,0.9);
+      box-shadow: 0 0 10px rgba(255,212,73,0.8);
       transition: transform 0.2s, box-shadow 0.2s;
       flex-shrink: 0;
     }
@@ -973,22 +991,22 @@
     .valley-city-label .label-text {
       font-family: var(--sans);
       font-size: 10px;
-      font-weight: 500;
+      font-weight: 600;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: rgba(242,237,228,0.7);
+      color: rgba(30,25,10,0.85);
       white-space: nowrap;
-      text-shadow: 0 1px 4px rgba(0,0,0,0.9), 0 0 12px rgba(0,0,0,0.8);
+      text-shadow: 0 1px 3px rgba(255,255,255,0.9), 0 0 8px rgba(255,255,255,0.7);
       transition: color 0.2s;
     }
 
     .valley-city-label.hovered .label-dot {
-      transform: scale(1.5);
-      box-shadow: 0 0 16px rgba(184,151,90,0.9);
+      transform: scale(1.6);
+      box-shadow: 0 0 18px rgba(255,212,73,1);
     }
 
     .valley-city-label.hovered .label-text {
-      color: var(--bronze);
+      color: #c07800;
     }
 
     /* Mobile community list */
@@ -1685,12 +1703,11 @@
         <div class="tooltip-tag" id="tooltip-tag"></div>
         <div class="tooltip-cta">Explore Community</div>
       </div>
-      <!-- Road legend -->
+      <!-- Map legend -->
       <div class="map-road-legend">
+        <div class="legend-item"><span class="legend-dot legend-gold"></span> Communities</div>
         <div class="legend-item"><span class="legend-line legend-i10"></span> I-10</div>
-        <div class="legend-item"><span class="legend-line legend-bronze"></span> Hwy 111</div>
-        <div class="legend-item"><span class="legend-line legend-bronze"></span> Monterey Ave</div>
-        <div class="legend-item"><span class="legend-line legend-bronze"></span> Ramon / Dinah Shore</div>
+        <div class="legend-item"><span class="legend-line legend-bronze"></span> Hwy 111 / Local</div>
         <div class="legend-item"><span class="legend-airport">✈</span> PSP Airport</div>
       </div>
     </div>
@@ -2106,7 +2123,7 @@
   (function () {
     const MAPBOX_TOKEN = 'pk.eyJ1IjoidmVnYXMta2l3aSIsImEiOiJjbW8waXJoaWEwOHN2MnJxYTl2bWNlaGp0In0.C57V2IUuHiNKHn5LLlbXog';
     const BRONZE       = '#B8975A';
-    const BRONZE_GLOW  = 'rgba(184,151,90,0.55)';
+    const GOLD         = '#FFD449';   // community boundary glow color
 
     const COMMUNITIES = [
       {
@@ -2249,6 +2266,18 @@
         { padding: { top: 60, bottom: 60, left: 60, right: 60 }, duration: 0 }
       );
 
+      // --- World fade — washes out base map so community glows pop ---
+      map.addSource('world-fade', {
+        type: 'geojson',
+        data: { type: 'Feature', geometry: {
+          type: 'Polygon',
+          coordinates: [[[-180,-85],[-180,85],[180,85],[180,-85],[-180,-85]]]
+        }, properties: {} }
+      });
+      map.addLayer({ id: 'world-fade', type: 'fill', source: 'world-fade',
+        paint: { 'fill-color': '#ffffff', 'fill-opacity': 0.52 }
+      });
+
       // Helper: add a glow + line pair for a highlighted road
       function addRoad(id, coords, color, glowWidth, lineWidth, glowOpacity, lineOpacity) {
         map.addSource(id, {
@@ -2295,57 +2324,80 @@
 
         map.addSource(c.id, { type: 'geojson', data: geojson });
 
-        // 1 — Outer glow (blurred wide line, renders under fill)
+        // 1 — Wide soft outer glow (yellow halo, blurred)
         map.addLayer({
           id: c.id + '-glow',
           type: 'line',
           source: c.id,
           paint: {
-            'line-color': BRONZE,
+            'line-color': GOLD,
             'line-width': [
               'case',
               ['boolean', ['feature-state', 'hovered'], false],
-              22,
-              14,
+              30,
+              18,
             ],
             'line-opacity': [
               'case',
               ['boolean', ['feature-state', 'hovered'], false],
-              0.45,
-              0.28,
+              0.65,
+              0.42,
             ],
-            'line-blur': 10,
+            'line-blur': 14,
           },
         });
 
-        // 2 — Fill (subtle bronze tint inside boundary)
+        // 2 — Tighter inner glow (crisper halo right on the edge)
+        map.addLayer({
+          id: c.id + '-glow2',
+          type: 'line',
+          source: c.id,
+          paint: {
+            'line-color': GOLD,
+            'line-width': [
+              'case',
+              ['boolean', ['feature-state', 'hovered'], false],
+              10,
+              6,
+            ],
+            'line-opacity': [
+              'case',
+              ['boolean', ['feature-state', 'hovered'], false],
+              0.70,
+              0.50,
+            ],
+            'line-blur': 4,
+          },
+        });
+
+        // 3 — Subtle yellow fill tint inside the boundary
         map.addLayer({
           id: c.id + '-fill',
           type: 'fill',
           source: c.id,
           paint: {
-            'fill-color': BRONZE,
+            'fill-color': GOLD,
             'fill-opacity': [
               'case',
               ['boolean', ['feature-state', 'hovered'], false],
-              0.32,
-              0.07,
+              0.18,
+              0.04,
             ],
           },
         });
 
-        // 3 — Bold border line (fully opaque at rest — clearly defines each city)
+        // 4 — Crisp border line on top (fully opaque, always visible)
         map.addLayer({
           id: c.id + '-line',
           type: 'line',
           source: c.id,
           paint: {
-            'line-color': BRONZE,
+            'line-color': GOLD,
             'line-width': [
               'case',
               ['boolean', ['feature-state', 'hovered'], false],
-              4,
-              2.5,
+              3.5,
+              2,
             ],
             'line-opacity': 1.0,
           },
