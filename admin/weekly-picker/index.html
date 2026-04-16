@@ -250,11 +250,11 @@
       margin-bottom: 14px;
     }
     .photo-grid {
-      display: flex;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
       gap: 10px;
     }
     .photo-thumb {
-      flex: 1;
       border-radius: 8px;
       overflow: hidden;
       cursor: pointer;
@@ -531,6 +531,7 @@
                 regularUrl: placement.photos[0].regularUrl,
                 authorName: placement.photos[0].authorName,
                 authorUrl: placement.photos[0].authorUrl,
+                source: placement.photos[0].source || 'unsplash',
               },
             }
           }
@@ -541,7 +542,7 @@
 
           placement.photos.forEach((photo, photoIdx) => {
             const isFirst = photoIdx === 0
-            html += `<div class="photo-thumb${isFirst ? ' active' : ''}" data-key="${key}" data-photo-idx="${photoIdx}" data-item="${suggestion.itemId}" data-section="${placement.sectionIndex}" data-regular="${encodeURIComponent(photo.regularUrl)}" data-author="${encodeURIComponent(photo.authorName)}" data-author-url="${encodeURIComponent(photo.authorUrl)}" onclick="selectPhoto(this)">`
+            html += `<div class="photo-thumb${isFirst ? ' active' : ''}" data-key="${key}" data-photo-idx="${photoIdx}" data-item="${suggestion.itemId}" data-section="${placement.sectionIndex}" data-regular="${encodeURIComponent(photo.regularUrl)}" data-author="${encodeURIComponent(photo.authorName)}" data-author-url="${encodeURIComponent(photo.authorUrl)}" data-source="${photo.source || 'unsplash'}" onclick="selectPhoto(this)">`
             html += `<img src="${photo.thumbUrl}" alt="${photo.authorName}" loading="lazy">`
             html += `</div>`
           })
@@ -578,6 +579,7 @@
       const regularUrl = decodeURIComponent(thumbEl.dataset.regular)
       const authorName = decodeURIComponent(thumbEl.dataset.author)
       const authorUrl = decodeURIComponent(thumbEl.dataset.authorUrl)
+      const source = thumbEl.dataset.source || 'unsplash'
 
       document.querySelectorAll(`.photo-thumb[data-key="${key}"]`).forEach(el => el.classList.remove('active'))
       thumbEl.classList.add('active')
@@ -588,7 +590,7 @@
       const card = document.getElementById(`pc_${key}`)
       if (card) card.classList.remove('skipped')
 
-      imageApprovals[key] = { sectionIndex, altText, photo: { regularUrl, authorName, authorUrl } }
+      imageApprovals[key] = { sectionIndex, altText, photo: { regularUrl, authorName, authorUrl, source } }
     }
 
     function skipPlacement(key) {
