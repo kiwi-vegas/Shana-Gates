@@ -2133,10 +2133,10 @@
 
     const map = new mapboxgl.Map({
       container: 'valley-map',
-      style: 'mapbox://styles/mapbox/light-v11',
-      center: [-116.37, 33.785],
-      zoom: 9.6,
-      minZoom: 8,
+      style: 'mapbox://styles/mapbox/streets-v12',
+      center: [-116.20, 33.65],
+      zoom: 9.2,
+      minZoom: 7,
       maxZoom: 14,
       pitch: 0,
       attributionControl: false,
@@ -2151,10 +2151,10 @@
 
     map.on('load', () => {
 
-      // Fit to show the full valley with padding
+      // Fit to full valley + surrounding geography (Salton Sea SE, San Jacinto Mtns W, Joshua Tree NE)
       map.fitBounds(
-        [[-116.68, 33.56], [-116.08, 34.02]],
-        { padding: { top: 60, bottom: 60, left: 60, right: 60 }, duration: 0 }
+        [[-116.90, 33.30], [-115.75, 34.15]],
+        { padding: { top: 70, bottom: 70, left: 70, right: 70 }, duration: 0 }
       );
 
       // Add each community as its own source + layers
