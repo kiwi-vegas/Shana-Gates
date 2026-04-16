@@ -976,6 +976,18 @@
       color: #1a1e3c;
       white-space: nowrap;
       text-shadow: none;
+      text-align: center;
+    }
+
+    .valley-city-label .label-count {
+      font-family: var(--sans);
+      font-size: 9px;
+      font-weight: 600;
+      color: rgba(72,100,200,0.60);
+      letter-spacing: 0.05em;
+      text-align: center;
+      margin-top: 2px;
+      white-space: nowrap;
     }
 
     .valley-city-label.hovered {
@@ -985,6 +997,10 @@
 
     .valley-city-label.hovered .label-text {
       color: #2f44b0;
+    }
+
+    .valley-city-label.hovered .label-count {
+      color: rgba(47,68,176,0.85);
     }
 
     /* Mobile community list */
@@ -2413,6 +2429,21 @@
           .setLngLat(c.center)
           .addTo(map);
       });
+
+      // --- Live listing counts: fetch once, update labels when ready ---
+      fetch('/api/listings/counts')
+        .then((r) => r.ok ? r.json() : null)
+        .then((data) => {
+          if (!data?.counts) return;
+          COMMUNITIES.forEach((c) => {
+            const n = data.counts[c.name];
+            if (n == null) return;
+            const el = document.getElementById('label-' + c.id);
+            if (!el) return;
+            el.innerHTML = `<div class="label-text">${c.name}</div><div class="label-count">${n.toLocaleString()} listings</div>`;
+          });
+        })
+        .catch(() => {}); // silent fail — labels keep showing city name only
 
     }); // map.on('load')
 
