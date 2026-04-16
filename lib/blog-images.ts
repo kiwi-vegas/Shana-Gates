@@ -71,7 +71,7 @@ async function generateWithDallE(prompt: string): Promise<{ base64: string; mime
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
     const response = await openai.images.generate({
       model: 'dall-e-3',
-      prompt: prompt + ' Coachella Valley desert real estate. Photorealistic. No text.',
+      prompt: prompt + ' Coachella Valley desert real estate. Photorealistic. Render all specified text and graphic elements.',
       size: '1792x1024',
       quality: 'hd',
       response_format: 'b64_json',
