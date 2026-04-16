@@ -48,14 +48,47 @@
       flex-shrink: 0;
     }
     .nav-logo img { height: 44px; width: auto; display: block; object-fit: contain; }
-    .nav-links { display: flex; gap: 28px; }
+    .nav-links { display: flex; align-items: center; gap: 28px; list-style: none; }
+    .nav-links li { list-style: none; }
     .nav-links a {
       color: var(--muted);
       text-decoration: none;
-      font-size: 14px;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
       transition: color 0.15s;
     }
-    .nav-links a:hover, .nav-links a.active { color: var(--text); }
+    .nav-links a:hover, .nav-links a.active { color: var(--bronze); }
+    .nav-communities { position: relative; }
+    .nav-communities-trigger {
+      display: flex; align-items: center; gap: 5px; cursor: pointer;
+      font-size: 13px; font-weight: 500; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .nav-communities-trigger::after { content: '▾'; font-size: 10px; color: rgba(255,255,255,0.3); }
+    .communities-dropdown {
+      position: absolute; top: calc(100% + 18px); left: 50%;
+      background: rgba(19,19,19,0.98); border: 1px solid rgba(184,151,90,0.2);
+      min-width: 200px; opacity: 0; pointer-events: none;
+      transition: opacity 0.25s, transform 0.25s;
+      transform: translateX(-50%) translateY(-6px); z-index: 150;
+    }
+    .communities-dropdown::before {
+      content: ''; position: absolute; top: -18px; left: 0; right: 0; height: 18px;
+    }
+    .nav-communities:hover .communities-dropdown {
+      opacity: 1; pointer-events: all; transform: translateX(-50%) translateY(0);
+    }
+    .communities-dropdown a {
+      display: block; padding: 10px 18px; font-size: 11px; font-weight: 400;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: rgba(255,255,255,0.65); text-decoration: none;
+      border-bottom: 1px solid rgba(184,151,90,0.08);
+      transition: color 0.2s, background 0.2s;
+    }
+    .communities-dropdown a:last-child { border-bottom: none; }
+    .communities-dropdown a:hover { color: var(--bronze); background: rgba(184,151,90,0.06); }
     .nav-cta {
       background: var(--bronze);
       color: #000;
@@ -271,13 +304,27 @@
     <a href="/" class="nav-logo">
       <img src="/images/C&B-logo+R.png" alt="Shana Gates" />
     </a>
-    <div class="nav-links">
-      <a href="/">Home</a>
-      <a href="/#communities">Communities</a>
-      <a href="/blog/" class="active">Blog</a>
-      <a href="/#about">About</a>
-    </div>
-    <a href="mailto:shana@craftbauer.com" class="nav-cta">Contact Shana</a>
+    <ul class="nav-links">
+      <li class="nav-communities">
+        <span class="nav-communities-trigger">Communities</span>
+        <div class="communities-dropdown">
+          <a href="/palm-springs.html">Palm Springs</a>
+          <a href="/palm-desert.html">Palm Desert</a>
+          <a href="/rancho-mirage.html">Rancho Mirage</a>
+          <a href="/indian-wells.html">Indian Wells</a>
+          <a href="/la-quinta.html">La Quinta</a>
+          <a href="/indio.html">Indio</a>
+          <a href="/cathedral-city.html">Cathedral City</a>
+          <a href="/desert-hot-springs.html">Desert Hot Springs</a>
+          <a href="/coachella.html">Coachella</a>
+        </div>
+      </li>
+      <li><a href="/#featured-properties">Properties</a></li>
+      <li><a href="/blog/" class="active">Blog</a></li>
+      <li><a href="/#about">About Shana</a></li>
+      <li><a href="/#search-listings">Search</a></li>
+    </ul>
+    <a href="tel:7605484340" class="nav-cta">760.548.4340</a>
   </nav>
 
   <div class="page-hero">
