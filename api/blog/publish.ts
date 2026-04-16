@@ -2,7 +2,7 @@ import { createHmac } from 'crypto'
 import { getDailyArticles } from '../../lib/blog-store'
 import { writeFromArticle } from '../../lib/writer'
 import { generateHeroImage } from '../../lib/blog-images'
-import { publishBlogPost } from '../../lib/blog-sanity'
+import { publishBlogPost, uploadImageAsset } from '../../lib/blog-sanity'
 import { injectImagesIntoBody, type ApprovedSelection } from '../../lib/blog-inline-images'
 
 const COOKIE_NAME = 'sg_assistant_session'
@@ -71,6 +71,26 @@ export default async function handler(req: any, res: any) {
 
   if (selected.length === 0) {
     return res.status(404).json({ error: 'No matching articles found for this date' })
+  }
+
+  // Upload any user-provided images to Sanity before writing posts
+  for (const selections of Object.values(imageSelectionsMap)) {
+    for (const sel of selections) {
+      if (sel.photo.source === 'upload' && sel.photo.dataUrl) {
+        try {
+          const base64 = sel.photo.dataUrl.split(',')[1]
+          const buffer = Buffer.from(base64, 'base64')
+          const url = await uploadImageAsset(buffer, `upload-${Date.now()}.jpg`)
+          sel.photo.regularUrl = url
+          delete sel.photo.dataUrl
+        } catch (err) {
+          console.error('[publish] Failed to upload user image to Sanity:', err)
+          // Fall back to skipping this image rather than failing the whole post
+          sel.photo.source = undefined
+          sel.photo.regularUrl = ''
+        }
+      }
+    }
   }
 
   // Write + publish in parallel

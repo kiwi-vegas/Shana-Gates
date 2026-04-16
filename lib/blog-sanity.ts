@@ -2,6 +2,18 @@ import { writeClient, readClient } from './sanity'
 import type { BlogPostOutput } from './writer'
 import type { HeroImageResult } from './blog-images'
 
+// ── Upload a raw image buffer as a Sanity asset ───────────────────────────
+
+export async function uploadImageAsset(
+  buffer: Buffer,
+  filename: string,
+  contentType = 'image/jpeg'
+): Promise<string> {
+  const asset = await writeClient.assets.upload('image', buffer, { filename, contentType })
+  // Return the plain HTTPS CDN URL
+  return asset.url
+}
+
 // ── Publish a blog post to Sanity ─────────────────────────────────────────
 
 export async function publishBlogPost(

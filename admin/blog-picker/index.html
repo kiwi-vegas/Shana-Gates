@@ -275,6 +275,53 @@
       font-family: var(--font);
     }
 
+    /* ── Drag-and-drop upload zone ── */
+    .upload-zone {
+      margin-top: 14px;
+      border: 2px dashed var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: transparent;
+      transition: border-color 0.15s, background 0.15s;
+      cursor: pointer;
+    }
+    .upload-zone:hover,
+    .upload-zone.drag-over {
+      border-color: var(--bronze);
+      background: rgba(184,151,90,0.06);
+    }
+    .upload-zone-icon { font-size: 22px; flex-shrink: 0; }
+    .upload-zone-body { flex: 1; min-width: 0; }
+    .upload-zone-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 1px;
+    }
+    .upload-zone-sub {
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .upload-zone-btn {
+      flex-shrink: 0;
+      display: inline-block;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 5px 14px;
+      font-size: 12px;
+      font-family: var(--font);
+      cursor: pointer;
+      color: var(--text);
+      transition: border-color 0.15s;
+    }
+    .upload-zone-btn:hover { border-color: var(--bronze); }
+    .upload-zone.has-upload { border-color: var(--bronze); border-style: solid; }
+    .upload-zone.has-upload .upload-zone-title { color: var(--bronze); }
+
     @media (max-width: 640px) {
       header { flex-direction: column; align-items: flex-start; gap: 8px; padding: 16px; }
       main { padding: 24px 16px 100px; }
@@ -507,6 +554,19 @@
             html += `<div class="photo-credit" id="credit_${key}">${placement.photos[0].authorName}</div>`
           }
 
+          // Drag-and-drop upload zone
+          html += `<div class="upload-zone" id="uz_${key}" data-key="${key}"
+            ondragover="event.preventDefault();this.classList.add('drag-over')"
+            ondragleave="this.classList.remove('drag-over')"
+            ondrop="handlePhotoDrop(event,'${key}')">`
+          html += `<span class="upload-zone-icon">📷</span>`
+          html += `<div class="upload-zone-body">`
+          html += `<div class="upload-zone-title" id="uzt_${key}">Use your own photo</div>`
+          html += `<div class="upload-zone-sub">Drag & drop here — resized &amp; optimized automatically</div>`
+          html += `</div>`
+          html += `<label class="upload-zone-btn">Browse<input type="file" accept="image/*" style="display:none" onchange="handlePhotoFile(event,'${key}')"></label>`
+          html += `</div>` // upload-zone
+
           html += `<button class="skip-placement" onclick="skipPlacement('${key}')">Skip this image</button>`
           html += `</div>` // placement-card
         }
@@ -554,6 +614,99 @@
         card.classList.add('skipped')
         document.querySelectorAll(`.photo-thumb[data-key="${key}"]`).forEach(el => el.classList.remove('active'))
       }
+    }
+
+    // ── Upload helpers ──────────────────────────────────────────────────────
+
+    function resizeImageToJpeg(file, maxWidth, quality) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onerror = reject
+        reader.onload = (e) => {
+          const img = new Image()
+          img.onerror = reject
+          img.onload = () => {
+            let w = img.naturalWidth, h = img.naturalHeight
+            if (w > maxWidth) { h = Math.round(h * maxWidth / w); w = maxWidth }
+            const canvas = document.createElement('canvas')
+            canvas.width = w; canvas.height = h
+            canvas.getContext('2d').drawImage(img, 0, 0, w, h)
+            resolve(canvas.toDataURL('image/jpeg', quality))
+          }
+          img.src = e.target.result
+        }
+        reader.readAsDataURL(file)
+      })
+    }
+
+    async function applyUploadedPhoto(file, key) {
+      if (!file || !file.type.startsWith('image/')) {
+        alert('Please drop an image file (JPG, PNG, WEBP, etc.)'); return
+      }
+      const zone = document.getElementById(`uz_${key}`)
+      const title = document.getElementById(`uzt_${key}`)
+      if (title) title.textContent = 'Processing…'
+
+      let dataUrl
+      try {
+        dataUrl = await resizeImageToJpeg(file, 1600, 0.85)
+      } catch {
+        if (title) title.textContent = 'Use your own photo'
+        alert('Could not read image. Please try another file.'); return
+      }
+
+      // Deselect all existing thumbs for this key
+      document.querySelectorAll(`.photo-thumb[data-key="${key}"]`).forEach(el => el.classList.remove('active'))
+
+      // Create or update a custom thumb in the photo grid
+      const grid = document.querySelector(`#pc_${key} .photo-grid`)
+      let uploadThumb = grid?.querySelector('.photo-thumb[data-source="upload"]')
+      if (!uploadThumb) {
+        uploadThumb = document.createElement('div')
+        uploadThumb.className = 'photo-thumb active'
+        uploadThumb.dataset.key = key
+        uploadThumb.dataset.source = 'upload'
+        const imgEl = document.createElement('img')
+        imgEl.alt = 'Your photo'
+        imgEl.style.cssText = 'width:100%;aspect-ratio:4/3;object-fit:cover;display:block;'
+        uploadThumb.appendChild(imgEl)
+        grid?.prepend(uploadThumb)
+      }
+      uploadThumb.querySelector('img').src = dataUrl
+      uploadThumb.classList.add('active')
+      uploadThumb.onclick = () => {
+        document.querySelectorAll(`.photo-thumb[data-key="${key}"]`).forEach(el => el.classList.remove('active'))
+        uploadThumb.classList.add('active')
+        document.getElementById(`pc_${key}`)?.classList.remove('skipped')
+        const credit = document.getElementById(`credit_${key}`)
+        if (credit) credit.textContent = 'Your photo'
+        imageApprovals[key] = { ...imageApprovals[key], photo: { regularUrl: '', authorName: 'Your photo', authorUrl: '', source: 'upload', dataUrl } }
+      }
+
+      // Update credit + re-enable card
+      const credit = document.getElementById(`credit_${key}`)
+      if (credit) credit.textContent = 'Your photo'
+      document.getElementById(`pc_${key}`)?.classList.remove('skipped')
+
+      // Store approval with base64 payload
+      const card = document.getElementById(`pc_${key}`)
+      const altText = card ? decodeURIComponent(card.dataset.alt || '') : ''
+      const sectionIndex = card ? parseInt(card.dataset.section || '0') : 0
+      imageApprovals[key] = { sectionIndex, altText, photo: { regularUrl: '', authorName: 'Your photo', authorUrl: '', source: 'upload', dataUrl } }
+
+      // Mark zone as done
+      if (zone) zone.classList.add('has-upload')
+      if (title) title.textContent = '✓ Your photo selected'
+    }
+
+    function handlePhotoDrop(event, key) {
+      event.preventDefault()
+      document.getElementById(`uz_${key}`)?.classList.remove('drag-over')
+      applyUploadedPhoto(event.dataTransfer.files[0], key)
+    }
+
+    function handlePhotoFile(event, key) {
+      applyUploadedPhoto(event.target.files[0], key)
     }
 
     async function publishWithPhotos() {

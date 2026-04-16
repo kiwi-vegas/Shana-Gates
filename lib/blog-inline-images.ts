@@ -27,7 +27,10 @@ export interface ImageSuggestion {
 export interface ApprovedSelection {
   sectionIndex: number
   altText: string
-  photo: Pick<UnsplashPhoto, 'regularUrl' | 'authorName' | 'authorUrl' | 'source'>
+  photo: Pick<UnsplashPhoto, 'regularUrl' | 'authorName' | 'authorUrl' | 'source'> & {
+    /** Base64 JPEG data URL — only present for user-uploaded photos before server processing */
+    dataUrl?: string
+  }
 }
 
 // ── Coachella Valley expert system prompt ─────────────────────────────────
@@ -249,6 +252,10 @@ export function buildImageMarkdown(
   photo: Pick<UnsplashPhoto, 'regularUrl' | 'authorName' | 'authorUrl'> & { source?: string },
   altText: string
 ): string {
+  // User-uploaded photos: no third-party attribution needed
+  if (photo.source === 'upload') {
+    return `![${altText}](${photo.regularUrl})`
+  }
   const isPexels = photo.source === 'pexels' || photo.authorUrl?.includes('pexels.com')
   const platform = isPexels ? 'Pexels' : 'Unsplash'
   const platformUrl = isPexels ? 'https://www.pexels.com' : 'https://unsplash.com'
