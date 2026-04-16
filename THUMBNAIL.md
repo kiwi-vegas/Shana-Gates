@@ -122,7 +122,7 @@ buildMapboxUrl()         ← Fallback 3: Mapbox satellite-streets map of detecte
                             externalUrl (Mapbox CDN)
 ```
 
-**AI generation timeout:** 20 seconds hard cap. Falls through to Mapbox if AI generation stalls.
+**AI generation timeout:** None — Gemini runs to completion. Fallbacks only trigger on actual API errors. Vercel publish functions have `maxDuration: 120`.
 
 ---
 

@@ -151,44 +151,35 @@ async function tryAiImageGeneration(
   whyItMatters: string,
   category: string,
   sourceUrl: string,
-  body: string,
-  timeoutMs = 20000
+  body: string
 ): Promise<HeroImageResult | null> {
-  return new Promise((resolve) => {
-    const timer = setTimeout(() => resolve(null), timeoutMs)
+  try {
+    const prompt = await buildImagePrompt(title, whyItMatters, category, body).catch(
+      () => `Cinematic Coachella Valley desert real estate scene, photorealistic, 16:9`
+    )
 
-    ;(async () => {
-      try {
-        const prompt = await buildImagePrompt(title, whyItMatters, category, body).catch(
-          () => `Cinematic Coachella Valley desert real estate scene, photorealistic, 16:9`
-        )
+    // Try Gemini — no timeout, let it run to completion
+    const geminiResult = await generateWithGemini(prompt)
+    if (geminiResult) {
+      const assetId = await uploadToSanity(geminiResult.base64, geminiResult.mimeType)
+      if (assetId) return { sanityAssetId: assetId, externalUrl: null }
+    }
 
-        // Try Gemini
-        const geminiResult = await generateWithGemini(prompt)
-        if (geminiResult) {
-          const assetId = await uploadToSanity(geminiResult.base64, geminiResult.mimeType)
-          if (assetId) { clearTimeout(timer); resolve({ sanityAssetId: assetId, externalUrl: null }); return }
-        }
+    // Try DALL-E 3
+    const dalleResult = await generateWithDallE(prompt)
+    if (dalleResult) {
+      const assetId = await uploadToSanity(dalleResult.base64, dalleResult.mimeType)
+      if (assetId) return { sanityAssetId: assetId, externalUrl: null }
+    }
 
-        // Try DALL-E 3
-        const dalleResult = await generateWithDallE(prompt)
-        if (dalleResult) {
-          const assetId = await uploadToSanity(dalleResult.base64, dalleResult.mimeType)
-          if (assetId) { clearTimeout(timer); resolve({ sanityAssetId: assetId, externalUrl: null }); return }
-        }
+    // Try OG scrape from source article
+    const ogUrl = await scrapeOgImage(sourceUrl)
+    if (ogUrl) return { sanityAssetId: null, externalUrl: ogUrl }
 
-        // Try OG scrape from source article
-        const ogUrl = await scrapeOgImage(sourceUrl)
-        if (ogUrl) { clearTimeout(timer); resolve({ sanityAssetId: null, externalUrl: ogUrl }); return }
-
-        clearTimeout(timer)
-        resolve(null)
-      } catch {
-        clearTimeout(timer)
-        resolve(null)
-      }
-    })()
-  })
+    return null
+  } catch {
+    return null
+  }
 }
 
 export async function generateHeroImage(
