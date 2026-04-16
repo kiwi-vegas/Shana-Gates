@@ -2134,11 +2134,12 @@
     const map = new mapboxgl.Map({
       container: 'valley-map',
       style: 'mapbox://styles/mapbox/standard',
-      center: [-116.20, 33.65],
-      zoom: 9.2,
+      center: [-116.42, 33.78],   // west of valley center — Palm Springs in near foreground
+      zoom: 10.0,
       minZoom: 7,
-      maxZoom: 14,
-      pitch: 0,
+      maxZoom: 16,
+      pitch: 52,                  // airplane-window angle
+      bearing: 115,               // facing ESE — like on approach from LA into Palm Springs
       attributionControl: false,
     });
 
@@ -2150,12 +2151,6 @@
     let hoveredId = null;
 
     map.on('load', () => {
-
-      // Fit to full valley + surrounding geography (Salton Sea SE, San Jacinto Mtns W, Joshua Tree NE)
-      map.fitBounds(
-        [[-116.90, 33.30], [-115.75, 34.15]],
-        { padding: { top: 70, bottom: 70, left: 70, right: 70 }, duration: 0 }
-      );
 
       // Add each community as its own source + layers
       COMMUNITIES.forEach((c) => {
