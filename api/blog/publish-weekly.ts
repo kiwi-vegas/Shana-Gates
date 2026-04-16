@@ -68,7 +68,8 @@ export default async function handler(req: any, res: any) {
         post.title,
         topic.angle,
         post.category,
-        ''
+        '',
+        post.body
       )
       const result = await publishBlogPost(post, heroImage)
       published.push({ ...result, title: post.title, category: post.category })

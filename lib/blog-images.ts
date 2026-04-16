@@ -1,5 +1,5 @@
 import OpenAI from 'openai'
-import { buildImagePrompt, generateWithGemini } from './blog-image-gen'
+import { buildImagePrompt, generateWithGemini, detectCity, CITY_COORDS } from './blog-image-gen'
 import { writeClient } from './sanity'
 
 // ── Unsplash fallback pool by category ───────────────────────────────────
@@ -39,10 +39,10 @@ const FALLBACK_POOL: Record<string, string[]> = {
   ],
 }
 
-function deterministicFallback(url: string, category: string): string {
+function deterministicFallback(key: string, category: string): string {
   const pool = FALLBACK_POOL[category] ?? FALLBACK_POOL['news']
   let hash = 0
-  for (const c of url) hash = (hash * 31 + c.charCodeAt(0)) >>> 0
+  for (const c of key) hash = (hash * 31 + c.charCodeAt(0)) >>> 0
   return pool[hash % pool.length]
 }
 
@@ -98,21 +98,35 @@ async function scrapeOgImage(url: string): Promise<string | null> {
   }
 }
 
+// ── Mapbox satellite fallback ─────────────────────────────────────────────
+// Returns a satellite-streets map image URL for the detected city.
+// Uses the public pk. token already embedded in the community pages.
+
+const MAPBOX_TOKEN = process.env.MAPBOX_TOKEN ??
+  'pk.eyJ1IjoidmVnYXMta2l3aSIsImEiOiJjbW8waXJoaWEwOHN2MnJxYTl2bWNlaGp0In0.C57V2IUuHiNKHn5LLlbXog'
+
+function buildMapboxUrl(city: string): string {
+  const coords = CITY_COORDS[city] ?? CITY_COORDS['Coachella Valley']
+  const [lon, lat, zoom] = coords
+  return `https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/static/${lon},${lat},${zoom},0/1280x720?access_token=${MAPBOX_TOKEN}`
+}
+
 // ── Unsplash API ──────────────────────────────────────────────────────────
 
-async function fetchUnsplash(category: string): Promise<string | null> {
+async function fetchUnsplash(category: string, city: string): Promise<string | null> {
   if (!process.env.UNSPLASH_ACCESS_KEY) return null
+  const cityQ = city !== 'Coachella Valley' ? city : 'coachella valley palm springs'
   const queries: Record<string, string> = {
-    'market-update': 'palm springs desert real estate',
-    'buying-tips': 'desert home purchase keys',
-    'selling-tips': 'luxury desert home sale',
-    'community-spotlight': 'coachella valley palm springs',
-    'investment': 'palm springs vacation rental pool',
-    'news': 'california real estate',
-    'local-area': 'palm springs desert lifestyle',
-    'market-insight': 'real estate data analysis',
+    'market-update': `${cityQ} real estate`,
+    'buying-tips': `${cityQ} desert home`,
+    'selling-tips': `${cityQ} luxury home sale`,
+    'community-spotlight': cityQ,
+    'investment': `${cityQ} vacation rental pool`,
+    'news': `${cityQ} california real estate`,
+    'local-area': `${cityQ} desert lifestyle`,
+    'market-insight': `${cityQ} real estate`,
   }
-  const q = encodeURIComponent(queries[category] ?? 'palm springs desert')
+  const q = encodeURIComponent(queries[category] ?? `${cityQ} desert`)
   try {
     const res = await fetch(
       `https://api.unsplash.com/photos/random?query=${q}&orientation=landscape&client_id=${process.env.UNSPLASH_ACCESS_KEY}`,
@@ -132,13 +146,12 @@ export interface HeroImageResult {
   externalUrl: string | null
 }
 
-// Wraps the AI image generation steps with a hard timeout so they
-// never stall the publish function. Falls through to static fallback.
 async function tryAiImageGeneration(
   title: string,
   whyItMatters: string,
   category: string,
   sourceUrl: string,
+  body: string,
   timeoutMs = 20000
 ): Promise<HeroImageResult | null> {
   return new Promise((resolve) => {
@@ -146,7 +159,7 @@ async function tryAiImageGeneration(
 
     ;(async () => {
       try {
-        const prompt = await buildImagePrompt(title, whyItMatters, category).catch(
+        const prompt = await buildImagePrompt(title, whyItMatters, category, body).catch(
           () => `Cinematic Coachella Valley desert real estate scene, photorealistic, 16:9`
         )
 
@@ -164,7 +177,7 @@ async function tryAiImageGeneration(
           if (assetId) { clearTimeout(timer); resolve({ sanityAssetId: assetId, externalUrl: null }); return }
         }
 
-        // Try OG scrape
+        // Try OG scrape from source article
         const ogUrl = await scrapeOgImage(sourceUrl)
         if (ogUrl) { clearTimeout(timer); resolve({ sanityAssetId: null, externalUrl: ogUrl }); return }
 
@@ -182,16 +195,20 @@ export async function generateHeroImage(
   title: string,
   whyItMatters: string,
   category: string,
-  sourceUrl: string
+  sourceUrl: string,
+  body = ''
 ): Promise<HeroImageResult> {
-  // Attempt AI generation with a 20-second cap so publish never hangs
-  const aiResult = await tryAiImageGeneration(title, whyItMatters, category, sourceUrl)
+  // Detect city for location-aware fallbacks
+  const searchText = [title, whyItMatters, body].join(' ')
+  const city = detectCity(searchText)
+
+  // Attempt AI generation with a 20-second cap
+  const aiResult = await tryAiImageGeneration(title, whyItMatters, category, sourceUrl, body)
   if (aiResult) return aiResult
 
-  // Try Unsplash API (fast)
-  const unsplashUrl = await fetchUnsplash(category)
-  if (unsplashUrl) return { sanityAssetId: null, externalUrl: unsplashUrl }
+  // Mapbox satellite fallback — geographically accurate to the detected city
+  const mapboxUrl = buildMapboxUrl(city)
+  return { sanityAssetId: null, externalUrl: mapboxUrl }
 
-  // Deterministic fallback pool — always succeeds
-  return { sanityAssetId: null, externalUrl: deterministicFallback(sourceUrl || title, category) }
+  // (Unsplash + pool remain available if Mapbox token is revoked — swap return above)
 }

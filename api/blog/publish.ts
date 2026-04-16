@@ -72,7 +72,8 @@ export default async function handler(req: any, res: any) {
         post.title,
         article.whyItMatters,
         post.category,
-        article.url
+        article.url,
+        post.body
       )
       const published = await publishBlogPost(post, heroImage)
       return { ...published, title: post.title, category: post.category }
