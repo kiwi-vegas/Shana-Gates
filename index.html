@@ -2226,7 +2226,30 @@
 
         map.addSource(c.id, { type: 'geojson', data: geojson });
 
-        // Fill layer
+        // 1 — Outer glow (blurred wide line, renders under fill)
+        map.addLayer({
+          id: c.id + '-glow',
+          type: 'line',
+          source: c.id,
+          paint: {
+            'line-color': BRONZE,
+            'line-width': [
+              'case',
+              ['boolean', ['feature-state', 'hovered'], false],
+              22,
+              14,
+            ],
+            'line-opacity': [
+              'case',
+              ['boolean', ['feature-state', 'hovered'], false],
+              0.45,
+              0.28,
+            ],
+            'line-blur': 10,
+          },
+        });
+
+        // 2 — Fill (subtle bronze tint inside boundary)
         map.addLayer({
           id: c.id + '-fill',
           type: 'fill',
@@ -2236,13 +2259,13 @@
             'fill-opacity': [
               'case',
               ['boolean', ['feature-state', 'hovered'], false],
-              0.38,
-              0.09,
+              0.32,
+              0.07,
             ],
           },
         });
 
-        // Border layer — brighter at rest than before for better city definition
+        // 3 — Bold border line (fully opaque at rest — clearly defines each city)
         map.addLayer({
           id: c.id + '-line',
           type: 'line',
@@ -2252,15 +2275,10 @@
             'line-width': [
               'case',
               ['boolean', ['feature-state', 'hovered'], false],
+              4,
               2.5,
-              1.5,
             ],
-            'line-opacity': [
-              'case',
-              ['boolean', ['feature-state', 'hovered'], false],
-              1.0,
-              0.60,
-            ],
+            'line-opacity': 1.0,
           },
         });
 
