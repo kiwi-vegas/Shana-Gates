@@ -87,15 +87,15 @@ nav {
   font-weight: 500;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--dark);
-  background: var(--bronze);
+  color: #ffffff;
+  background: #1A444C;
   padding: 11px 26px;
   text-decoration: none;
   transition: background 0.3s;
   white-space: nowrap;
 }
 
-.nav-cta:hover { background: var(--bronze-light); }
+.nav-cta:hover { background: #255a65; }
 
 /* Communities dropdown */
 .nav-communities {
@@ -416,15 +416,15 @@ nav {
   font-weight: 500;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--dark);
-  background: var(--bronze);
+  color: #ffffff;
+  background: #1A444C;
   padding: 14px 32px;
   text-decoration: none;
   display: inline-block;
   transition: background 0.3s, transform 0.2s;
 }
 
-.btn-primary:hover { background: var(--bronze-light); transform: translateY(-2px); }
+.btn-primary:hover { background: #255a65; transform: translateY(-2px); }
 
 .btn-text {
   font-family: var(--sans);
@@ -667,14 +667,14 @@ nav {
   font-weight: 500;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--dark);
-  background: var(--bronze);
+  color: #ffffff;
+  background: #1A444C;
   padding: 17px 48px;
   text-decoration: none;
   transition: background 0.3s, transform 0.2s;
 }
 
-.btn-view-all:hover { background: var(--bronze-light); transform: translateY(-2px); }
+.btn-view-all:hover { background: #255a65; transform: translateY(-2px); }
 
 /* ============================================================
    LIFESTYLE / CALLOUT
@@ -827,8 +827,9 @@ nav {
 }
 
 .btn-outline:hover {
-  border-color: var(--bronze);
-  color: var(--bronze);
+  background: #1A444C;
+  border-color: #1A444C;
+  color: #ffffff;
   transform: translateY(-2px);
 }
 
@@ -1492,15 +1493,15 @@ footer {
   font-size: 12.5px;
   font-weight: 500;
   letter-spacing: 0.08em;
-  color: var(--dark);
-  background: var(--bronze);
+  color: #ffffff;
+  background: #1A444C;
   padding: 9px 22px;
   border-radius: 22px;
   margin-bottom: 18px;
   transition: background 0.3s;
 }
 
-.builder-price-btn:hover { background: var(--bronze-light); }
+.builder-price-btn:hover { background: #255a65; }
 
 .builder-desc {
   font-family: var(--sans);
@@ -1794,12 +1795,12 @@ footer {
 }
 
 .faq-item.open .faq-toggle {
-  background: var(--bronze);
-  border-color: var(--bronze);
+  background: #1A444C;
+  border-color: #1A444C;
 }
 
 .faq-item.open .faq-toggle-icon {
-  color: var(--dark);
+  color: #ffffff;
   transform: rotate(45deg);
 }
 
