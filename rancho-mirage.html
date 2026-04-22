@@ -726,43 +726,39 @@
     }
   </script>
 
-  <!-- Sanity content sync — updates stats and facts from CMS without redeploy -->
+  <!-- Community content sync — updates stats and facts from CMS without redeploy -->
   <script>
   (function() {
-    var SLUG = 'rancho-mirage';
-    var PROJECT = 'll3zy5cp';
-    var DATASET = 'production';
-    var query = '*[_type=="communityPage"&&slug.current=="' + SLUG + '"][0]{quickStats[]{key,value},heroImage{asset->{url}}}';
-    var url = 'https://' + PROJECT + '.apicdn.sanity.io/v2024-01-01/data/query/' + DATASET + '?query=' + encodeURIComponent(query);
-    fetch(url).then(function(r){ return r.json(); }).then(function(data) {
-      var doc = data.result;
-      if (!doc) return;
-      if (doc.quickStats && doc.quickStats.length) {
-        doc.quickStats.forEach(function(stat) {
-          var keyLower = stat.key.toLowerCase();
-          document.querySelectorAll('.hero-stat').forEach(function(el) {
-            var lbl = el.querySelector('.hero-stat-label');
-            var val = el.querySelector('.hero-stat-value');
-            if (lbl && val && lbl.textContent.trim().toLowerCase() === keyLower) val.textContent = stat.value;
+    fetch('/api/community?slug=rancho-mirage')
+      .then(function(r){ return r.json(); })
+      .then(function(doc) {
+        if (!doc || (!doc.quickStats && !doc.heroImage)) return;
+        if (doc.quickStats && doc.quickStats.length) {
+          doc.quickStats.forEach(function(stat) {
+            var keyLower = stat.key.toLowerCase();
+            document.querySelectorAll('.hero-stat').forEach(function(el) {
+              var lbl = el.querySelector('.hero-stat-label');
+              var val = el.querySelector('.hero-stat-value');
+              if (lbl && val && lbl.textContent.trim().toLowerCase() === keyLower) val.textContent = stat.value;
+            });
+            document.querySelectorAll('.quick-fact').forEach(function(el) {
+              var lbl = el.querySelector('.fact-label');
+              var val = el.querySelector('.fact-value');
+              if (lbl && val && lbl.textContent.trim().toLowerCase() === keyLower) val.textContent = stat.value;
+            });
           });
-          document.querySelectorAll('.quick-fact').forEach(function(el) {
-            var lbl = el.querySelector('.fact-label');
-            var val = el.querySelector('.fact-value');
-            if (lbl && val && lbl.textContent.trim().toLowerCase() === keyLower) val.textContent = stat.value;
-          });
-        });
-      }
-      if (doc.heroImage && doc.heroImage.asset && doc.heroImage.asset.url) {
-        var heroSection = document.getElementById('community-hero');
-        var heroMap = document.getElementById('hero-map');
-        if (heroSection && heroMap) {
-          var overlay = document.createElement('div');
-          overlay.style.cssText = 'position:absolute;inset:0;background-image:url(' + doc.heroImage.asset.url + '?w=1600&auto=format);background-size:cover;background-position:center;z-index:1;';
-          heroSection.insertBefore(overlay, heroMap.nextSibling);
-          heroMap.style.display = 'none';
         }
-      }
-    }).catch(function(){});
+        if (doc.heroImage && doc.heroImage.asset && doc.heroImage.asset.url) {
+          var heroSection = document.getElementById('community-hero');
+          var heroMap = document.getElementById('hero-map');
+          if (heroSection && heroMap) {
+            var overlay = document.createElement('div');
+            overlay.style.cssText = 'position:absolute;inset:0;background-image:url(' + doc.heroImage.asset.url + ');background-size:cover;background-position:center;z-index:1;';
+            heroSection.insertBefore(overlay, heroMap.nextSibling);
+            heroMap.style.display = 'none';
+          }
+        }
+      }).catch(function(){});
   })();
   </script>
 

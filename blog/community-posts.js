@@ -44,15 +44,12 @@
   var cityName = CITY_NAMES[path]
   if (!cityName) return
 
-  var PROJECT = 'll3zy5cp'
-  var DATASET = 'production'
-  var query = '*[_type == "blogPost" && city == "' + path + '"] | order(publishedAt desc) [0...3] { title, "slug": slug.current, publishedAt, excerpt, category }'
-  var url = 'https://' + PROJECT + '.apicdn.sanity.io/v2024-01-01/data/query/' + DATASET + '?query=' + encodeURIComponent(query)
+  var url = '/api/blog/posts?city=' + encodeURIComponent(path) + '&limit=3'
 
   fetch(url)
     .then(function (r) { return r.json() })
     .then(function (data) {
-      var posts = data.result
+      var posts = data.posts
       if (!posts || !posts.length) return
 
       var cardsHtml = posts.map(function (post) {

@@ -2,7 +2,7 @@ import { createHmac } from 'crypto'
 import { getWeeklyTopics } from '../../lib/blog-store'
 import { writeFromTopic } from '../../lib/writer'
 import { generateHeroImage } from '../../lib/blog-images'
-import { publishBlogPost, uploadImageAsset } from '../../lib/blog-sanity'
+import { publishBlogPost, uploadImageAsset } from '../../lib/blog-redis'
 import { injectImagesIntoBody, type ApprovedSelection } from '../../lib/blog-inline-images'
 
 const COOKIE_NAME = 'sg_assistant_session'

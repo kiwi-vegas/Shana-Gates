@@ -1,5 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk'
-import { readClient, writeClient } from './sanity'
+import { getCommunityOverride, setCommunityOverride, uploadImageAsset, type CommunityOverride } from './blog-redis'
 
 // ─── Community registry ───────────────────────────────────────────────────────
 
@@ -144,22 +144,10 @@ export const TOOLS: Anthropic.Tool[] = [
   },
 ]
 
-// ─── Helper: get or create communityPage doc ──────────────────────────────────
+// ─── Helper: get community override (creates empty object if missing) ─────────
 
-async function getOrCreateCommunityDoc(slug: string): Promise<string> {
-  const existing = await readClient.fetch<{ _id: string } | null>(
-    `*[_type == "communityPage" && slug.current == $slug][0]{ _id }`,
-    { slug }
-  )
-  if (existing?._id) return existing._id
-
-  const community = COMMUNITY_PAGES.find((c) => c.slug === slug)
-  const doc = await writeClient.create({
-    _type: 'communityPage',
-    name: community?.name ?? slug,
-    slug: { _type: 'slug', current: slug },
-  })
-  return doc._id
+async function getOrInitOverride(slug: string): Promise<CommunityOverride> {
+  return (await getCommunityOverride(slug)) ?? {}
 }
 
 // ─── Tool executor ────────────────────────────────────────────────────────────
@@ -171,15 +159,7 @@ export async function executeToolCall(name: string, input: Record<string, any>):
     }
 
     case 'get_community_content': {
-      const doc = await readClient.fetch(
-        `*[_type == "communityPage" && slug.current == $slug][0]{
-          name, heroHeadline, heroSubheadline, overviewTitle, metaTitle, metaDescription,
-          quickStats[]{ key, value },
-          "hasHeroImage": defined(heroImage),
-          sectionImages[]{ role }
-        }`,
-        { slug: input.slug }
-      )
+      const doc = await getCommunityOverride(input.slug)
       const community = COMMUNITY_PAGES.find((c) => c.slug === input.slug)
       const result = {
         ...(doc ?? { note: `No CMS overrides yet for "${input.slug}". Page currently shows hardcoded defaults.` }),
@@ -190,12 +170,8 @@ export async function executeToolCall(name: string, input: Record<string, any>):
     }
 
     case 'update_community_stats': {
-      const docId = await getOrCreateCommunityDoc(input.slug)
-      const current = await readClient.fetch<{ quickStats?: Array<{ key: string; value: string }> }>(
-        `*[_id == $id][0]{ quickStats[]{ key, value } }`,
-        { id: docId }
-      )
-      const existing = current?.quickStats ?? []
+      const override = await getOrInitOverride(input.slug)
+      const existing = override.quickStats ?? []
       const updateMap = new Map((input.stats as Array<{ key: string; value: string }>).map((s) => [s.key.toLowerCase(), s]))
       const merged = existing.map((s) =>
         updateMap.has(s.key.toLowerCase()) ? updateMap.get(s.key.toLowerCase())! : s
@@ -204,7 +180,7 @@ export async function executeToolCall(name: string, input: Record<string, any>):
       for (const s of input.stats as Array<{ key: string; value: string }>) {
         if (!mergedKeys.has(s.key.toLowerCase())) merged.push(s)
       }
-      await writeClient.patch(docId).set({ quickStats: merged }).commit()
+      await setCommunityOverride(input.slug, { ...override, quickStats: merged })
       const changed = (input.stats as Array<{ key: string; value: string }>)
         .map((s) => `${s.key}: ${s.value}`)
         .join(', ')
@@ -214,53 +190,43 @@ export async function executeToolCall(name: string, input: Record<string, any>):
     case 'update_community_text': {
       const ALLOWED = ['heroHeadline', 'heroSubheadline', 'overviewTitle', 'metaTitle', 'metaDescription']
       if (!ALLOWED.includes(input.field)) return `Field "${input.field}" is not editable via this tool.`
-      const docId = await getOrCreateCommunityDoc(input.slug)
-      await writeClient.patch(docId).set({ [input.field]: input.value }).commit()
+      const override = await getOrInitOverride(input.slug)
+      await setCommunityOverride(input.slug, { ...override, [input.field]: input.value })
       return `Updated ${input.field} for ${input.slug}. Live within 60 seconds.`
     }
 
     case 'upload_community_image': {
       const buffer = Buffer.from(input.imageBase64, 'base64')
       const ext = input.mimeType.split('/')[1] ?? 'jpg'
-      const asset = await writeClient.assets.upload('image', buffer, {
-        filename: `${input.slug}-${input.role}-${Date.now()}.${ext}`,
-        contentType: input.mimeType,
-      })
-      const imageRef = { _type: 'image', asset: { _type: 'reference', _ref: asset._id } }
-      const docId = await getOrCreateCommunityDoc(input.slug)
+      const imageUrl = await uploadImageAsset(
+        buffer,
+        `community-${input.slug}-${input.role}-${Date.now()}.${ext}`,
+        input.mimeType
+      )
+      const imageRef = { asset: { url: imageUrl } }
+      const override = await getOrInitOverride(input.slug)
 
       if (input.role === 'hero') {
-        await writeClient.patch(docId).set({ heroImage: imageRef }).commit()
+        await setCommunityOverride(input.slug, { ...override, heroImage: imageRef })
         return `Hero image updated for ${input.slug}. Live within 60 seconds.`
       } else {
-        const current = await readClient.fetch<{ sectionImages?: Array<{ role: string; image: any }> }>(
-          `*[_id == $id][0]{ sectionImages[]{ role, image } }`,
-          { id: docId }
-        )
-        const existingImages = (current?.sectionImages ?? []).filter((s) => s.role !== input.role)
+        const existingImages = (override.sectionImages ?? []).filter((s) => s.role !== input.role)
         existingImages.push({ role: input.role, image: imageRef })
-        await writeClient.patch(docId).set({ sectionImages: existingImages }).commit()
+        await setCommunityOverride(input.slug, { ...override, sectionImages: existingImages })
         return `"${input.role}" section image updated for ${input.slug}. Live within 60 seconds.`
       }
     }
 
     case 'get_homepage_content': {
-      const doc = await readClient.fetch(
-        `*[_type == "homepage" && _id == "homepage"][0]{
-          heroHeadline, heroSubheadline, ctaHeadline, ctaBody
-        }`
-      )
+      const doc = await getCommunityOverride('homepage')
       return doc ? JSON.stringify(doc, null, 2) : 'No homepage CMS overrides yet. Page currently shows hardcoded defaults.'
     }
 
     case 'update_homepage_field': {
       const ALLOWED = ['heroHeadline', 'heroSubheadline', 'ctaHeadline', 'ctaBody']
       if (!ALLOWED.includes(input.field)) return `Field "${input.field}" is not editable.`
-      await writeClient
-        .patch('homepage')
-        .setIfMissing({ _type: 'homepage', _id: 'homepage' })
-        .set({ [input.field]: input.value })
-        .commit()
+      const override = await getOrInitOverride('homepage')
+      await setCommunityOverride('homepage', { ...override, [input.field]: input.value })
       return `Updated homepage ${input.field}. Live within 60 seconds.`
     }
 

@@ -131,7 +131,7 @@ export default async function handler(req: any, res: any) {
   if (step === 'publish-trace') {
     const { getWeeklyTopics } = await import('../../lib/blog-store')
     const { writeFromTopic } = await import('../../lib/writer')
-    const { publishBlogPost } = await import('../../lib/blog-sanity')
+    const { publishBlogPost } = await import('../../lib/blog-redis')
 
     // Step A: load topics from Redis
     const t0 = Date.now()
@@ -155,11 +155,11 @@ export default async function handler(req: any, res: any) {
         // Step C: publish to Sanity (skip image gen — use static fallback URL)
         const t2 = Date.now()
         try {
-          const heroImage = { sanityAssetId: null, externalUrl: 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=1792&h=1024&fit=crop' }
+          const heroImage = { imageUrl: 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=1792&h=1024&fit=crop' }
           const published = await publishBlogPost(post, heroImage)
-          results.c_sanity = { ok: true, ms: Date.now() - t2, slug: published.slug }
+          results.c_publish = { ok: true, ms: Date.now() - t2, slug: published.slug }
         } catch (e: any) {
-          results.c_sanity = { ok: false, ms: Date.now() - t2, error: e.message }
+          results.c_publish = { ok: false, ms: Date.now() - t2, error: e.message }
         }
       } catch (e: any) {
         results.b_write = { ok: false, ms: Date.now() - t1, error: e.message }

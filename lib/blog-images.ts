@@ -1,6 +1,6 @@
 import OpenAI from 'openai'
 import { buildImagePrompt, generateWithGemini, detectCity, CITY_COORDS } from './blog-image-gen'
-import { writeClient } from './sanity'
+import { uploadImageAsset } from './blog-redis'
 
 // ── Unsplash fallback pool by category ───────────────────────────────────
 
@@ -46,18 +46,14 @@ function deterministicFallback(key: string, category: string): string {
   return pool[hash % pool.length]
 }
 
-// ── Upload base64 image to Sanity CDN ─────────────────────────────────────
+// ── Upload base64 image to Vercel Blob ────────────────────────────────────
 
-async function uploadToSanity(base64: string, mimeType: string): Promise<string | null> {
+async function uploadToBlob(base64: string, mimeType: string): Promise<string | null> {
   try {
     const buffer = Buffer.from(base64, 'base64')
     const ext = mimeType.includes('jpeg') || mimeType.includes('jpg') ? 'jpg' : 'png'
     const filename = `shana-blog-cover-${Date.now()}.${ext}`
-    const asset = await writeClient.assets.upload('image', buffer, {
-      filename,
-      contentType: mimeType,
-    })
-    return asset._id
+    return await uploadImageAsset(buffer, filename, mimeType)
   } catch {
     return null
   }
@@ -142,8 +138,7 @@ async function fetchUnsplash(category: string, city: string): Promise<string | n
 // ── Main orchestrator ─────────────────────────────────────────────────────
 
 export interface HeroImageResult {
-  sanityAssetId: string | null  // null means use externalUrl
-  externalUrl: string | null
+  imageUrl: string | null
 }
 
 async function tryAiImageGeneration(
@@ -161,20 +156,20 @@ async function tryAiImageGeneration(
     // Try Gemini — no timeout, let it run to completion
     const geminiResult = await generateWithGemini(prompt)
     if (geminiResult) {
-      const assetId = await uploadToSanity(geminiResult.base64, geminiResult.mimeType)
-      if (assetId) return { sanityAssetId: assetId, externalUrl: null }
+      const url = await uploadToBlob(geminiResult.base64, geminiResult.mimeType)
+      if (url) return { imageUrl: url }
     }
 
     // Try DALL-E 3
     const dalleResult = await generateWithDallE(prompt)
     if (dalleResult) {
-      const assetId = await uploadToSanity(dalleResult.base64, dalleResult.mimeType)
-      if (assetId) return { sanityAssetId: assetId, externalUrl: null }
+      const url = await uploadToBlob(dalleResult.base64, dalleResult.mimeType)
+      if (url) return { imageUrl: url }
     }
 
     // Try OG scrape from source article
     const ogUrl = await scrapeOgImage(sourceUrl)
-    if (ogUrl) return { sanityAssetId: null, externalUrl: ogUrl }
+    if (ogUrl) return { imageUrl: ogUrl }
 
     return null
   } catch {
@@ -199,7 +194,7 @@ export async function generateHeroImage(
 
   // Mapbox satellite fallback — geographically accurate to the detected city
   const mapboxUrl = buildMapboxUrl(city)
-  return { sanityAssetId: null, externalUrl: mapboxUrl }
+  return { imageUrl: mapboxUrl }
 
   // (Unsplash + pool remain available if Mapbox token is revoked — swap return above)
 }

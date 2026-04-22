@@ -3,7 +3,7 @@
  * Public endpoint — returns a single blog post by slug.
  * Proxies Sanity reads server-side to avoid browser CORS restrictions.
  */
-import { getPostBySlug } from '../../lib/blog-sanity'
+import { getPostBySlug } from '../../lib/blog-redis'
 
 export default async function handler(req: any, res: any) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' })
