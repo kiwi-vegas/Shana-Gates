@@ -45,7 +45,7 @@ function verifyToken(token: string, secret: string): boolean {
 const STRATEGIC_TOPICS: WeeklyTopic[] = [
   {
     id: 'st-01',
-    title: 'What Does It Cost to Buy a Luxury Home in Palm Springs?',
+    title: 'What Does It Cost to Buy a Luxury Home in Palm Springs in 2026?',
     angle: 'Complete cost breakdown for buying a luxury home in Palm Springs: purchase price ranges by neighborhood (Old Las Palmas, Movie Colony, South End), closing costs (typically 2–5%), inspection fees, HOA dues in resort communities, property taxes at 1.1% base rate, and first-year ownership costs buyers rarely account for. Compare mid-century modern fixer vs turnkey updated homes.',
     category: 'buying-tips',
     researchContext: 'Palm Springs luxury real estate market 2026, California buyer closing costs breakdown, Palm Springs neighborhoods price per square foot',
@@ -53,7 +53,7 @@ const STRATEGIC_TOPICS: WeeklyTopic[] = [
   },
   {
     id: 'st-02',
-    title: 'What Does It Cost to Sell a Home in the Coachella Valley?',
+    title: 'What Does It Cost to Sell a Home in the Coachella Valley in 2026?',
     angle: 'All-in seller cost breakdown for the Coachella Valley: agent commissions post-NAR settlement, pre-sale prep and staging costs for desert homes, escrow and title fees, transfer taxes, capital gains considerations for snowbirds and second-home owners, and a realistic net proceeds walkthrough.',
     category: 'selling-tips',
     researchContext: 'Seller costs California real estate 2026, Coachella Valley home selling expenses, NAR commission changes 2024',
@@ -61,7 +61,7 @@ const STRATEGIC_TOPICS: WeeklyTopic[] = [
   },
   {
     id: 'st-03',
-    title: 'What Are the Closing Costs for Home Buyers in the Coachella Valley?',
+    title: 'What Are the Closing Costs for Home Buyers in the Coachella Valley in 2026?',
     angle: 'Itemized breakdown of every closing cost a buyer pays in the Coachella Valley: loan origination, title insurance, escrow fees, property tax proration, homeowners insurance, HOA transfer fees, and Riverside County-specific charges. What to expect on the closing disclosure and how to negotiate credits.',
     category: 'buying-tips',
     researchContext: 'California buyer closing costs 2026, Riverside County recording fees, escrow fees desert real estate',
@@ -69,7 +69,7 @@ const STRATEGIC_TOPICS: WeeklyTopic[] = [
   },
   {
     id: 'st-04',
-    title: 'What Are the Closing Costs for Home Sellers in California?',
+    title: 'What Are the Closing Costs for Home Sellers in California in 2026?',
     angle: 'California seller closing costs line by line: agent commissions under the new NAR rules, Riverside County transfer tax, natural hazard disclosure fees, HOA payoff and transfer fees, escrow and title split, and city-specific requirements in Palm Springs vs Palm Desert vs La Quinta.',
     category: 'selling-tips',
     researchContext: 'California seller closing costs 2026, Riverside County transfer tax rate, city transfer tax Palm Springs',
@@ -80,12 +80,12 @@ const STRATEGIC_TOPICS: WeeklyTopic[] = [
     title: 'What Do Sellers Pay in California Real Estate Commissions in 2026?',
     angle: 'How commissions changed after the NAR settlement: what California sellers now negotiate, what buyer\'s agent compensation looks like today, how it plays out in a luxury desert transaction, and why the right agent still more than earns their fee in a market this specific.',
     category: 'selling-tips',
-    researchContext: 'NAR commission settlement California impact 2025 2026, buyer agent compensation changes, real estate commission negotiation',
+    researchContext: 'NAR commission settlement California impact 2026, buyer agent compensation changes, real estate commission negotiation',
     keywords: ['real estate commissions California 2026', 'NAR settlement seller impact', 'buyer agent fees Coachella Valley'],
   },
   {
     id: 'st-06',
-    title: 'How Do Seller Concessions Work in California Real Estate?',
+    title: 'How Do Seller Concessions Work in California Real Estate in 2026?',
     angle: 'What seller concessions are, when buyers ask for them in the Coachella Valley, how much is typical (1–3% of purchase price), how they affect your net proceeds vs. a simple price reduction, and when a confident seller should push back — especially during peak winter snowbird season.',
     category: 'selling-tips',
     researchContext: 'Seller concessions California real estate 2026, Coachella Valley buyer negotiation tactics',
@@ -93,7 +93,7 @@ const STRATEGIC_TOPICS: WeeklyTopic[] = [
   },
   {
     id: 'st-07',
-    title: 'Palm Springs vs Palm Desert: Which Real Estate Market Is Right for You?',
+    title: 'Palm Springs vs Palm Desert: Which Real Estate Market Wins in 2026?',
     angle: 'Side-by-side comparison: median price points, property types and architectural styles, short-term rental regulations (Palm Springs allows STR with permit; Palm Desert is more restricted), Airbnb investment potential, lifestyle differences, and which city makes more sense for primary residence vs. vacation home vs. investment property.',
     category: 'community-spotlight',
     researchContext: 'Palm Springs vs Palm Desert real estate comparison 2026, STR regulations Palm Springs Palm Desert, median home prices comparison',
@@ -101,7 +101,7 @@ const STRATEGIC_TOPICS: WeeklyTopic[] = [
   },
   {
     id: 'st-08',
-    title: 'La Quinta vs Indian Wells: Which Desert Luxury Market Wins?',
+    title: 'La Quinta vs Indian Wells: Which Desert Luxury Market Wins in 2026?',
     angle: 'Detailed comparison of La Quinta and Indian Wells: price per sq ft, HOA fee ranges, golf community culture (PGA West vs Indian Wells CC), second-home vs primary-residence buyer ratios, rental demand differences, and what each city\'s future looks like with planned development and infrastructure projects.',
     category: 'community-spotlight',
     researchContext: 'La Quinta vs Indian Wells real estate 2026, PGA West homes market, Indian Wells luxury market comparison',
@@ -109,7 +109,7 @@ const STRATEGIC_TOPICS: WeeklyTopic[] = [
   },
   {
     id: 'st-09',
-    title: 'What Does It Cost to Relocate to the Coachella Valley?',
+    title: 'What Does It Cost to Relocate to the Coachella Valley in 2026?',
     angle: 'Full relocation cost guide for the most common feeder markets (LA, Bay Area, Seattle, Chicago): moving costs, first-year housing cost comparison, Prop 19 property tax transfer savings for California homeowners 55+, income tax implications for out-of-state buyers, and the costs first-timers consistently underestimate.',
     category: 'buying-tips',
     researchContext: 'Relocating to Palm Springs Coachella Valley 2026, California Prop 19 tax transfer, cost of living comparison desert',
@@ -117,7 +117,7 @@ const STRATEGIC_TOPICS: WeeklyTopic[] = [
   },
   {
     id: 'st-10',
-    title: 'What Does It Cost to Buy a Home in Palm Desert?',
+    title: 'What Does It Cost to Buy a Home in Palm Desert in 2026?',
     angle: 'Realistic price guide for Palm Desert in 2026: what $400K, $650K, $900K, and $1.5M+ each actually get you by neighborhood, how prices have shifted over 3 years, which areas have appreciated most, and what the condo-vs-single-family trade-off looks like in today\'s market.',
     category: 'buying-tips',
     researchContext: 'Palm Desert home prices 2026, real estate market update by neighborhood, Palm Desert condo vs house comparison',
@@ -125,7 +125,7 @@ const STRATEGIC_TOPICS: WeeklyTopic[] = [
   },
   {
     id: 'st-11',
-    title: 'What Do California Home Sellers Need to Know About Appraisals?',
+    title: 'What Do California Home Sellers Need to Know About Appraisals in 2026?',
     angle: 'How the appraisal process works in California, what commonly triggers a low appraisal in the desert market (seasonal comp issues, solar system valuation, pool adjustments), how sellers can challenge a low appraisal, and what your options are when the appraisal comes in under the agreed-upon contract price.',
     category: 'selling-tips',
     researchContext: 'California home appraisal process 2026, low appraisal seller options, desert real estate appraisal challenges',
@@ -133,7 +133,7 @@ const STRATEGIC_TOPICS: WeeklyTopic[] = [
   },
   {
     id: 'st-12',
-    title: 'Is Now a Good Time to Buy in the Coachella Valley?',
+    title: 'Is 2026 a Good Time to Buy in the Coachella Valley?',
     angle: 'Honest market analysis of whether 2026 is the right time to buy: current inventory levels across all 9 cities, price trend direction, where interest rates are headed, the snowbird seasonal effect on buyer competition, and which buyer profiles benefit most from acting now vs. waiting for a shift that may not come.',
     category: 'market-insight',
     researchContext: 'Coachella Valley real estate market conditions 2026, buyer demand desert housing, interest rate forecast 2026',
@@ -141,7 +141,7 @@ const STRATEGIC_TOPICS: WeeklyTopic[] = [
   },
   {
     id: 'st-13',
-    title: 'What Permits Do You Need to Build a Pool in Palm Springs?',
+    title: 'What Permits Do You Need to Build a Pool in Palm Springs in 2026?',
     angle: 'Step-by-step guide to pool permits in Palm Springs and across the valley: city building permits, HOA approval process, setback and barrier requirements, typical timeline (6–12 weeks), average permit cost, and what buyers should know when purchasing a home with an unpermitted or undocumented pool.',
     category: 'local-area',
     researchContext: 'Palm Springs pool permit requirements 2026, Riverside County pool regulations, pool construction approval desert',
@@ -149,7 +149,7 @@ const STRATEGIC_TOPICS: WeeklyTopic[] = [
   },
   {
     id: 'st-14',
-    title: 'Coachella Valley HOA Fees: What Every Desert Buyer Must Know Before Closing',
+    title: 'Coachella Valley HOA Fees: What Every Desert Buyer Must Know in 2026',
     angle: 'How HOA fees vary dramatically across the valley — from $150/month in standard neighborhoods to $1,500+/month in private golf clubs — what\'s included, how to vet an HOA\'s financial reserves and litigation history, how fees affect mortgage qualification, and red flags to look for in the HOA documents.',
     category: 'buying-tips',
     researchContext: 'HOA fees Coachella Valley 2026, desert golf community HOA comparison, California HOA reserve study requirements',
@@ -157,7 +157,7 @@ const STRATEGIC_TOPICS: WeeklyTopic[] = [
   },
   {
     id: 'st-15',
-    title: 'What Flood Zone Is My Coachella Valley Property In?',
+    title: 'What Flood Zone Is My Coachella Valley Property In? (2026 Guide)',
     angle: 'How to look up your FEMA flood zone designation in the desert (many valley properties sit in Zone AE or X), what it means for mandatory flood insurance and mortgage requirements, how recent FEMA remapping has changed risk designations, and what the long-term Salton Sea situation means for properties near the eastern valley.',
     category: 'buying-tips',
     researchContext: 'Coachella Valley FEMA flood zones 2026, desert flood risk California, Salton Sea flooding risk real estate',
