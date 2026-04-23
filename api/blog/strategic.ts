@@ -261,26 +261,38 @@ export default async function handler(req: any, res: any) {
       }
     }
 
-    // ── Publish with thumbnail ───────────────────────────────────────────────
+    // ── Publish with thumbnails ──────────────────────────────────────────────
     if (action === 'publish') {
-      const { draftId, imageDataUrl } = req.body
+      const { draftId, images } = req.body
+      // images: { landscape?: string | null, square?: string | null, vertical?: string | null }
       if (!draftId) return res.status(400).json({ error: 'draftId required' })
-      if (!imageDataUrl) return res.status(400).json({ error: 'imageDataUrl required — select a thumbnail first' })
+      if (!images || (!images.landscape && !images.square && !images.vertical)) {
+        return res.status(400).json({ error: 'At least one thumbnail image is required' })
+      }
 
       const rawDraft = await redis.get<string>(`strategic_draft:${draftId}`)
       if (!rawDraft) return res.status(404).json({ error: 'Draft not found — it may have already been published' })
       const draft: StrategicDraft = typeof rawDraft === 'string' ? JSON.parse(rawDraft) : rawDraft
 
       try {
-        const base64 = imageDataUrl.split(',')[1]
-        const buffer = Buffer.from(base64, 'base64')
-        const isPng = imageDataUrl.startsWith('data:image/png')
-        const ext = isPng ? 'png' : 'jpg'
-        const { url: imageUrl } = await put(
-          `blog-thumbnails/${draftId}.${ext}`,
-          buffer,
-          { access: 'public', contentType: isPng ? 'image/png' : 'image/jpeg' }
-        )
+        // Upload each provided format to Vercel Blob
+        const uploadedUrls: Record<string, string> = {}
+        for (const [format, dataUrl] of Object.entries(images as Record<string, string | null>)) {
+          if (!dataUrl) continue
+          const base64 = dataUrl.split(',')[1]
+          const buffer = Buffer.from(base64, 'base64')
+          const isPng = dataUrl.startsWith('data:image/png')
+          const ext = isPng ? 'png' : 'jpg'
+          const { url } = await put(
+            `blog-thumbnails/${draftId}-${format}.${ext}`,
+            buffer,
+            { access: 'public', contentType: isPng ? 'image/png' : 'image/jpeg' }
+          )
+          uploadedUrls[format] = url
+        }
+
+        // Blog hero = landscape first, then square, then vertical
+        const heroImageUrl = uploadedUrls.landscape ?? uploadedUrls.square ?? uploadedUrls.vertical ?? null
 
         const result = await publishBlogPost(
           {
@@ -294,7 +306,7 @@ export default async function handler(req: any, res: any) {
             pipeline: 'weekly',
             city: draft.city,
           },
-          { imageUrl }
+          { imageUrl: heroImageUrl }
         )
 
         const rawIndex = await redis.get<string>('strategic_drafts_index')
@@ -304,7 +316,7 @@ export default async function handler(req: any, res: any) {
         await redis.set('strategic_drafts_index', JSON.stringify(index.filter((d) => d.id !== draftId)))
         await redis.del(`strategic_draft:${draftId}`)
 
-        return res.status(200).json({ ok: true, slug: result.slug })
+        return res.status(200).json({ ok: true, slug: result.slug, uploadedUrls })
       } catch (err: any) {
         console.error('[strategic] publish error:', err)
         return res.status(500).json({ error: err.message })

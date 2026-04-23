@@ -131,36 +131,73 @@
 
     .draft-card-bottom {
       border-top: 1px solid var(--border);
-      padding: 16px 24px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      flex-wrap: wrap;
+      padding: 20px 24px;
     }
 
-    /* Thumbnail area */
-    .thumb-area {
-      width: 120px;
-      height: 68px;
+    /* ── Thumbnail buckets ── */
+    .buckets-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+      margin-bottom: 16px;
+    }
+    .thumb-buckets { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; margin-bottom: 20px; }
+    .thumb-bucket-wrap { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    .thumb-bucket {
       border: 2px dashed rgba(255,255,255,0.15);
       border-radius: 8px;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: border-color 0.15s;
-      flex-shrink: 0;
-      overflow: hidden;
+      transition: border-color 0.15s, background 0.15s;
       position: relative;
+      overflow: hidden;
+      background: var(--surf2);
+      user-select: none;
     }
-    .thumb-area:hover { border-color: rgba(184,151,90,0.5); }
-    .thumb-area.has-image { border-style: solid; border-color: var(--bronze); }
-    .thumb-area img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
-    .thumb-label { font-size: 10px; color: var(--muted); text-align: center; line-height: 1.4; }
-    .thumb-icon { font-size: 18px; margin-bottom: 2px; }
+    .thumb-bucket:hover { border-color: rgba(184,151,90,0.5); background: rgba(184,151,90,0.05); }
+    .thumb-bucket.drag-over { border-color: var(--bronze); background: rgba(184,151,90,0.1); border-style: solid; }
+    .thumb-bucket.has-image { border-style: solid; border-color: var(--bronze); }
+    .thumb-bucket img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; pointer-events: none; }
+    .bucket-inner { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; z-index: 1; padding: 8px; }
+    .thumb-bucket.has-image .bucket-inner { display: none; }
+    .bucket-icon { font-size: 22px; }
+    .bucket-drop-hint { font-size: 10px; color: rgba(255,255,255,0.25); text-align: center; line-height: 1.4; }
+    /* Checkmark overlay on filled bucket */
+    .bucket-check {
+      display: none;
+      position: absolute; top: 6px; right: 6px; z-index: 2;
+      width: 20px; height: 20px;
+      background: var(--bronze); border-radius: 50%;
+      align-items: center; justify-content: center;
+      font-size: 11px; color: #000; font-weight: 700;
+    }
+    .thumb-bucket.has-image .bucket-check { display: flex; }
+    /* Re-upload hint on hover when filled */
+    .bucket-re-upload {
+      display: none;
+      position: absolute; inset: 0; z-index: 3;
+      background: rgba(0,0,0,0.55);
+      align-items: center; justify-content: center;
+      font-size: 11px; color: #fff; font-weight: 600;
+      text-align: center;
+    }
+    .thumb-bucket.has-image:hover .bucket-re-upload { display: flex; }
 
-    .draft-actions { flex: 1; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    /* Aspect ratio sizing — all same height (172px), width from ratio */
+    .ratio-4-5  { width: 138px; height: 172px; } /* 4:5 → w = 172×0.8 = 138 */
+    .ratio-1-1  { width: 155px; height: 155px; } /* 1:1 square, slightly smaller feels right */
+    .ratio-9-16 { width: 97px;  height: 172px; } /* 9:16 → w = 172×0.5625 = 97 */
+
+    .bucket-info { text-align: center; }
+    .bucket-ratio { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+    .bucket-size  { font-size: 10px; color: rgba(255,255,255,0.35); margin-bottom: 3px; }
+    .bucket-platforms { font-size: 10px; color: var(--muted); line-height: 1.5; }
+
+    .draft-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
     .draft-hint { font-size: 12px; color: var(--muted); flex: 1; min-width: 120px; }
 
     .publish-btn {
@@ -276,7 +313,7 @@
     let allDrafts = []
     let draftedTopicIds = new Set()
     let activeTab = 'queue'
-    // Map: draftId → { imageDataUrl, previewEl }
+    // Map: draftId → { landscape?: string, square?: string, vertical?: string } (base64 dataUrls)
     const pendingImages = {}
 
     function catBadge(cat) {
@@ -357,6 +394,12 @@
 
     // ── Pending tab ───────────────────────────────────────────────────────────
 
+    const FORMATS = [
+      { key: 'landscape', ratio: '4:5',  size: '1080 × 1350', platforms: 'Blog Post · LinkedIn',              cls: 'ratio-4-5'  },
+      { key: 'square',    ratio: '1:1',  size: '1080 × 1080', platforms: 'Instagram · Facebook · Pinterest',  cls: 'ratio-1-1'  },
+      { key: 'vertical',  ratio: '9:16', size: '1080 × 1920', platforms: 'YouTube Shorts · TikTok · Reels',   cls: 'ratio-9-16' },
+    ]
+
     function renderPending() {
       const container = document.getElementById('pendingContainer')
       if (!allDrafts.length) {
@@ -370,17 +413,58 @@
 
       container.innerHTML = allDrafts.map(d => draftCardHtml(d)).join('')
 
-      // Re-attach file input handlers
+      // Wire up drag-and-drop and click for each bucket
       allDrafts.forEach(d => {
-        const inp = document.getElementById(`fileinput-${d.id}`)
-        if (inp) inp.addEventListener('change', (e) => handleFileSelect(d.id, e))
+        FORMATS.forEach(fmt => {
+          const bucket = document.getElementById(`bucket-${d.id}-${fmt.key}`)
+          if (!bucket) return
+
+          bucket.addEventListener('dragover', (e) => { e.preventDefault(); bucket.classList.add('drag-over') })
+          bucket.addEventListener('dragleave', () => bucket.classList.remove('drag-over'))
+          bucket.addEventListener('drop', (e) => {
+            e.preventDefault()
+            bucket.classList.remove('drag-over')
+            const file = e.dataTransfer.files[0]
+            if (file && file.type.startsWith('image/')) loadImageFile(d.id, fmt.key, file)
+          })
+          bucket.addEventListener('click', () => {
+            const inp = document.createElement('input')
+            inp.type = 'file'
+            inp.accept = 'image/jpeg,image/png,image/webp'
+            inp.onchange = (e) => { if (e.target.files[0]) loadImageFile(d.id, fmt.key, e.target.files[0]) }
+            inp.click()
+          })
+        })
       })
     }
 
     function draftCardHtml(d) {
       const ago = timeAgo(d.createdAt)
-      const pi = pendingImages[d.id]
-      const hasImage = !!pi
+      const pi = pendingImages[d.id] || {}
+      const anyImage = !!(pi.landscape || pi.square || pi.vertical)
+      const count = [pi.landscape, pi.square, pi.vertical].filter(Boolean).length
+
+      const bucketsHtml = FORMATS.map(fmt => {
+        const dataUrl = pi[fmt.key]
+        return `
+          <div class="thumb-bucket-wrap">
+            <div class="thumb-bucket ${fmt.cls}" id="bucket-${d.id}-${fmt.key}">
+              <div class="bucket-check">✓</div>
+              <div class="bucket-re-upload">Replace</div>
+              ${dataUrl ? `<img src="${escAttr(dataUrl)}">` : ''}
+              <div class="bucket-inner">
+                <span class="bucket-icon">🖼</span>
+                <span class="bucket-drop-hint">Drop here<br>or click</span>
+              </div>
+            </div>
+            <div class="bucket-info">
+              <div class="bucket-ratio">${fmt.ratio}</div>
+              <div class="bucket-size">${fmt.size}</div>
+              <div class="bucket-platforms">${fmt.platforms}</div>
+            </div>
+          </div>`
+      }).join('')
+
       return `
         <div class="draft-card" id="dcard-${d.id}">
           <div class="draft-card-top">
@@ -393,50 +477,52 @@
             </div>
           </div>
           <div class="draft-card-bottom">
-            <input type="file" id="fileinput-${d.id}" accept="image/jpeg,image/png,image/webp" style="display:none;">
-            <div class="thumb-area${hasImage ? ' has-image' : ''}" id="thumbarea-${d.id}" onclick="document.getElementById('fileinput-${d.id}').click()">
-              ${hasImage
-                ? `<img id="thumbpreview-${d.id}" src="${escHtml(pi.dataUrl)}">`
-                : `<span class="thumb-icon">🖼</span><span class="thumb-label">Click to<br>upload thumbnail</span>`}
-            </div>
+            <div class="buckets-label">Upload thumbnails — drag &amp; drop or click each bucket</div>
+            <div class="thumb-buckets">${bucketsHtml}</div>
             <div class="draft-actions" id="dactions-${d.id}">
-              ${hasImage
-                ? `<span class="draft-hint">Thumbnail ready — publish when you're set.</span>
-                   <button class="publish-btn" id="pubbtn-${d.id}" onclick="publishDraft('${d.id}')">Publish Post →</button>`
-                : `<span class="draft-hint">Upload a thumbnail image (1600×900 px recommended) to enable publishing.</span>
-                   <button class="publish-btn" disabled>Publish Post →</button>`}
+              <span class="draft-hint" id="dhint-${d.id}">${
+                anyImage
+                  ? `${count} thumbnail${count > 1 ? 's' : ''} ready — publish when set.`
+                  : 'Upload at least one thumbnail to enable publishing.'
+              }</span>
+              <button class="publish-btn" id="pubbtn-${d.id}" ${anyImage ? '' : 'disabled'} onclick="publishDraft('${d.id}')">Publish Post →</button>
               <button class="delete-btn" onclick="deleteDraft('${d.id}')">Discard</button>
             </div>
           </div>
         </div>`
     }
 
-    function handleFileSelect(draftId, e) {
-      const file = e.target.files[0]
-      if (!file) return
+    function loadImageFile(draftId, format, file) {
       const reader = new FileReader()
       reader.onload = (ev) => {
-        pendingImages[draftId] = { dataUrl: ev.target.result }
-        // Update just this card's bottom section
-        const thumbArea = document.getElementById(`thumbarea-${draftId}`)
-        const dactions  = document.getElementById(`dactions-${draftId}`)
-        if (thumbArea) {
-          thumbArea.classList.add('has-image')
-          thumbArea.innerHTML = `<img id="thumbpreview-${draftId}" src="${escAttr(ev.target.result)}">`
+        if (!pendingImages[draftId]) pendingImages[draftId] = {}
+        pendingImages[draftId][format] = ev.target.result
+        // Update this bucket
+        const bucket = document.getElementById(`bucket-${draftId}-${format}`)
+        if (bucket) {
+          bucket.classList.add('has-image')
+          bucket.querySelectorAll('img').forEach(el => el.remove())
+          const img = document.createElement('img')
+          img.src = ev.target.result
+          bucket.prepend(img)
         }
-        if (dactions) {
-          dactions.innerHTML = `
-            <span class="draft-hint">Thumbnail ready — publish when you're set.</span>
-            <button class="publish-btn" id="pubbtn-${draftId}" onclick="publishDraft('${draftId}')">Publish Post →</button>
-            <button class="delete-btn" onclick="deleteDraft('${draftId}')">Discard</button>`
-        }
+        // Update publish button + hint
+        const pi = pendingImages[draftId] || {}
+        const count = [pi.landscape, pi.square, pi.vertical].filter(Boolean).length
+        const btn  = document.getElementById(`pubbtn-${draftId}`)
+        const hint = document.getElementById(`dhint-${draftId}`)
+        if (btn) btn.disabled = false
+        if (hint) hint.textContent = `${count} thumbnail${count > 1 ? 's' : ''} ready — publish when set.`
       }
       reader.readAsDataURL(file)
     }
 
     async function publishDraft(draftId) {
-      const pi = pendingImages[draftId]
-      if (!pi) { alert('Select a thumbnail first.'); return }
+      const pi = pendingImages[draftId] || {}
+      if (!pi.landscape && !pi.square && !pi.vertical) {
+        alert('Upload at least one thumbnail first.')
+        return
+      }
 
       const btn = document.getElementById(`pubbtn-${draftId}`)
       if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spin"></span>Publishing…' }
@@ -445,17 +531,23 @@
         const res = await fetch('/api/blog/strategic', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'publish', draftId, imageDataUrl: pi.dataUrl }),
+          body: JSON.stringify({
+            action: 'publish',
+            draftId,
+            images: {
+              landscape: pi.landscape || null,
+              square:    pi.square    || null,
+              vertical:  pi.vertical  || null,
+            },
+          }),
         })
         const data = await res.json()
         if (!res.ok) throw new Error(data.error || 'Unknown error')
 
-        // Remove from allDrafts
         allDrafts = allDrafts.filter(d => d.id !== draftId)
         delete pendingImages[draftId]
         updatePendingCount()
 
-        // Show success in card bottom
         const bottom = document.getElementById(`dcard-${draftId}`)?.querySelector('.draft-card-bottom')
         if (bottom) {
           bottom.innerHTML = `
