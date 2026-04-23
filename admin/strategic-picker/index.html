@@ -194,10 +194,10 @@
       display: flex; align-items: center; justify-content: center;
     }
 
-    /* Aspect ratio sizing — all same height (172px), width from ratio */
-    .ratio-4-5  { width: 138px; height: 172px; } /* 4:5 → w = 172×0.8 = 138 */
-    .ratio-1-1  { width: 155px; height: 155px; } /* 1:1 square, slightly smaller feels right */
-    .ratio-9-16 { width: 97px;  height: 172px; } /* 9:16 → w = 172×0.5625 = 97 */
+    /* Aspect ratio sizing */
+    .ratio-16-9 { width: 172px; height: 97px;  } /* 16:9 → h = 172×(9/16) = 97 */
+    .ratio-1-1  { width: 155px; height: 155px; } /* 1:1 square */
+    .ratio-9-16 { width: 97px;  height: 172px; } /* 9:16 → w = 172×(9/16) = 97 */
 
     .bucket-info { text-align: center; }
     .bucket-ratio { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
@@ -402,7 +402,7 @@
     // ── Pending tab ───────────────────────────────────────────────────────────
 
     const FORMATS = [
-      { key: 'landscape', ratio: '4:5',  size: '1080 × 1350', platforms: 'Blog Post · LinkedIn',              cls: 'ratio-4-5'  },
+      { key: 'landscape', ratio: '16:9', size: '1280 × 720',  platforms: 'Blog Post',                        cls: 'ratio-16-9' },
       { key: 'square',    ratio: '1:1',  size: '1080 × 1080', platforms: 'Instagram · Facebook · Pinterest',  cls: 'ratio-1-1'  },
       { key: 'vertical',  ratio: '9:16', size: '1080 × 1920', platforms: 'YouTube Shorts · TikTok · Reels',   cls: 'ratio-9-16' },
     ]
