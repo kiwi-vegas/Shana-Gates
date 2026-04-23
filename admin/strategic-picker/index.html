@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-B0SJ1F6PDN"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-B0SJ1F6PDN');
+</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="/images/favcon.png" />
+  <title>Strategic Blog Posts — Shana Gates</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bronze: #B8975A;
+      --teal:   #1A444C;
+      --teal-h: #255a65;
+      --bg:     #0a0a0a;
+      --surf:   #141414;
+      --surf2:  #1c1c1c;
+      --surf3:  #242424;
+      --border: rgba(255,255,255,0.08);
+      --text:   #fff;
+      --muted:  rgba(255,255,255,0.45);
+      --font:   system-ui, -apple-system, sans-serif;
+    }
+    body { background: var(--bg); color: var(--text); font-family: var(--font); -webkit-font-smoothing: antialiased; min-height: 100vh; }
+
+    /* ── Header ── */
+    header { background: var(--surf); border-bottom: 1px solid var(--border); padding: 20px 32px; }
+    .header-brand { color: var(--bronze); font-size: 11px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 4px; }
+    .header-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+    .header-sub { color: var(--muted); font-size: 13px; max-width: 600px; }
+
+    /* ── Tabs ── */
+    .tab-bar { background: var(--surf); border-bottom: 1px solid var(--border); padding: 0 32px; display: flex; gap: 0; overflow-x: auto; }
+    .tab-btn { padding: 14px 20px; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; border: none; background: transparent; border-bottom: 2px solid transparent; font-family: var(--font); white-space: nowrap; transition: all 0.15s; }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active { color: var(--text); border-bottom-color: var(--bronze); font-weight: 700; }
+    .tab-count { display: inline-block; background: rgba(255,255,255,0.1); border-radius: 100px; padding: 1px 7px; font-size: 11px; margin-left: 6px; }
+    .tab-btn.active .tab-count { background: rgba(184,151,90,0.2); color: var(--bronze); }
+
+    /* ── Main ── */
+    main { max-width: 900px; margin: 0 auto; padding: 36px 24px 100px; }
+
+    /* ── Section heading ── */
+    .section-note { color: var(--muted); font-size: 13px; margin-bottom: 24px; line-height: 1.5; }
+
+    /* ── Category colors ── */
+    .cat-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+
+    /* ── Topic queue card ── */
+    .topic-card {
+      background: var(--surf);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 12px;
+      transition: border-color 0.15s;
+    }
+    .topic-card.drafted { opacity: 0.5; }
+    .topic-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+    .topic-card-body { flex: 1; }
+    .topic-title { font-size: 15px; font-weight: 600; margin-bottom: 6px; line-height: 1.4; }
+    .topic-angle { font-size: 13px; color: var(--muted); line-height: 1.5; }
+    .topic-angle-full { display: none; }
+    .topic-card:hover .topic-angle { display: none; }
+    .topic-card:hover .topic-angle-full { display: block; font-size: 13px; color: rgba(255,255,255,0.6); line-height: 1.5; }
+    .topic-meta { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+    .topic-num { font-size: 11px; color: rgba(255,255,255,0.25); }
+
+    .gen-btn {
+      flex-shrink: 0;
+      padding: 9px 18px;
+      background: var(--teal);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--font);
+      transition: background 0.15s;
+      white-space: nowrap;
+      min-width: 140px;
+      text-align: center;
+    }
+    .gen-btn:hover:not(:disabled) { background: var(--teal-h); }
+    .gen-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .gen-btn.drafted { background: rgba(74,197,80,0.15); color: #4CAF50; cursor: default; }
+    .gen-btn.loading { background: rgba(255,255,255,0.08); color: var(--muted); }
+
+    /* ── Spinner ── */
+    .spin {
+      display: inline-block;
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Pending draft card ── */
+    .draft-card {
+      background: var(--surf);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+    .draft-card-top { padding: 20px 24px 16px; }
+    .draft-title { font-size: 15px; font-weight: 600; margin-bottom: 8px; line-height: 1.4; }
+    .draft-excerpt { font-size: 13px; color: var(--muted); line-height: 1.5; margin-bottom: 12px; }
+    .draft-meta { display: flex; gap: 12px; align-items: center; font-size: 12px; color: rgba(255,255,255,0.3); }
+
+    .draft-card-bottom {
+      border-top: 1px solid var(--border);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    /* Thumbnail area */
+    .thumb-area {
+      width: 120px;
+      height: 68px;
+      border: 2px dashed rgba(255,255,255,0.15);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: border-color 0.15s;
+      flex-shrink: 0;
+      overflow: hidden;
+      position: relative;
+    }
+    .thumb-area:hover { border-color: rgba(184,151,90,0.5); }
+    .thumb-area.has-image { border-style: solid; border-color: var(--bronze); }
+    .thumb-area img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
+    .thumb-label { font-size: 10px; color: var(--muted); text-align: center; line-height: 1.4; }
+    .thumb-icon { font-size: 18px; margin-bottom: 2px; }
+
+    .draft-actions { flex: 1; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .draft-hint { font-size: 12px; color: var(--muted); flex: 1; min-width: 120px; }
+
+    .publish-btn {
+      padding: 10px 22px;
+      background: var(--teal);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--font);
+      transition: background 0.15s;
+    }
+    .publish-btn:hover:not(:disabled) { background: var(--teal-h); }
+    .publish-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .delete-btn {
+      padding: 8px 14px;
+      background: transparent;
+      color: rgba(255,255,255,0.3);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      font-size: 12px;
+      cursor: pointer;
+      font-family: var(--font);
+      transition: all 0.15s;
+    }
+    .delete-btn:hover { color: #ff6b6b; border-color: rgba(255,107,107,0.3); }
+
+    /* Success banner */
+    .success-banner {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      background: rgba(74,197,80,0.12);
+      border: 1px solid rgba(74,197,80,0.25);
+      border-radius: 8px;
+      font-size: 13px;
+      color: #4CAF50;
+      flex: 1;
+    }
+    .success-banner a { color: #6fcf75; }
+
+    /* Error banner */
+    .error-banner {
+      padding: 10px 16px;
+      background: rgba(255,80,80,0.1);
+      border: 1px solid rgba(255,80,80,0.2);
+      border-radius: 8px;
+      font-size: 13px;
+      color: #ff8a8a;
+      flex: 1;
+    }
+
+    /* Empty state */
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--muted); }
+    .empty-state .empty-icon { font-size: 36px; margin-bottom: 12px; }
+    .empty-state p { font-size: 14px; line-height: 1.6; }
+
+    /* Loading skeleton */
+    .skeleton { background: var(--surf); border-radius: 12px; padding: 20px 24px; margin-bottom: 12px; }
+    .sk { background: rgba(255,255,255,0.06); border-radius: 6px; margin-bottom: 8px; animation: pulse 1.4s ease-in-out infinite; }
+    .sk-short { width: 40%; height: 12px; }
+    .sk-wide  { width: 85%; height: 16px; }
+    .sk-med   { width: 65%; height: 12px; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-brand">Shana Gates · Blog System</div>
+    <div class="header-title">Strategic Posts</div>
+    <div class="header-sub">15 evergreen topics adapted from proven high-performers. Generate a draft, create your thumbnail manually, then publish — no automated image generation.</div>
+  </header>
+
+  <div class="tab-bar">
+    <button class="tab-btn active" data-tab="queue">Topic Queue <span class="tab-count" id="count-queue">15</span></button>
+    <button class="tab-btn" data-tab="pending">Pending Thumbnail <span class="tab-count" id="count-pending">…</span></button>
+  </div>
+
+  <main>
+    <div id="loadingState">
+      <div class="skeleton"><div class="sk sk-short" style="height:12px;margin-bottom:10px;"></div><div class="sk sk-wide" style="height:16px;margin-bottom:8px;"></div><div class="sk sk-med"></div></div>
+      <div class="skeleton"><div class="sk sk-short" style="height:12px;margin-bottom:10px;"></div><div class="sk sk-wide" style="height:16px;margin-bottom:8px;"></div><div class="sk sk-med"></div></div>
+      <div class="skeleton"><div class="sk sk-short" style="height:12px;margin-bottom:10px;"></div><div class="sk sk-wide" style="height:16px;margin-bottom:8px;"></div><div class="sk sk-med"></div></div>
+    </div>
+    <div id="queueContainer" style="display:none;"></div>
+    <div id="pendingContainer" style="display:none;"></div>
+  </main>
+
+  <script>
+    const CAT_COLORS = {
+      'buying-tips':         ['#4CAF50', 'rgba(76,175,80,0.12)'],
+      'selling-tips':        ['#0ea5e9', 'rgba(14,165,233,0.12)'],
+      'community-spotlight': ['#9C27B0', 'rgba(156,39,176,0.12)'],
+      'market-insight':      ['#4338CA', 'rgba(67,56,202,0.12)'],
+      'investment':          ['#FF9800', 'rgba(255,152,0,0.12)'],
+      'local-area':          ['#D97706', 'rgba(217,119,6,0.12)'],
+      'market-update':       ['#2563eb', 'rgba(37,99,235,0.12)'],
+      'news':                ['#607D8B', 'rgba(96,125,139,0.12)'],
+    }
+    const CAT_LABELS = {
+      'buying-tips': 'Buying Tips', 'selling-tips': 'Selling Tips',
+      'community-spotlight': 'Community Spotlight', 'market-insight': 'Market Insight',
+      'investment': 'Investment', 'local-area': 'Local Area',
+      'market-update': 'Market Update', 'news': 'News',
+    }
+
+    let allTopics = []
+    let allDrafts = []
+    let draftedTopicIds = new Set()
+    let activeTab = 'queue'
+    // Map: draftId → { imageDataUrl, previewEl }
+    const pendingImages = {}
+
+    function catBadge(cat) {
+      const [color, bg] = CAT_COLORS[cat] || ['#607D8B', 'rgba(96,125,139,0.12)']
+      return `<span class="cat-badge" style="background:${bg};color:${color};">${CAT_LABELS[cat] || cat}</span>`
+    }
+
+    // ── Queue tab ─────────────────────────────────────────────────────────────
+
+    function renderQueue() {
+      if (!allTopics.length) {
+        document.getElementById('queueContainer').innerHTML =
+          '<div class="empty-state"><div class="empty-icon">📋</div><p>No topics loaded.</p></div>'
+        return
+      }
+      const html = allTopics.map((t, i) => {
+        const isDrafted = draftedTopicIds.has(t.id)
+        const angleFull = escHtml(t.angle)
+        const angleShort = escHtml(t.angle.slice(0, 120)) + (t.angle.length > 120 ? '…' : '')
+        let btnHtml
+        if (isDrafted) {
+          btnHtml = `<button class="gen-btn drafted" disabled>✓ Draft created</button>`
+        } else {
+          btnHtml = `<button class="gen-btn" id="genbtn-${t.id}" onclick="generateDraft('${t.id}')">Generate Draft →</button>`
+        }
+        return `
+          <div class="topic-card${isDrafted ? ' drafted' : ''}" id="tcard-${t.id}">
+            <div class="topic-meta">
+              ${catBadge(t.category)}
+              <span class="topic-num">#${String(i + 1).padStart(2, '0')}</span>
+            </div>
+            <div class="topic-card-header">
+              <div class="topic-card-body">
+                <div class="topic-title">${escHtml(t.title)}</div>
+                <div class="topic-angle">${angleShort}</div>
+                <div class="topic-angle-full">${angleFull}</div>
+              </div>
+              ${btnHtml}
+            </div>
+          </div>`
+      }).join('')
+      document.getElementById('queueContainer').innerHTML = html
+    }
+
+    async function generateDraft(topicId) {
+      const btn = document.getElementById(`genbtn-${topicId}`)
+      if (!btn) return
+      btn.disabled = true
+      btn.className = 'gen-btn loading'
+      btn.innerHTML = '<span class="spin"></span>Writing post…'
+
+      try {
+        const res = await fetch('/api/blog/strategic', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'draft', topicId }),
+        })
+        const data = await res.json()
+        if (!res.ok) throw new Error(data.error || 'Unknown error')
+
+        draftedTopicIds.add(topicId)
+        allDrafts.unshift(data.draft)
+        updatePendingCount()
+
+        btn.className = 'gen-btn drafted'
+        btn.textContent = '✓ Draft created'
+        document.getElementById(`tcard-${topicId}`).classList.add('drafted')
+
+        // If user is on pending tab, refresh it
+        if (activeTab === 'pending') renderPending()
+      } catch (err) {
+        btn.disabled = false
+        btn.className = 'gen-btn'
+        btn.textContent = 'Generate Draft →'
+        alert('Error: ' + err.message)
+      }
+    }
+
+    // ── Pending tab ───────────────────────────────────────────────────────────
+
+    function renderPending() {
+      const container = document.getElementById('pendingContainer')
+      if (!allDrafts.length) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">🖼</div>
+            <p>No drafts waiting for thumbnails yet.<br>Go to <strong>Topic Queue</strong> and generate a draft to get started.</p>
+          </div>`
+        return
+      }
+
+      container.innerHTML = allDrafts.map(d => draftCardHtml(d)).join('')
+
+      // Re-attach file input handlers
+      allDrafts.forEach(d => {
+        const inp = document.getElementById(`fileinput-${d.id}`)
+        if (inp) inp.addEventListener('change', (e) => handleFileSelect(d.id, e))
+      })
+    }
+
+    function draftCardHtml(d) {
+      const ago = timeAgo(d.createdAt)
+      const pi = pendingImages[d.id]
+      const hasImage = !!pi
+      return `
+        <div class="draft-card" id="dcard-${d.id}">
+          <div class="draft-card-top">
+            ${catBadge(d.category)}
+            <div class="draft-title">${escHtml(d.title)}</div>
+            <div class="draft-excerpt">${escHtml(d.excerpt)}</div>
+            <div class="draft-meta">
+              <span>Created ${ago}</span>
+              ${d.city ? `<span>· ${d.city}</span>` : ''}
+            </div>
+          </div>
+          <div class="draft-card-bottom">
+            <input type="file" id="fileinput-${d.id}" accept="image/jpeg,image/png,image/webp" style="display:none;">
+            <div class="thumb-area${hasImage ? ' has-image' : ''}" id="thumbarea-${d.id}" onclick="document.getElementById('fileinput-${d.id}').click()">
+              ${hasImage
+                ? `<img id="thumbpreview-${d.id}" src="${escHtml(pi.dataUrl)}">`
+                : `<span class="thumb-icon">🖼</span><span class="thumb-label">Click to<br>upload thumbnail</span>`}
+            </div>
+            <div class="draft-actions" id="dactions-${d.id}">
+              ${hasImage
+                ? `<span class="draft-hint">Thumbnail ready — publish when you're set.</span>
+                   <button class="publish-btn" id="pubbtn-${d.id}" onclick="publishDraft('${d.id}')">Publish Post →</button>`
+                : `<span class="draft-hint">Upload a thumbnail image (1600×900 px recommended) to enable publishing.</span>
+                   <button class="publish-btn" disabled>Publish Post →</button>`}
+              <button class="delete-btn" onclick="deleteDraft('${d.id}')">Discard</button>
+            </div>
+          </div>
+        </div>`
+    }
+
+    function handleFileSelect(draftId, e) {
+      const file = e.target.files[0]
+      if (!file) return
+      const reader = new FileReader()
+      reader.onload = (ev) => {
+        pendingImages[draftId] = { dataUrl: ev.target.result }
+        // Update just this card's bottom section
+        const thumbArea = document.getElementById(`thumbarea-${draftId}`)
+        const dactions  = document.getElementById(`dactions-${draftId}`)
+        if (thumbArea) {
+          thumbArea.classList.add('has-image')
+          thumbArea.innerHTML = `<img id="thumbpreview-${draftId}" src="${escAttr(ev.target.result)}">`
+        }
+        if (dactions) {
+          dactions.innerHTML = `
+            <span class="draft-hint">Thumbnail ready — publish when you're set.</span>
+            <button class="publish-btn" id="pubbtn-${draftId}" onclick="publishDraft('${draftId}')">Publish Post →</button>
+            <button class="delete-btn" onclick="deleteDraft('${draftId}')">Discard</button>`
+        }
+      }
+      reader.readAsDataURL(file)
+    }
+
+    async function publishDraft(draftId) {
+      const pi = pendingImages[draftId]
+      if (!pi) { alert('Select a thumbnail first.'); return }
+
+      const btn = document.getElementById(`pubbtn-${draftId}`)
+      if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spin"></span>Publishing…' }
+
+      try {
+        const res = await fetch('/api/blog/strategic', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'publish', draftId, imageDataUrl: pi.dataUrl }),
+        })
+        const data = await res.json()
+        if (!res.ok) throw new Error(data.error || 'Unknown error')
+
+        // Remove from allDrafts
+        allDrafts = allDrafts.filter(d => d.id !== draftId)
+        delete pendingImages[draftId]
+        updatePendingCount()
+
+        // Show success in card bottom
+        const bottom = document.getElementById(`dcard-${draftId}`)?.querySelector('.draft-card-bottom')
+        if (bottom) {
+          bottom.innerHTML = `
+            <div class="success-banner">
+              ✅ Published! <a href="/blog/post.html?slug=${encodeURIComponent(data.slug)}" target="_blank">View post →</a>
+            </div>`
+        }
+      } catch (err) {
+        if (btn) { btn.disabled = false; btn.textContent = 'Publish Post →' }
+        const dactions = document.getElementById(`dactions-${draftId}`)
+        if (dactions) {
+          const errEl = document.createElement('div')
+          errEl.className = 'error-banner'
+          errEl.textContent = 'Error: ' + err.message
+          dactions.prepend(errEl)
+        }
+      }
+    }
+
+    async function deleteDraft(draftId) {
+      if (!confirm('Discard this draft? This cannot be undone.')) return
+      try {
+        await fetch('/api/blog/strategic', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'delete', draftId }),
+        })
+        allDrafts = allDrafts.filter(d => d.id !== draftId)
+        delete pendingImages[draftId]
+
+        // Also un-mark the topic in the queue
+        const draft = allDrafts.find(d => d.id === draftId) // already removed, but track topicId before removal
+        // Rebuild draftedTopicIds from remaining drafts
+        draftedTopicIds = new Set(allDrafts.map(d => d.topicId))
+
+        updatePendingCount()
+        renderPending()
+        renderQueue()
+      } catch (e) {
+        alert('Delete failed: ' + e.message)
+      }
+    }
+
+    // ── Tabs ──────────────────────────────────────────────────────────────────
+
+    document.querySelector('.tab-bar').addEventListener('click', (e) => {
+      const btn = e.target.closest('.tab-btn')
+      if (!btn) return
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'))
+      btn.classList.add('active')
+      activeTab = btn.dataset.tab
+      showTab(activeTab)
+    })
+
+    function showTab(tab) {
+      document.getElementById('queueContainer').style.display = tab === 'queue' ? '' : 'none'
+      document.getElementById('pendingContainer').style.display = tab === 'pending' ? '' : 'none'
+      if (tab === 'pending') renderPending()
+    }
+
+    function updatePendingCount() {
+      document.getElementById('count-pending').textContent = allDrafts.length
+    }
+
+    // ── Load ──────────────────────────────────────────────────────────────────
+
+    async function load() {
+      try {
+        const [topicsRes, draftsRes] = await Promise.all([
+          fetch('/api/blog/strategic?action=topics'),
+          fetch('/api/blog/strategic?action=drafts'),
+        ])
+
+        if (topicsRes.status === 401 || draftsRes.status === 401) {
+          window.location.href = '/admin/assistant/login.html?next=' + encodeURIComponent(window.location.pathname)
+          return
+        }
+
+        const topicsData = await topicsRes.json()
+        const draftsData = await draftsRes.json()
+
+        allTopics = topicsData.topics || []
+        allDrafts = draftsData.drafts || []
+        draftedTopicIds = new Set(topicsData.draftedTopicIds || [])
+
+        updatePendingCount()
+        document.getElementById('loadingState').style.display = 'none'
+        document.getElementById('queueContainer').style.display = ''
+        renderQueue()
+      } catch (err) {
+        document.getElementById('loadingState').innerHTML =
+          `<div class="empty-state"><div class="empty-icon">⚠️</div><p>Could not load topics.<br><small>${err.message}</small></p></div>`
+      }
+    }
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+
+    function escHtml(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+    }
+    function escAttr(s) {
+      return String(s).replace(/"/g, '&quot;')
+    }
+    function timeAgo(iso) {
+      const diff = (Date.now() - new Date(iso).getTime()) / 1000
+      if (diff < 60) return 'just now'
+      if (diff < 3600) return Math.floor(diff / 60) + 'm ago'
+      if (diff < 86400) return Math.floor(diff / 3600) + 'h ago'
+      return Math.floor(diff / 86400) + 'd ago'
+    }
+
+    load()
+  </script>
+</body>
+</html>
