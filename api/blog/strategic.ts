@@ -261,13 +261,41 @@ export default async function handler(req: any, res: any) {
       }
     }
 
-    // ── Publish with thumbnails ──────────────────────────────────────────────
+    // ── Upload a single thumbnail to Blob ────────────────────────────────────
+    // Called once per bucket immediately when the user drops/selects a file.
+    // Keeps individual requests small — no multi-image body size issues.
+    if (action === 'upload-image') {
+      const { draftId, format, imageDataUrl } = req.body
+      if (!draftId || !format || !imageDataUrl) {
+        return res.status(400).json({ error: 'draftId, format, and imageDataUrl required' })
+      }
+      if (!['landscape', 'square', 'vertical'].includes(format)) {
+        return res.status(400).json({ error: 'format must be landscape, square, or vertical' })
+      }
+      try {
+        const base64 = imageDataUrl.split(',')[1]
+        const buffer = Buffer.from(base64, 'base64')
+        const isPng = imageDataUrl.startsWith('data:image/png')
+        const ext = isPng ? 'png' : 'jpg'
+        const { url } = await put(
+          `blog-thumbnails/${draftId}-${format}.${ext}`,
+          buffer,
+          { access: 'public', contentType: isPng ? 'image/png' : 'image/jpeg' }
+        )
+        return res.status(200).json({ ok: true, url, format })
+      } catch (err: any) {
+        console.error('[strategic] upload-image error:', err)
+        return res.status(500).json({ error: err.message })
+      }
+    }
+
+    // ── Publish — receives pre-uploaded Blob URLs, not raw image data ─────────
     if (action === 'publish') {
-      const { draftId, images } = req.body
-      // images: { landscape?: string | null, square?: string | null, vertical?: string | null }
+      const { draftId, imageUrls } = req.body
+      // imageUrls: { landscape?: string, square?: string, vertical?: string }
       if (!draftId) return res.status(400).json({ error: 'draftId required' })
-      if (!images || (!images.landscape && !images.square && !images.vertical)) {
-        return res.status(400).json({ error: 'At least one thumbnail image is required' })
+      if (!imageUrls || (!imageUrls.landscape && !imageUrls.square && !imageUrls.vertical)) {
+        return res.status(400).json({ error: 'At least one thumbnail URL is required' })
       }
 
       const rawDraft = await redis.get<string>(`strategic_draft:${draftId}`)
@@ -275,24 +303,8 @@ export default async function handler(req: any, res: any) {
       const draft: StrategicDraft = typeof rawDraft === 'string' ? JSON.parse(rawDraft) : rawDraft
 
       try {
-        // Upload each provided format to Vercel Blob
-        const uploadedUrls: Record<string, string> = {}
-        for (const [format, dataUrl] of Object.entries(images as Record<string, string | null>)) {
-          if (!dataUrl) continue
-          const base64 = dataUrl.split(',')[1]
-          const buffer = Buffer.from(base64, 'base64')
-          const isPng = dataUrl.startsWith('data:image/png')
-          const ext = isPng ? 'png' : 'jpg'
-          const { url } = await put(
-            `blog-thumbnails/${draftId}-${format}.${ext}`,
-            buffer,
-            { access: 'public', contentType: isPng ? 'image/png' : 'image/jpeg' }
-          )
-          uploadedUrls[format] = url
-        }
-
-        // Blog hero = landscape first, then square, then vertical
-        const heroImageUrl = uploadedUrls.landscape ?? uploadedUrls.square ?? uploadedUrls.vertical ?? null
+        // Blog hero = landscape (4:5) first, fall back to square, then vertical
+        const heroImageUrl = imageUrls.landscape ?? imageUrls.square ?? imageUrls.vertical ?? null
 
         const result = await publishBlogPost(
           {
@@ -316,7 +328,7 @@ export default async function handler(req: any, res: any) {
         await redis.set('strategic_drafts_index', JSON.stringify(index.filter((d) => d.id !== draftId)))
         await redis.del(`strategic_draft:${draftId}`)
 
-        return res.status(200).json({ ok: true, slug: result.slug, uploadedUrls })
+        return res.status(200).json({ ok: true, slug: result.slug })
       } catch (err: any) {
         console.error('[strategic] publish error:', err)
         return res.status(500).json({ error: err.message })

@@ -187,6 +187,13 @@
     }
     .thumb-bucket.has-image:hover .bucket-re-upload { display: flex; }
 
+    /* Upload-in-progress overlay */
+    .bucket-upload-overlay {
+      position: absolute; inset: 0; z-index: 4;
+      background: rgba(0,0,0,0.6);
+      display: flex; align-items: center; justify-content: center;
+    }
+
     /* Aspect ratio sizing — all same height (172px), width from ratio */
     .ratio-4-5  { width: 138px; height: 172px; } /* 4:5 → w = 172×0.8 = 138 */
     .ratio-1-1  { width: 155px; height: 155px; } /* 1:1 square, slightly smaller feels right */
@@ -441,17 +448,22 @@
     function draftCardHtml(d) {
       const ago = timeAgo(d.createdAt)
       const pi = pendingImages[d.id] || {}
-      const anyImage = !!(pi.landscape || pi.square || pi.vertical)
-      const count = [pi.landscape, pi.square, pi.vertical].filter(Boolean).length
+      const ready = ['landscape', 'square', 'vertical'].filter(f => pi[f]?.url)
+      const anyUploading = ['landscape', 'square', 'vertical'].some(f => pi[f]?.uploading)
+      const publishEnabled = ready.length > 0 && !anyUploading
 
       const bucketsHtml = FORMATS.map(fmt => {
-        const dataUrl = pi[fmt.key]
+        const state = pi[fmt.key]
+        const hasPreview = !!state?.preview
+        const isUploading = !!state?.uploading
+        const hasUrl = !!state?.url
         return `
           <div class="thumb-bucket-wrap">
-            <div class="thumb-bucket ${fmt.cls}" id="bucket-${d.id}-${fmt.key}">
-              <div class="bucket-check">✓</div>
+            <div class="thumb-bucket ${fmt.cls}${hasPreview ? ' has-image' : ''}" id="bucket-${d.id}-${fmt.key}">
+              ${hasUrl ? '<div class="bucket-check">✓</div>' : ''}
               <div class="bucket-re-upload">Replace</div>
-              ${dataUrl ? `<img src="${escAttr(dataUrl)}">` : ''}
+              ${hasPreview ? `<img src="${escAttr(state.preview)}">` : ''}
+              ${isUploading ? '<div class="bucket-upload-overlay"><span class="spin" style="width:16px;height:16px;border-color:rgba(255,255,255,0.25);border-top-color:#fff;"></span></div>' : ''}
               <div class="bucket-inner">
                 <span class="bucket-icon">🖼</span>
                 <span class="bucket-drop-hint">Drop here<br>or click</span>
@@ -464,6 +476,10 @@
             </div>
           </div>`
       }).join('')
+
+      const hintText = anyUploading ? 'Uploading…'
+        : ready.length > 0 ? `${ready.length} thumbnail${ready.length > 1 ? 's' : ''} uploaded — publish when set.`
+        : 'Upload at least one thumbnail to enable publishing.'
 
       return `
         <div class="draft-card" id="dcard-${d.id}">
@@ -480,46 +496,90 @@
             <div class="buckets-label">Upload thumbnails — drag &amp; drop or click each bucket</div>
             <div class="thumb-buckets">${bucketsHtml}</div>
             <div class="draft-actions" id="dactions-${d.id}">
-              <span class="draft-hint" id="dhint-${d.id}">${
-                anyImage
-                  ? `${count} thumbnail${count > 1 ? 's' : ''} ready — publish when set.`
-                  : 'Upload at least one thumbnail to enable publishing.'
-              }</span>
-              <button class="publish-btn" id="pubbtn-${d.id}" ${anyImage ? '' : 'disabled'} onclick="publishDraft('${d.id}')">Publish Post →</button>
+              <span class="draft-hint" id="dhint-${d.id}">${hintText}</span>
+              <button class="publish-btn" id="pubbtn-${d.id}" ${publishEnabled ? '' : 'disabled'} onclick="publishDraft('${d.id}')">Publish Post →</button>
               <button class="delete-btn" onclick="deleteDraft('${d.id}')">Discard</button>
             </div>
           </div>
         </div>`
     }
 
+    // pendingImages[draftId][format] = { preview: localDataUrl, url: blobUrl | null, uploading: bool }
+
     function loadImageFile(draftId, format, file) {
       const reader = new FileReader()
-      reader.onload = (ev) => {
+      reader.onload = async (ev) => {
+        const dataUrl = ev.target.result
+
         if (!pendingImages[draftId]) pendingImages[draftId] = {}
-        pendingImages[draftId][format] = ev.target.result
-        // Update this bucket
+        pendingImages[draftId][format] = { preview: dataUrl, url: null, uploading: true }
+
+        // Show preview + uploading overlay immediately
         const bucket = document.getElementById(`bucket-${draftId}-${format}`)
         if (bucket) {
           bucket.classList.add('has-image')
           bucket.querySelectorAll('img').forEach(el => el.remove())
           const img = document.createElement('img')
-          img.src = ev.target.result
+          img.src = dataUrl
           bucket.prepend(img)
+          if (!bucket.querySelector('.bucket-upload-overlay')) {
+            const ov = document.createElement('div')
+            ov.className = 'bucket-upload-overlay'
+            ov.innerHTML = '<span class="spin" style="width:16px;height:16px;border-color:rgba(255,255,255,0.25);border-top-color:#fff;"></span>'
+            bucket.appendChild(ov)
+          }
         }
-        // Update publish button + hint
-        const pi = pendingImages[draftId] || {}
-        const count = [pi.landscape, pi.square, pi.vertical].filter(Boolean).length
-        const btn  = document.getElementById(`pubbtn-${draftId}`)
-        const hint = document.getElementById(`dhint-${draftId}`)
-        if (btn) btn.disabled = false
-        if (hint) hint.textContent = `${count} thumbnail${count > 1 ? 's' : ''} ready — publish when set.`
+        refreshPublishBar(draftId)
+
+        try {
+          const res = await fetch('/api/blog/strategic', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'upload-image', draftId, format, imageDataUrl: dataUrl }),
+          })
+          const data = await res.json()
+          if (!res.ok) throw new Error(data.error || 'Upload failed')
+
+          pendingImages[draftId][format].url = data.url
+          pendingImages[draftId][format].uploading = false
+          if (bucket) bucket.querySelector('.bucket-upload-overlay')?.remove()
+        } catch (err) {
+          // Reset this bucket on failure
+          pendingImages[draftId][format] = null
+          if (bucket) {
+            bucket.classList.remove('has-image')
+            bucket.querySelectorAll('img').forEach(el => el.remove())
+            bucket.querySelector('.bucket-upload-overlay')?.remove()
+          }
+          alert('Upload failed: ' + err.message)
+        }
+        refreshPublishBar(draftId)
       }
       reader.readAsDataURL(file)
     }
 
+    function refreshPublishBar(draftId) {
+      const pi = pendingImages[draftId] || {}
+      const ready = ['landscape', 'square', 'vertical'].filter(f => pi[f]?.url)
+      const anyUploading = ['landscape', 'square', 'vertical'].some(f => pi[f]?.uploading)
+      const btn  = document.getElementById(`pubbtn-${draftId}`)
+      const hint = document.getElementById(`dhint-${draftId}`)
+      if (btn) btn.disabled = ready.length === 0 || anyUploading
+      if (hint) {
+        if (anyUploading) hint.textContent = 'Uploading…'
+        else if (ready.length > 0) hint.textContent = `${ready.length} thumbnail${ready.length > 1 ? 's' : ''} uploaded — publish when set.`
+        else hint.textContent = 'Upload at least one thumbnail to enable publishing.'
+      }
+    }
+
     async function publishDraft(draftId) {
       const pi = pendingImages[draftId] || {}
-      if (!pi.landscape && !pi.square && !pi.vertical) {
+      const imageUrls = {
+        landscape: pi.landscape?.url || null,
+        square:    pi.square?.url    || null,
+        vertical:  pi.vertical?.url  || null,
+      }
+      if (!imageUrls.landscape && !imageUrls.square && !imageUrls.vertical) {
         alert('Upload at least one thumbnail first.')
         return
       }
@@ -531,15 +591,7 @@
         const res = await fetch('/api/blog/strategic', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'publish',
-            draftId,
-            images: {
-              landscape: pi.landscape || null,
-              square:    pi.square    || null,
-              vertical:  pi.vertical  || null,
-            },
-          }),
+          body: JSON.stringify({ action: 'publish', draftId, imageUrls }),
         })
         const data = await res.json()
         if (!res.ok) throw new Error(data.error || 'Unknown error')
