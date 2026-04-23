@@ -28,6 +28,21 @@
   </script>
 
   <style>
+    @font-face {
+      font-family: 'Montserrat';
+      src: url('/fonts/Montserrat-VariableFont_wght.ttf') format('truetype');
+      font-weight: 100 900;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Montserrat';
+      src: url('/fonts/Montserrat-Italic-VariableFont_wght.ttf') format('truetype');
+      font-weight: 100 900;
+      font-style: italic;
+      font-display: swap;
+    }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
@@ -273,12 +288,12 @@
     }
 
     .hero-title {
-      font-family: var(--serif);
-      font-size: clamp(58px, 8.5vw, 108px);
+      font-family: 'Montserrat', var(--sans);
+      font-size: clamp(52px, 7.5vw, 96px);
       font-weight: 300;
-      line-height: 0.95;
+      line-height: 1.0;
       color: var(--text-light);
-      letter-spacing: -0.01em;
+      letter-spacing: -0.02em;
       margin-bottom: 32px;
       opacity: 0;
       animation: fadeUp 1.1s ease 0.7s forwards;
