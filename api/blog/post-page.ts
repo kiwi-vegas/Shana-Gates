@@ -1,4 +1,58 @@
-<!DOCTYPE html>
+/**
+ * api/blog/post-page.ts
+ * Serves /blog/post/:slug with server-rendered Open Graph meta tags so
+ * social media crawlers (Facebook, LinkedIn, Twitter/X, iMessage, Slack)
+ * pick up the post title, excerpt, and hero image thumbnail.
+ *
+ * Vercel rewrites /blog/post/:slug → /api/blog/post-page?slug=:slug
+ *
+ * Humans get the same JS-rendered post experience as blog/post.html.
+ * Crawlers read the OG tags in <head> without executing JavaScript.
+ */
+
+import { getPostBySlug } from '../../lib/blog-redis'
+
+function esc(s: string): string {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+}
+
+export default async function handler(req: any, res: any) {
+  if (req.method !== 'GET') return res.status(405).end()
+
+  const slug = (req.query?.slug as string) || ''
+  if (!slug) return res.status(400).end()
+
+  const post = await getPostBySlug(slug)
+
+  if (!post) {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8')
+    res.status(404).send(`<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Post Not Found — Shana Gates Blog</title>
+<style>body{background:#0a0a0a;color:#fff;font-family:system-ui;display:flex;align-items:center;justify-content:center;min-height:100vh;text-align:center;}</style>
+</head><body>
+<div><h1 style="color:#B8975A;margin-bottom:16px">Post Not Found</h1>
+<p style="color:rgba(255,255,255,0.5);margin-bottom:24px">This post may have been moved or removed.</p>
+<a href="/blog/" style="color:#B8975A">← Back to Blog</a></div>
+</body></html>`)
+    return
+  }
+
+  const canonicalUrl = `https://shana-gates.vercel.app/blog/post/${esc(slug)}`
+  const imageTag = post.heroImageUrl
+    ? `
+  <meta property="og:image"        content="${esc(post.heroImageUrl)}" />
+  <meta property="og:image:width"  content="1280" />
+  <meta property="og:image:height" content="720" />
+  <meta name="twitter:image"       content="${esc(post.heroImageUrl)}" />`
+    : ''
+
+  const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
 <!-- Google tag (gtag.js) -->
@@ -7,16 +61,35 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
   gtag('config', 'G-B0SJ1F6PDN');
 </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title id="pageTitle">Loading… — Shana Gates Blog</title>
-  <meta name="description" id="pageDesc" content="Coachella Valley real estate insights from Shana Gates, REALTOR® at Craft & Bauer." />
+
+  <title>${esc(post.title)} — Shana Gates</title>
+  <meta name="description" content="${esc(post.excerpt)}" />
+
+  <!-- Open Graph -->
+  <meta property="og:type"        content="article" />
+  <meta property="og:site_name"   content="Shana Gates Real Estate" />
+  <meta property="og:title"       content="${esc(post.title)}" />
+  <meta property="og:description" content="${esc(post.excerpt)}" />
+  <meta property="og:url"         content="${canonicalUrl}" />${imageTag}
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card"        content="summary_large_image" />
+  <meta name="twitter:title"       content="${esc(post.title)}" />
+  <meta name="twitter:description" content="${esc(post.excerpt)}" />
+
+  <link rel="canonical" href="${canonicalUrl}" />
   <link rel="icon" type="image/png" href="/images/favcon.png" />
+
   <!-- marked.js for markdown rendering -->
   <script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
+
+  <!-- Slug injected server-side so JS doesn't need to parse the URL -->
+  <script>const PAGE_SLUG = '${esc(slug)}';</script>
+
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -212,11 +285,7 @@
       border-radius: 8px;
       margin: 32px auto 6px;
     }
-    /* Paragraph containing only an image — remove its default bottom margin */
-    .post-body p:has(> img) {
-      margin-bottom: 0;
-    }
-    /* Attribution line immediately after an image paragraph */
+    .post-body p:has(> img) { margin-bottom: 0; }
     .post-body p:has(> img) + p > em:only-child {
       display: block;
       font-size: 12px;
@@ -256,17 +325,8 @@
       text-transform: uppercase;
       margin-bottom: 8px;
     }
-    .city-link-left h3 {
-      font-size: 18px;
-      font-weight: 700;
-      margin-bottom: 0;
-    }
-    .city-link-actions {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      flex-shrink: 0;
-    }
+    .city-link-left h3 { font-size: 18px; font-weight: 700; margin-bottom: 0; }
+    .city-link-actions { display: flex; gap: 12px; flex-wrap: wrap; flex-shrink: 0; }
     .city-link-btn {
       display: inline-block;
       background: var(--bronze);
@@ -325,17 +385,8 @@
       text-transform: uppercase;
       margin-bottom: 12px;
     }
-    .cta-card h3 {
-      font-size: 22px;
-      font-weight: 700;
-      margin-bottom: 12px;
-    }
-    .cta-card p {
-      color: var(--muted);
-      font-size: 15px;
-      margin-bottom: 24px;
-      line-height: 1.6;
-    }
+    .cta-card h3 { font-size: 22px; font-weight: 700; margin-bottom: 12px; }
+    .cta-card p { color: var(--muted); font-size: 15px; margin-bottom: 24px; line-height: 1.6; }
     .cta-btn {
       display: inline-block;
       background: var(--bronze);
@@ -381,7 +432,7 @@
 
   <nav>
     <a href="/" class="nav-logo">
-      <img src="/images/C&B-logo+R.png" alt="Shana Gates" />
+      <img src="/images/C&amp;B-logo+R.png" alt="Shana Gates" />
     </a>
     <ul class="nav-links">
       <li class="nav-communities">
@@ -410,7 +461,6 @@
     <a href="/blog/" class="post-back">← Back to Blog</a>
   </div>
 
-  <!-- Loading state -->
   <div class="post-loading" id="loadingState">
     <div class="sk sk-hero"></div>
     <div class="sk sk-line narrow"></div>
@@ -423,7 +473,6 @@
     <div class="sk sk-line narrow"></div>
   </div>
 
-  <!-- Post content -->
   <article class="post-wrap" id="postWrap">
     <div class="post-meta" id="postMeta"></div>
     <img id="heroImage" class="post-hero-image" style="display:none;" alt="" />
@@ -431,24 +480,20 @@
     <div class="source-credit" id="sourceCredit" style="display:none;"></div>
     <div id="cityLinkCard" style="display:none;"></div>
     <div class="cta-card">
-      <img class="cta-avatar" src="/images/shana%20pro.JPG" alt="Shana Gates, REALTOR®" />
+      <img class="cta-avatar" src="/images/shana%20pro.JPG" alt="Shana Gates, REALTOR&reg;" />
       <div class="overline">Ready to Buy or Sell?</div>
       <h3>Let's Talk Coachella Valley</h3>
       <p>Shana Gates knows this market inside and out. Whether you're buying your dream desert home or ready to sell, she's here to guide you every step of the way.</p>
-      <a href="mailto:shana@craftbauer.com" class="cta-btn">Contact Shana →</a>
+      <a href="mailto:shana@craftbauer.com" class="cta-btn">Contact Shana &rarr;</a>
     </div>
   </article>
 
   <footer>
-    <p>© 2026 Shana Gates · Craft &amp; Bauer | Real Broker · Coachella Valley, CA</p>
-    <p style="margin-top:8px;">All content for informational purposes. Not legal or financial advice. <a href="/blog/">← Back to Blog</a></p>
+    <p>&copy; 2026 Shana Gates &middot; Craft &amp; Bauer | Real Broker &middot; Coachella Valley, CA</p>
+    <p style="margin-top:8px;">All content for informational purposes. Not legal or financial advice. <a href="/blog/">&larr; Back to Blog</a></p>
   </footer>
 
   <script>
-    // Redirect /blog/post.html?slug=X → /blog/post/X so old shared links still work
-    const _oldSlug = new URLSearchParams(window.location.search).get('slug')
-    if (_oldSlug) { window.location.replace('/blog/post/' + encodeURIComponent(_oldSlug)); }
-
     const CATEGORY_COLORS = {
       'market-update': '#2563eb',
       'buying-tips': '#4CAF50',
@@ -459,7 +504,6 @@
       'local-area': '#D97706',
       'market-insight': '#4338CA',
     }
-
     const CATEGORY_LABELS = {
       'market-update': 'Market Update',
       'buying-tips': 'Buying Tips',
@@ -470,61 +514,53 @@
       'local-area': 'Local Area',
       'market-insight': 'Market Insight',
     }
-
     const CITY_META = {
-      'palm-springs':     { name: 'Palm Springs',     page: '/palm-springs.html',     ylopoCity: 'Palm+Springs' },
-      'palm-desert':      { name: 'Palm Desert',      page: '/palm-desert.html',      ylopoCity: 'Palm+Desert' },
-      'rancho-mirage':    { name: 'Rancho Mirage',    page: '/rancho-mirage.html',    ylopoCity: 'Rancho+Mirage' },
-      'indian-wells':     { name: 'Indian Wells',     page: '/indian-wells.html',     ylopoCity: 'Indian+Wells' },
-      'la-quinta':        { name: 'La Quinta',        page: '/la-quinta.html',        ylopoCity: 'La+Quinta' },
-      'indio':            { name: 'Indio',            page: '/indio.html',            ylopoCity: 'Indio' },
-      'cathedral-city':   { name: 'Cathedral City',   page: '/cathedral-city.html',   ylopoCity: 'Cathedral+City' },
+      'palm-springs':       { name: 'Palm Springs',       page: '/palm-springs.html',       ylopoCity: 'Palm+Springs' },
+      'palm-desert':        { name: 'Palm Desert',        page: '/palm-desert.html',        ylopoCity: 'Palm+Desert' },
+      'rancho-mirage':      { name: 'Rancho Mirage',      page: '/rancho-mirage.html',      ylopoCity: 'Rancho+Mirage' },
+      'indian-wells':       { name: 'Indian Wells',       page: '/indian-wells.html',       ylopoCity: 'Indian+Wells' },
+      'la-quinta':          { name: 'La Quinta',          page: '/la-quinta.html',          ylopoCity: 'La+Quinta' },
+      'indio':              { name: 'Indio',              page: '/indio.html',              ylopoCity: 'Indio' },
+      'cathedral-city':     { name: 'Cathedral City',     page: '/cathedral-city.html',     ylopoCity: 'Cathedral+City' },
       'desert-hot-springs': { name: 'Desert Hot Springs', page: '/desert-hot-springs.html', ylopoCity: 'Desert+Hot+Springs' },
-      'coachella':        { name: 'Coachella',        page: '/coachella.html',        ylopoCity: 'Coachella' },
+      'coachella':          { name: 'Coachella',          page: '/coachella.html',          ylopoCity: 'Coachella' },
     }
 
     function renderCityLinkCard(citySlug) {
       const meta = CITY_META[citySlug]
       if (!meta) return
-      const searchUrl = `https://search.searchcoachellavalleyhomes.com/search?s[orderBy]=sourceCreationDate%2Cdesc&s[page]=1&s[locations][0][city]=${meta.ylopoCity}&s[locations][0][state]=CA`
+      const searchUrl = 'https://search.searchcoachellavalleyhomes.com/search?s[orderBy]=sourceCreationDate%2Cdesc&s[page]=1&s[locations][0][city]=' + meta.ylopoCity + '&s[locations][0][state]=CA'
       const el = document.getElementById('cityLinkCard')
-      el.innerHTML = `
+      el.innerHTML = \`
         <div class="city-link-card">
           <div class="city-link-left">
-            <div class="overline">Explore ${meta.name}</div>
-            <h3>Homes for Sale in ${meta.name}</h3>
+            <div class="overline">Explore \${meta.name}</div>
+            <h3>Homes for Sale in \${meta.name}</h3>
           </div>
           <div class="city-link-actions">
-            <a href="${meta.page}" class="city-link-btn">Community Guide →</a>
-            <a href="${searchUrl}" class="city-link-btn-outline" target="_blank" rel="noopener">Search Active Listings →</a>
+            <a href="\${meta.page}" class="city-link-btn">Community Guide &rarr;</a>
+            <a href="\${searchUrl}" class="city-link-btn-outline" target="_blank" rel="noopener">Search Active Listings &rarr;</a>
           </div>
-        </div>`
+        </div>\`
       el.style.display = 'block'
     }
 
     async function loadPost() {
-      const params = new URLSearchParams(window.location.search)
-      const slug = params.get('slug')
+      // PAGE_SLUG is injected server-side
+      const slug = window.PAGE_SLUG
+      if (!slug) { window.location.href = '/blog/'; return }
 
-      if (!slug) {
-        window.location.href = '/blog/'
-        return
-      }
-
-      const res = await fetch(`/api/blog/post?slug=${encodeURIComponent(slug)}`)
+      const res = await fetch('/api/blog/post?slug=' + encodeURIComponent(slug))
       if (res.status === 404) {
-        document.getElementById('loadingState').innerHTML = '<div style="text-align:center;padding:80px 0;color:rgba(255,255,255,0.4)"><h2>Post not found</h2><p><a href="/blog/" style="color:#B8975A">← Back to Blog</a></p></div>'
+        document.getElementById('loadingState').innerHTML = '<div style="text-align:center;padding:80px 0;color:rgba(255,255,255,0.4)"><h2>Post not found</h2><p><a href="/blog/" style="color:#B8975A">&larr; Back to Blog</a></p></div>'
         return
       }
-      if (!res.ok) throw new Error(`Server error ${res.status}`)
+      if (!res.ok) throw new Error('Server error ' + res.status)
       const data = await res.json()
       const post = data.post
 
-      // Update page metadata
-      document.title = `${post.title} — Shana Gates Blog`
-      document.getElementById('pageDesc').setAttribute('content', post.excerpt || '')
+      document.title = post.title + ' — Shana Gates Blog'
 
-      // Hero image
       if (post.heroImageUrl) {
         const img = document.getElementById('heroImage')
         img.src = post.heroImageUrl
@@ -532,38 +568,36 @@
         img.style.display = 'block'
       }
 
-      // Meta row
       const color = CATEGORY_COLORS[post.category] || '#607D8B'
       const label = CATEGORY_LABELS[post.category] || post.category
       const date = new Date(post.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
-      document.getElementById('postMeta').innerHTML = `
-        <span class="category-badge" style="background:${color}22;color:${color};">${label}</span>
-        <span class="post-date">${date}</span>
-      `
+      document.getElementById('postMeta').innerHTML =
+        '<span class="category-badge" style="background:' + color + '22;color:' + color + ';">' + label + '</span>' +
+        '<span class="post-date">' + date + '</span>'
 
-      // Render markdown body
-      const bodyEl = document.getElementById('postBody')
-      bodyEl.innerHTML = marked.parse(post.body || '')
+      document.getElementById('postBody').innerHTML = marked.parse(post.body || '')
 
-      // Community link card — if post is tagged to a specific CV city
       if (post.city) renderCityLinkCard(post.city)
 
-      // Source credit for daily articles
       if (post.sourceUrl && post.sourceTitle) {
         const sc = document.getElementById('sourceCredit')
-        sc.innerHTML = `Source: <a href="${post.sourceUrl}" target="_blank" rel="noopener noreferrer">${post.sourceTitle}</a>`
+        sc.innerHTML = 'Source: <a href="' + post.sourceUrl + '" target="_blank" rel="noopener noreferrer">' + post.sourceTitle + '</a>'
         sc.style.display = 'block'
       }
 
-      // Show post, hide loader
       document.getElementById('loadingState').style.display = 'none'
       document.getElementById('postWrap').style.display = 'block'
     }
 
     loadPost().catch(() => {
-      document.getElementById('loadingState').innerHTML = '<div style="text-align:center;padding:80px 0;color:rgba(255,255,255,0.4)"><p>Failed to load post. <a href="/blog/" style="color:#B8975A">← Back to Blog</a></p></div>'
+      document.getElementById('loadingState').innerHTML = '<div style="text-align:center;padding:80px 0;color:rgba(255,255,255,0.4)"><p>Failed to load post. <a href="/blog/" style="color:#B8975A">&larr; Back to Blog</a></p></div>'
     })
   </script>
 
 </body>
-</html>
+</html>`
+
+  res.setHeader('Content-Type', 'text/html; charset=utf-8')
+  res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=3600')
+  res.status(200).send(html)
+}

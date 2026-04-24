@@ -1,4 +1,7 @@
 {
+  "rewrites": [
+    { "source": "/blog/post/:slug", "destination": "/api/blog/post-page?slug=:slug" }
+  ],
   "functions": {
     "api/assistant/chat.ts": {
       "maxDuration": 120

@@ -58,7 +58,7 @@
         var color = CATEGORY_COLORS[cat] || '#607D8B'
         var label = CATEGORY_LABELS[cat] || cat
         var excerpt = post.excerpt ? post.excerpt.slice(0, 140) + (post.excerpt.length > 140 ? '…' : '') : ''
-        return '<a href="/blog/post.html?slug=' + encodeURIComponent(post.slug) + '" class="cbp-card">' +
+        return '<a href="/blog/post/' + encodeURIComponent(post.slug) + '" class="cbp-card">' +
           '<span class="cbp-badge" style="background:' + color + '22;color:' + color + ';">' + label + '</span>' +
           '<h3 class="cbp-title">' + post.title + '</h3>' +
           (excerpt ? '<p class="cbp-excerpt">' + excerpt + '</p>' : '') +

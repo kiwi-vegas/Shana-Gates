@@ -432,7 +432,7 @@
           : `<div class="post-card-image placeholder">🌵</div>`
 
         return `
-          <a class="post-card" href="/blog/post.html?slug=${encodeURIComponent(post.slug)}">
+          <a class="post-card" href="/blog/post/${encodeURIComponent(post.slug)}">
             ${imageHtml}
             <div class="post-card-body">
               <div class="post-meta">
