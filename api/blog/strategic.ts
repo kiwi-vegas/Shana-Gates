@@ -359,14 +359,23 @@ export default async function handler(req: any, res: any) {
     const action = req.query?.action
 
     if (action === 'topics') {
-      const raw = await redis.get<string>('strategic_drafts_index')
-      const drafts: DraftSummary[] = raw
-        ? (typeof raw === 'string' ? JSON.parse(raw) : raw)
+      const [rawDrafts, rawDismissed] = await Promise.all([
+        redis.get<string>('strategic_drafts_index'),
+        redis.get<string>('dismissed_strategic_topics'),
+      ])
+      const drafts: DraftSummary[] = rawDrafts
+        ? (typeof rawDrafts === 'string' ? JSON.parse(rawDrafts) : rawDrafts)
         : []
+      const dismissed: string[] = rawDismissed
+        ? (typeof rawDismissed === 'string' ? JSON.parse(rawDismissed) : rawDismissed)
+        : []
+      const dismissedSet = new Set(dismissed)
       const draftedTopicIds = new Set(drafts.map((d) => d.topicId))
       return res.status(200).json({
-        topics: STRATEGIC_TOPICS,
+        topics: STRATEGIC_TOPICS.filter((t) => !dismissedSet.has(t.id)),
+        dismissedTopics: STRATEGIC_TOPICS.filter((t) => dismissedSet.has(t.id)),
         draftedTopicIds: [...draftedTopicIds],
+        dismissedTopicIds: dismissed,
       })
     }
 
@@ -494,6 +503,33 @@ export default async function handler(req: any, res: any) {
         console.error('[strategic] publish error:', err)
         return res.status(500).json({ error: err.message })
       }
+    }
+
+    // ── Dismiss topic (hide from queue) ─────────────────────────────────────
+    if (action === 'dismiss-topic') {
+      const { topicId } = req.body
+      if (!topicId) return res.status(400).json({ error: 'topicId required' })
+
+      const raw = await redis.get<string>('dismissed_strategic_topics')
+      const dismissed: string[] = raw
+        ? (typeof raw === 'string' ? JSON.parse(raw) : raw)
+        : []
+      if (!dismissed.includes(topicId)) dismissed.push(topicId)
+      await redis.set('dismissed_strategic_topics', JSON.stringify(dismissed))
+      return res.status(200).json({ ok: true })
+    }
+
+    // ── Restore topic (un-dismiss) ───────────────────────────────────────────
+    if (action === 'restore-topic') {
+      const { topicId } = req.body
+      if (!topicId) return res.status(400).json({ error: 'topicId required' })
+
+      const raw = await redis.get<string>('dismissed_strategic_topics')
+      const dismissed: string[] = raw
+        ? (typeof raw === 'string' ? JSON.parse(raw) : raw)
+        : []
+      await redis.set('dismissed_strategic_topics', JSON.stringify(dismissed.filter((id) => id !== topicId)))
+      return res.status(200).json({ ok: true })
     }
 
     // ── Delete draft ─────────────────────────────────────────────────────────

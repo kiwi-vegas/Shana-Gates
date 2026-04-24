@@ -235,6 +235,60 @@
     }
     .delete-btn:hover { color: #ff6b6b; border-color: rgba(255,107,107,0.3); }
 
+    /* ── Topic trash button ── */
+    .topic-meta { justify-content: space-between; }
+    .topic-meta-left { display: flex; gap: 8px; align-items: center; }
+    .topic-trash-btn {
+      width: 28px; height: 28px;
+      display: flex; align-items: center; justify-content: center;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      cursor: pointer;
+      color: rgba(255,255,255,0.2);
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+    .topic-trash-btn:hover { color: #ff6b6b; background: rgba(255,107,107,0.1); border-color: rgba(255,107,107,0.2); }
+    .topic-trash-btn svg { width: 14px; height: 14px; }
+
+    /* ── Hidden topics section ── */
+    .hidden-topics-toggle {
+      display: flex; align-items: center; gap: 8px;
+      margin-top: 32px; margin-bottom: 12px;
+      cursor: pointer;
+      color: rgba(255,255,255,0.3);
+      font-size: 12px;
+      font-weight: 500;
+      user-select: none;
+      transition: color 0.15s;
+    }
+    .hidden-topics-toggle:hover { color: rgba(255,255,255,0.5); }
+    .hidden-chevron { transition: transform 0.2s; font-size: 10px; }
+    .hidden-chevron.open { transform: rotate(90deg); }
+    .hidden-topics-list { display: none; }
+    .hidden-topics-list.open { display: block; }
+    .topic-card.dismissed { opacity: 0.35; border-style: dashed; }
+    .topic-restore-btn {
+      flex-shrink: 0;
+      padding: 7px 14px;
+      background: transparent;
+      color: rgba(255,255,255,0.35);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: var(--font);
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .topic-restore-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.25); }
+
+    /* Dismissing animation */
+    @keyframes fadeOut { to { opacity: 0; transform: translateX(12px); } }
+    .topic-card.dismissing { animation: fadeOut 0.2s ease forwards; pointer-events: none; }
+
     /* Success banner */
     .success-banner {
       display: flex;
@@ -280,11 +334,11 @@
   <header>
     <div class="header-brand">Shana Gates · Blog System</div>
     <div class="header-title">Strategic Posts</div>
-    <div class="header-sub">15 evergreen topics adapted from proven high-performers. Generate a draft, create your thumbnail manually, then publish — no automated image generation.</div>
+    <div class="header-sub">35 evergreen topics adapted from proven high-performers. Generate a draft, create your thumbnail manually, then publish — no automated image generation.</div>
   </header>
 
   <div class="tab-bar">
-    <button class="tab-btn active" data-tab="queue">Topic Queue <span class="tab-count" id="count-queue">15</span></button>
+    <button class="tab-btn active" data-tab="queue">Topic Queue <span class="tab-count" id="count-queue">…</span></button>
     <button class="tab-btn" data-tab="pending">Pending Thumbnail <span class="tab-count" id="count-pending">…</span></button>
   </div>
 
@@ -317,6 +371,7 @@
     }
 
     let allTopics = []
+    let allDismissedTopics = []
     let allDrafts = []
     let draftedTopicIds = new Set()
     let activeTab = 'queue'
@@ -328,41 +383,115 @@
       return `<span class="cat-badge" style="background:${bg};color:${color};">${CAT_LABELS[cat] || cat}</span>`
     }
 
+    const TRASH_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>`
+
     // ── Queue tab ─────────────────────────────────────────────────────────────
 
+    function topicCardHtml(t, i, opts = {}) {
+      const isDrafted = draftedTopicIds.has(t.id)
+      const isDismissed = opts.dismissed || false
+      const angleFull = escHtml(t.angle)
+      const angleShort = escHtml(t.angle.slice(0, 120)) + (t.angle.length > 120 ? '…' : '')
+      let btnHtml
+      if (isDismissed) {
+        btnHtml = `<button class="topic-restore-btn" onclick="restoreTopic('${t.id}')">Restore</button>`
+      } else if (isDrafted) {
+        btnHtml = `<button class="gen-btn drafted" disabled>✓ Draft created</button>`
+      } else {
+        btnHtml = `<button class="gen-btn" id="genbtn-${t.id}" onclick="generateDraft('${t.id}')">Generate Draft →</button>`
+      }
+      const trashBtn = isDismissed ? '' : `
+        <button class="topic-trash-btn" onclick="dismissTopic('${t.id}')" title="Remove from queue">${TRASH_SVG}</button>`
+      return `
+        <div class="topic-card${isDrafted ? ' drafted' : ''}${isDismissed ? ' dismissed' : ''}" id="tcard-${t.id}">
+          <div class="topic-meta">
+            <div class="topic-meta-left">
+              ${catBadge(t.category)}
+              <span class="topic-num">#${String(i + 1).padStart(2, '0')}</span>
+            </div>
+            ${trashBtn}
+          </div>
+          <div class="topic-card-header">
+            <div class="topic-card-body">
+              <div class="topic-title">${escHtml(t.title)}</div>
+              <div class="topic-angle">${angleShort}</div>
+              <div class="topic-angle-full">${angleFull}</div>
+            </div>
+            ${btnHtml}
+          </div>
+        </div>`
+    }
+
     function renderQueue() {
-      if (!allTopics.length) {
+      document.getElementById('count-queue').textContent = allTopics.length
+
+      if (!allTopics.length && !allDismissedTopics.length) {
         document.getElementById('queueContainer').innerHTML =
           '<div class="empty-state"><div class="empty-icon">📋</div><p>No topics loaded.</p></div>'
         return
       }
-      const html = allTopics.map((t, i) => {
-        const isDrafted = draftedTopicIds.has(t.id)
-        const angleFull = escHtml(t.angle)
-        const angleShort = escHtml(t.angle.slice(0, 120)) + (t.angle.length > 120 ? '…' : '')
-        let btnHtml
-        if (isDrafted) {
-          btnHtml = `<button class="gen-btn drafted" disabled>✓ Draft created</button>`
-        } else {
-          btnHtml = `<button class="gen-btn" id="genbtn-${t.id}" onclick="generateDraft('${t.id}')">Generate Draft →</button>`
-        }
-        return `
-          <div class="topic-card${isDrafted ? ' drafted' : ''}" id="tcard-${t.id}">
-            <div class="topic-meta">
-              ${catBadge(t.category)}
-              <span class="topic-num">#${String(i + 1).padStart(2, '0')}</span>
-            </div>
-            <div class="topic-card-header">
-              <div class="topic-card-body">
-                <div class="topic-title">${escHtml(t.title)}</div>
-                <div class="topic-angle">${angleShort}</div>
-                <div class="topic-angle-full">${angleFull}</div>
-              </div>
-              ${btnHtml}
-            </div>
-          </div>`
-      }).join('')
-      document.getElementById('queueContainer').innerHTML = html
+
+      const activeHtml = allTopics.map((t, i) => topicCardHtml(t, i)).join('')
+
+      let dismissedSection = ''
+      if (allDismissedTopics.length) {
+        const dismissedHtml = allDismissedTopics.map((t, i) => topicCardHtml(t, i, { dismissed: true })).join('')
+        dismissedSection = `
+          <div class="hidden-topics-toggle" onclick="toggleHiddenTopics(this)">
+            <span class="hidden-chevron">▶</span>
+            Hidden topics (${allDismissedTopics.length})
+          </div>
+          <div class="hidden-topics-list" id="hiddenTopicsList">${dismissedHtml}</div>`
+      }
+
+      document.getElementById('queueContainer').innerHTML = activeHtml + dismissedSection
+    }
+
+    function toggleHiddenTopics(btn) {
+      const list = document.getElementById('hiddenTopicsList')
+      const chevron = btn.querySelector('.hidden-chevron')
+      list.classList.toggle('open')
+      chevron.classList.toggle('open')
+    }
+
+    async function dismissTopic(topicId) {
+      const card = document.getElementById(`tcard-${topicId}`)
+      if (card) card.classList.add('dismissing')
+
+      try {
+        const res = await fetch('/api/blog/strategic', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'dismiss-topic', topicId }),
+        })
+        if (!res.ok) throw new Error((await res.json()).error || 'Failed')
+
+        const topic = allTopics.find(t => t.id === topicId)
+        allTopics = allTopics.filter(t => t.id !== topicId)
+        if (topic) allDismissedTopics.push(topic)
+        renderQueue()
+      } catch (err) {
+        if (card) card.classList.remove('dismissing')
+        alert('Error: ' + err.message)
+      }
+    }
+
+    async function restoreTopic(topicId) {
+      try {
+        const res = await fetch('/api/blog/strategic', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'restore-topic', topicId }),
+        })
+        if (!res.ok) throw new Error((await res.json()).error || 'Failed')
+
+        const topic = allDismissedTopics.find(t => t.id === topicId)
+        allDismissedTopics = allDismissedTopics.filter(t => t.id !== topicId)
+        if (topic) allTopics.push(topic)
+        renderQueue()
+      } catch (err) {
+        alert('Error: ' + err.message)
+      }
     }
 
     async function generateDraft(topicId) {
@@ -682,6 +811,7 @@
         const draftsData = await draftsRes.json()
 
         allTopics = topicsData.topics || []
+        allDismissedTopics = topicsData.dismissedTopics || []
         allDrafts = draftsData.drafts || []
         draftedTopicIds = new Set(topicsData.draftedTopicIds || [])
 
