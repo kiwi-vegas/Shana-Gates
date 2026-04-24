@@ -400,6 +400,42 @@ export default async function handler(req: any, res: any) {
     }
     .cta-btn:hover { opacity: 0.85; }
 
+    /* ── Equity links (auto-linked phrases about home value) ── */
+    .equity-link { color: var(--bronze); text-decoration: underline; text-decoration-style: dotted; text-underline-offset: 3px; }
+    .equity-link:hover { text-decoration-style: solid; }
+
+    /* ── YLOPO listings section ── */
+    .listings-section {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 56px 32px 60px;
+      margin-top: 0;
+    }
+    .listings-inner { max-width: 1100px; margin: 0 auto; }
+    .listings-eyebrow {
+      color: var(--bronze);
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .listings-heading { font-size: clamp(22px, 3vw, 30px); font-weight: 700; margin-bottom: 6px; }
+    .listings-sub { color: var(--muted); font-size: 14px; margin-bottom: 28px; }
+    .listings-view-all {
+      display: inline-block;
+      margin-top: 24px;
+      background: transparent;
+      border: 1.5px solid rgba(184,151,90,0.5);
+      color: var(--bronze);
+      font-size: 14px;
+      font-weight: 600;
+      padding: 10px 24px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: border-color 0.15s;
+    }
+    .listings-view-all:hover { border-color: var(--bronze); }
+
     /* ── Back to blog ── */
     .back-bar {
       max-width: 760px;
@@ -488,6 +524,17 @@ export default async function handler(req: any, res: any) {
     </div>
   </article>
 
+  <!-- YLOPO listings — only shown when the post is tagged to a specific CV city -->
+  <section id="cityListingsSection" class="listings-section" style="display:none;">
+    <div class="listings-inner">
+      <div class="listings-eyebrow">Browse the Market</div>
+      <h2 class="listings-heading" id="listingsHeading">Homes for Sale</h2>
+      <p class="listings-sub" id="listingsSub">Active listings in this community</p>
+      <div id="ylopoWidget"></div>
+      <div><a class="listings-view-all" id="listingsViewAll" href="#" target="_blank" rel="noopener">View All Listings &rarr;</a></div>
+    </div>
+  </section>
+
   <footer>
     <p>&copy; 2026 Shana Gates &middot; Craft &amp; Bauer | Real Broker &middot; Coachella Valley, CA</p>
     <p style="margin-top:8px;">All content for informational purposes. Not legal or financial advice. <a href="/blog/">&larr; Back to Blog</a></p>
@@ -524,6 +571,36 @@ export default async function handler(req: any, res: any) {
       'cathedral-city':     { name: 'Cathedral City',     page: '/cathedral-city.html',     ylopoCity: 'Cathedral+City' },
       'desert-hot-springs': { name: 'Desert Hot Springs', page: '/desert-hot-springs.html', ylopoCity: 'Desert+Hot+Springs' },
       'coachella':          { name: 'Coachella',          page: '/coachella.html',          ylopoCity: 'Coachella' },
+    }
+
+    // Wrap equity / home-value phrases in a link to the seller equity page
+    function addEquityLinks(html) {
+      const SELLER_URL = 'https://search.searchcoachellavalleyhomes.com/seller'
+      // Split on existing <a> tags so we never double-link
+      const parts = html.split(/(<a\\b[^>]*>[\\s\\S]*?<\\/a>)/i)
+      const pattern = /\\b(home equity|equity in (?:your|their|the) (?:home|property)|property equity|(?:your|their|the) home(?:'s)? (?:value|worth)|(?:your|their|the) property(?:'s)? value|home value|property value|what (?:your|the|their) home is worth|home(?:'s)? worth)\\b/gi
+      return parts.map((part, i) => {
+        if (i % 2 === 1) return part // already inside an anchor tag
+        return part.replace(pattern, '<a href="' + SELLER_URL + '" target="_blank" rel="noopener" class="equity-link">$1</a>')
+      }).join('')
+    }
+
+    function renderYlopoWidget(cityName) {
+      const section = document.getElementById('cityListingsSection')
+      if (!section || !cityName) return
+      document.getElementById('listingsHeading').textContent = 'Homes for Sale in ' + cityName
+      document.getElementById('listingsSub').textContent = 'Browse active listings in ' + cityName + ', CA'
+      const cityEnc = encodeURIComponent(cityName).replace(/%20/g, '+')
+      document.getElementById('listingsViewAll').href =
+        'https://search.searchcoachellavalleyhomes.com/search?s[orderBy]=sourceCreationDate%2Cdesc&s[page]=1&s[locations][0][city]=' + cityEnc + '&s[locations][0][state]=CA'
+      window.YLOPO_HOSTNAME = 'search.searchcoachellavalleyhomes.com'
+      window.YLOPO_WIDGETS = { domain: 'search.searchcoachellavalleyhomes.com' }
+      const dataSearch = JSON.stringify({ locations: [{ city: cityName, state: 'CA' }], propertyTypes: ['house', 'condo', 'townhouse'], limit: 12 })
+      document.getElementById('ylopoWidget').innerHTML = '<div class="YLOPO_resultsWidget" data-search=\\'' + dataSearch.replace(/'/g, "\\\\'") + '\\'></div>'
+      const s = document.createElement('script')
+      s.src = 'https://search.searchcoachellavalleyhomes.com/build/js/widgets-1.0.0.js'
+      document.body.appendChild(s)
+      section.style.display = 'block'
     }
 
     function renderCityLinkCard(citySlug) {
@@ -575,9 +652,13 @@ export default async function handler(req: any, res: any) {
         '<span class="category-badge" style="background:' + color + '22;color:' + color + ';">' + label + '</span>' +
         '<span class="post-date">' + date + '</span>'
 
-      document.getElementById('postBody').innerHTML = marked.parse(post.body || '')
+      document.getElementById('postBody').innerHTML = addEquityLinks(marked.parse(post.body || ''))
 
-      if (post.city) renderCityLinkCard(post.city)
+      if (post.city) {
+        renderCityLinkCard(post.city)
+        const cityMeta = CITY_META[post.city]
+        if (cityMeta) renderYlopoWidget(cityMeta.name)
+      }
 
       if (post.sourceUrl && post.sourceTitle) {
         const sc = document.getElementById('sourceCredit')

@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-X2N2M3LDKS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-X2N2M3LDKS');
+</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="/images/favcon.png" />
+  <title>Blog Effectiveness Dashboard — Shana Gates</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bronze: #B8975A;
+      --teal:   #1A444C;
+      --bg:     #0a0a0a;
+      --surf:   #141414;
+      --surf2:  #1c1c1c;
+      --border: rgba(255,255,255,0.08);
+      --text:   #fff;
+      --muted:  rgba(255,255,255,0.45);
+      --green:  #4CAF50;
+      --blue:   #2563eb;
+      --red:    #ef4444;
+      --font:   system-ui, -apple-system, sans-serif;
+    }
+    body { background: var(--bg); color: var(--text); font-family: var(--font); -webkit-font-smoothing: antialiased; min-height: 100vh; }
+
+    /* ── Header ── */
+    header { background: var(--surf); border-bottom: 1px solid var(--border); padding: 24px 32px 20px; }
+    .header-brand { color: var(--bronze); font-size: 11px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 4px; }
+    .header-title { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+    .header-meta { color: var(--muted); font-size: 13px; }
+
+    /* ── Layout ── */
+    main { max-width: 1100px; margin: 0 auto; padding: 36px 24px 100px; }
+    .section { margin-bottom: 40px; }
+    .section-title { font-size: 13px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+
+    /* ── Stat cards row ── */
+    .stat-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 40px; }
+    .stat-card { background: var(--surf); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; }
+    .stat-label { font-size: 11px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px; }
+    .stat-value { font-size: 32px; font-weight: 700; line-height: 1; margin-bottom: 4px; }
+    .stat-sub { font-size: 12px; color: var(--muted); }
+    .stat-card.highlight { border-color: rgba(184,151,90,0.3); background: rgba(184,151,90,0.06); }
+    .stat-card.highlight .stat-value { color: var(--bronze); }
+
+    /* ── GA status badge ── */
+    .ga-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 10px; border-radius: 100px;
+      font-size: 11px; font-weight: 600; letter-spacing: 0.05em;
+    }
+    .ga-badge.connected { background: rgba(74,197,80,0.12); color: var(--green); }
+    .ga-badge.pending { background: rgba(255,152,0,0.12); color: #FF9800; }
+    .ga-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+    /* ── Tables ── */
+    .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th { background: var(--surf2); text-align: left; padding: 10px 14px; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); white-space: nowrap; }
+    td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+    .td-muted { color: var(--muted); }
+    .td-pending { color: rgba(255,255,255,0.2); font-style: italic; }
+
+    /* ── Category badges ── */
+    .cat-badge {
+      display: inline-block; font-size: 10px; font-weight: 600;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      padding: 2px 7px; border-radius: 4px; white-space: nowrap;
+    }
+
+    /* ── Benchmark table ── */
+    .bench-table td:first-child { color: var(--muted); font-size: 12px; }
+    .bench-status { display: inline-flex; align-items: center; gap: 6px; }
+    .bench-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .bench-dot.green { background: var(--green); }
+    .bench-dot.amber { background: #FF9800; }
+    .bench-dot.pending { background: rgba(255,255,255,0.2); }
+
+    /* ── Category breakdown ── */
+    .cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+    .cat-item { background: var(--surf); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; }
+    .cat-item-count { font-size: 28px; font-weight: 700; line-height: 1; margin-bottom: 6px; }
+    .cat-item-label { font-size: 12px; color: var(--muted); }
+
+    /* ── Bar chart ── */
+    .bar-chart { display: flex; flex-direction: column; gap: 10px; }
+    .bar-row { display: flex; align-items: center; gap: 12px; }
+    .bar-label { font-size: 12px; color: var(--muted); width: 130px; flex-shrink: 0; text-align: right; }
+    .bar-track { flex: 1; height: 8px; background: var(--surf2); border-radius: 4px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 4px; background: var(--bronze); transition: width 0.6s ease; }
+    .bar-count { font-size: 12px; font-weight: 600; width: 28px; text-align: right; }
+
+    /* ── Post title link ── */
+    .post-link { color: var(--text); text-decoration: none; }
+    .post-link:hover { color: var(--bronze); }
+
+    /* ── Info callout ── */
+    .callout {
+      background: var(--surf); border: 1px solid var(--border); border-left: 3px solid var(--bronze);
+      border-radius: 0 10px 10px 0; padding: 16px 20px; font-size: 13px; line-height: 1.6;
+      color: rgba(255,255,255,0.7); margin-bottom: 32px;
+    }
+    .callout strong { color: var(--text); }
+    .callout code { background: rgba(255,255,255,0.08); padding: 1px 5px; border-radius: 3px; font-size: 12px; }
+
+    /* ── Pipeline badge ── */
+    .pipe-badge {
+      display: inline-block; font-size: 10px; font-weight: 600;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      padding: 2px 6px; border-radius: 4px;
+    }
+    .pipe-daily   { background: rgba(37,99,235,0.15); color: #60a5fa; }
+    .pipe-weekly  { background: rgba(156,39,176,0.15); color: #c084fc; }
+    .pipe-strategic { background: rgba(184,151,90,0.15); color: var(--bronze); }
+
+    /* ── Loading ── */
+    .loading { text-align: center; padding: 80px 20px; color: var(--muted); font-size: 15px; }
+    .sk { background: rgba(255,255,255,0.06); border-radius: 8px; animation: pulse 1.4s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+    @media (max-width: 640px) {
+      main { padding: 24px 16px 60px; }
+      .stat-cards { grid-template-columns: repeat(2, 1fr); }
+      .bar-label { width: 90px; font-size: 11px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-brand">Shana Gates · Admin</div>
+    <div class="header-title">Blog Effectiveness Dashboard</div>
+    <div class="header-meta" id="headerMeta">Loading…</div>
+  </header>
+
+  <main id="mainContent">
+    <div class="loading">Loading dashboard data…</div>
+  </main>
+
+  <script>
+    const CAT_COLORS = {
+      'buying-tips':         ['#4CAF50',  'rgba(76,175,80,0.12)'],
+      'selling-tips':        ['#0ea5e9',  'rgba(14,165,233,0.12)'],
+      'community-spotlight': ['#9C27B0',  'rgba(156,39,176,0.12)'],
+      'market-insight':      ['#4338CA',  'rgba(67,56,202,0.12)'],
+      'market-update':       ['#2563eb',  'rgba(37,99,235,0.12)'],
+      'investment':          ['#FF9800',  'rgba(255,152,0,0.12)'],
+      'local-area':          ['#D97706',  'rgba(217,119,6,0.12)'],
+      'news':                ['#607D8B',  'rgba(96,125,139,0.12)'],
+    }
+    const CAT_LABELS = {
+      'buying-tips': 'Buying Tips', 'selling-tips': 'Selling Tips',
+      'community-spotlight': 'Community Spotlight', 'market-insight': 'Market Insight',
+      'market-update': 'Market Update', 'investment': 'Investment',
+      'local-area': 'Local Area', 'news': 'News',
+    }
+
+    const BENCHMARKS = [
+      { metric: 'Pageviews per post / day',    key: 'pvPerDay',      low: 0.15, high: 0.35 },
+      { metric: 'Sessions per post / day',     key: 'sessPerDay',    low: 0.12, high: 0.30 },
+      { metric: 'Avg. engagement time (sec)',  key: 'engTime',       low: 30,   high: 60   },
+      { metric: 'Organic search share',        key: 'organicShare',  low: 55,   high: 70, isPercent: true },
+      { metric: 'Direct traffic share',        key: 'directShare',   low: 15,   high: 25, isPercent: true },
+    ]
+
+    const TRAFFIC_CHANNELS = ['Organic Search', 'Direct', 'Organic Social', 'Referral']
+
+    function catBadge(cat) {
+      const [color, bg] = CAT_COLORS[cat] || ['#607D8B', 'rgba(96,125,139,0.12)']
+      return `<span class="cat-badge" style="background:${bg};color:${color};">${CAT_LABELS[cat] || cat}</span>`
+    }
+
+    function pipeBadge(pipeline) {
+      const cls = pipeline === 'daily' ? 'pipe-daily' : pipeline === 'weekly' ? 'pipe-weekly' : 'pipe-strategic'
+      const label = pipeline === 'daily' ? 'Daily News' : pipeline === 'weekly' ? 'Weekly' : 'Strategic'
+      return `<span class="pipe-badge ${cls}">${label}</span>`
+    }
+
+    function fmtDate(iso) {
+      return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    }
+
+    function benchStatus(val) {
+      // All GA data is pending until property connected
+      return `<span class="bench-status"><span class="bench-dot pending"></span><span style="color:rgba(255,255,255,0.25);font-size:12px;">Pending GA data</span></span>`
+    }
+
+    function buildDashboard(d) {
+      const generated = new Date(d.generatedAt).toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' })
+      document.getElementById('headerMeta').textContent = `${d.recentPosts} posts in the last 90 days · Generated ${generated}`
+
+      const gaBadge = d.gaConnected
+        ? `<span class="ga-badge connected"><span class="ga-dot"></span>Google Analytics Connected</span>`
+        : `<span class="ga-badge pending"><span class="ga-dot"></span>GA4 Not Yet Connected</span>`
+
+      const catEntries = Object.entries(d.byCat).sort((a, b) => b[1] - a[1])
+      const maxCat = catEntries.length ? catEntries[0][1] : 1
+
+      const catBarsHtml = catEntries.map(([cat, count]) => {
+        const [color] = CAT_COLORS[cat] || ['#607D8B']
+        const pct = Math.round((count / maxCat) * 100)
+        return `<div class="bar-row">
+          <div class="bar-label">${CAT_LABELS[cat] || cat}</div>
+          <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${color};"></div></div>
+          <div class="bar-count">${count}</div>
+        </div>`
+      }).join('')
+
+      const postsHtml = d.posts.map(p => `
+        <tr>
+          <td><a class="post-link" href="/blog/post/${encodeURIComponent(p.slug)}" target="_blank">${escHtml(p.title)}</a></td>
+          <td>${catBadge(p.category)}</td>
+          <td>${pipeBadge(p.pipeline || 'weekly')}</td>
+          <td class="td-muted">${p.city ? p.city.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase()) : '—'}</td>
+          <td class="td-muted">${fmtDate(p.publishedAt)}</td>
+          <td class="td-muted">${p.ageDays}d</td>
+          <td class="td-pending">—</td>
+          <td class="td-pending">—</td>
+          <td class="td-pending">—</td>
+        </tr>`).join('')
+
+      const benchRows = BENCHMARKS.map(b => `
+        <tr>
+          <td>${b.metric}</td>
+          <td>${benchStatus(null)}</td>
+          <td class="td-muted">${b.low}${b.isPercent ? '%' : ''}–${b.high}${b.isPercent ? '%' : ''}</td>
+        </tr>`).join('')
+
+      const trafficRows = TRAFFIC_CHANNELS.map(ch => `
+        <tr>
+          <td>${ch}</td>
+          <td class="td-pending">—</td>
+          <td class="td-pending">—</td>
+          <td class="td-pending">—</td>
+        </tr>`).join('')
+
+      document.getElementById('mainContent').innerHTML = `
+        <!-- Stat cards -->
+        <div class="stat-cards">
+          <div class="stat-card highlight">
+            <div class="stat-label">Total Posts Published</div>
+            <div class="stat-value">${d.totalPosts}</div>
+            <div class="stat-sub">All time</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Last 90 Days</div>
+            <div class="stat-value">${d.recentPosts}</div>
+            <div class="stat-sub">posts published</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Posts / Week</div>
+            <div class="stat-value">${d.postsPerWeek}</div>
+            <div class="stat-sub">Benchmark: 3–7 / week</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Google Analytics</div>
+            <div style="margin-top:10px;">${gaBadge}</div>
+            <div class="stat-sub" style="margin-top:8px;">Property: ${escHtml(d.gaMeasurementId)}</div>
+          </div>
+        </div>
+
+        <!-- GA callout -->
+        ${!d.gaConnected ? `
+        <div class="callout">
+          <strong>Connect Google Analytics for live traffic metrics.</strong><br>
+          To see pageviews, sessions, and engagement time per post, add these environment variables to Vercel:<br><br>
+          <code>GOOGLE_ANALYTICS_PROPERTY_ID</code> — your numeric GA4 property ID (found in GA4 → Admin → Property Settings)<br>
+          <code>GOOGLE_SERVICE_ACCOUNT_JSON</code> — a service account JSON key with Viewer access to the GA4 property<br><br>
+          Once set, all "—" values below will populate automatically on each page load.
+        </div>` : ''}
+
+        <!-- Category breakdown -->
+        <div class="section">
+          <div class="section-title">Content Breakdown by Category (Last 90 Days)</div>
+          <div class="bar-chart">${catBarsHtml || '<div style="color:var(--muted);font-size:13px;">No posts in the last 90 days.</div>'}</div>
+        </div>
+
+        <!-- Benchmark comparison -->
+        <div class="section">
+          <div class="section-title">How We Compare to a Typical Real Estate Blog</div>
+          <div class="table-wrap">
+            <table class="bench-table">
+              <thead><tr><th>Metric</th><th>Current</th><th>Benchmark Range</th></tr></thead>
+              <tbody>
+                ${benchRows}
+                <tr>
+                  <td>Posts published (last 90 days)</td>
+                  <td><span style="color:${d.recentPosts >= 12 ? 'var(--green)' : '#FF9800'};font-weight:600;">${d.recentPosts} posts</span></td>
+                  <td class="td-muted">36–84 (3–7/wk)</td>
+                </tr>
+                <tr>
+                  <td>Posts per week</td>
+                  <td><span style="color:${parseFloat(d.postsPerWeek) >= 3 ? 'var(--green)' : '#FF9800'};font-weight:600;">${d.postsPerWeek}/wk</span></td>
+                  <td class="td-muted">3–7 / week</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="margin-top:10px;font-size:11px;color:rgba(255,255,255,0.25);">Benchmark sources: HubSpot, Databox, SEMrush, SimilarWeb. Ranges reflect the middle 50% of mature informational posts on real estate blogs.</div>
+        </div>
+
+        <!-- Traffic sources -->
+        <div class="section">
+          <div class="section-title">Traffic by Channel (Last 90 Days)</div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Channel</th><th>Pageviews</th><th>Sessions</th><th>% of Pageviews</th></tr></thead>
+              <tbody>${trafficRows}</tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Per-post table -->
+        <div class="section">
+          <div class="section-title">Post-by-Post Results (Last 90 Days — ${d.recentPosts} posts)</div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Category</th>
+                  <th>Pipeline</th>
+                  <th>City</th>
+                  <th>Published</th>
+                  <th>Age</th>
+                  <th>PV / Day</th>
+                  <th>Sess / Day</th>
+                  <th>Eng. Time</th>
+                </tr>
+              </thead>
+              <tbody>${postsHtml || '<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:32px;">No posts in the last 90 days.</td></tr>'}</tbody>
+            </table>
+          </div>
+        </div>
+      `
+    }
+
+    function escHtml(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+    }
+
+    async function load() {
+      try {
+        const res = await fetch('/api/blog/dashboard')
+        if (res.status === 401) {
+          window.location.href = '/admin/assistant/login.html?next=' + encodeURIComponent(window.location.pathname)
+          return
+        }
+        if (!res.ok) throw new Error('Server error ' + res.status)
+        const data = await res.json()
+        buildDashboard(data)
+      } catch (err) {
+        document.getElementById('mainContent').innerHTML =
+          `<div class="loading" style="color:#ff8a8a;">Failed to load dashboard.<br><small>${err.message}</small></div>`
+      }
+    }
+
+    load()
+  </script>
+</body>
+</html>
