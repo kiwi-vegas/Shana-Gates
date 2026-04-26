@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="/images/favcon.png" />
+  <title>Review Post — Shana Gates</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bronze: #B8975A;
+      --bg:     #0a0a0a;
+      --surf:   #141414;
+      --surf2:  #1c1c1c;
+      --border: rgba(255,255,255,0.08);
+      --text:   #fff;
+      --muted:  rgba(255,255,255,0.45);
+      --amber:  #f59e0b;
+      --blue:   #3b82f6;
+      --green:  #22c55e;
+      --red:    #ef4444;
+      --font:   system-ui, -apple-system, sans-serif;
+    }
+    body { background: var(--bg); color: var(--text); font-family: var(--font); -webkit-font-smoothing: antialiased; min-height: 100vh; }
+
+    header { background: var(--surf); border-bottom: 1px solid var(--border); padding: 24px 32px 20px; }
+    .header-brand { color: var(--bronze); font-size: 11px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 4px; }
+    .header-title { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+    .header-meta { color: var(--muted); font-size: 13px; }
+
+    .back-bar { max-width: 860px; margin: 0 auto; padding: 20px 24px 0; }
+    .back-link { color: var(--muted); font-size: 13px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: color 0.15s; }
+    .back-link:hover { color: var(--bronze); }
+
+    main { max-width: 860px; margin: 0 auto; padding: 24px 24px 100px; }
+
+    /* Loading */
+    .loading-state { text-align: center; padding: 60px 20px; color: var(--muted); font-size: 14px; }
+
+    /* Card sections */
+    .card {
+      background: var(--surf); border: 1px solid var(--border);
+      border-radius: 12px; padding: 24px; margin-bottom: 16px;
+    }
+    .card-title {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 16px;
+    }
+
+    /* Post info */
+    .post-title { font-size: 20px; font-weight: 700; line-height: 1.35; margin-bottom: 10px; }
+    .post-excerpt { font-size: 14px; color: rgba(255,255,255,0.7); line-height: 1.6; margin-bottom: 14px; }
+    .meta-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .status-badge {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 3px 8px; border-radius: 100px;
+    }
+    .status-media_pending { background: rgba(245,158,11,0.15); color: var(--amber); border: 1px solid rgba(245,158,11,0.25); }
+    .status-media_ready   { background: rgba(59,130,246,0.15);  color: var(--blue);  border: 1px solid rgba(59,130,246,0.25); }
+    .cat-badge {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+      padding: 2px 7px; border-radius: 100px;
+      background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.45);
+    }
+    .post-date { font-size: 12px; color: var(--muted); }
+    .source-link { font-size: 12px; color: var(--bronze); text-decoration: none; }
+    .source-link:hover { text-decoration: underline; }
+
+    /* Thumbnail */
+    .thumb-wrap { position: relative; margin-bottom: 16px; }
+    .thumb-img {
+      width: 100%; max-width: 480px; aspect-ratio: 16/9;
+      object-fit: cover; border-radius: 8px; background: var(--surf2);
+      display: block;
+    }
+    .thumb-placeholder {
+      width: 100%; max-width: 480px; aspect-ratio: 16/9;
+      background: var(--surf2); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px; color: rgba(255,255,255,0.1);
+    }
+    .file-label {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--surf2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 9px 16px;
+      font-size: 13px; color: var(--muted); cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .file-label:hover { border-color: rgba(184,151,90,0.4); color: var(--text); }
+    .file-input { display: none; }
+    .file-hint { font-size: 12px; color: var(--muted); margin-top: 8px; }
+
+    /* Caption */
+    textarea {
+      width: 100%; background: var(--surf2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 12px; color: var(--text);
+      font-family: var(--font); font-size: 14px; line-height: 1.6;
+      resize: vertical; min-height: 100px;
+      transition: border-color 0.15s;
+    }
+    textarea:focus { outline: none; border-color: rgba(184,151,90,0.4); }
+    .gen-btn {
+      margin-top: 10px;
+      background: none; border: 1px solid var(--border);
+      color: var(--muted); border-radius: 8px;
+      padding: 8px 16px; font-size: 13px; cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .gen-btn:hover:not(:disabled) { border-color: rgba(184,151,90,0.4); color: var(--text); }
+    .gen-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* Actions */
+    .actions { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn {
+      padding: 11px 24px; border-radius: 8px; font-size: 14px; font-weight: 600;
+      cursor: pointer; border: none; transition: opacity 0.15s, transform 0.1s;
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn:active:not(:disabled) { transform: scale(0.98); }
+    .btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .btn-amber  { background: var(--amber); color: #000; }
+    .btn-green  { background: var(--green); color: #000; }
+    .btn-amber:hover:not(:disabled)  { opacity: 0.85; }
+    .btn-green:hover:not(:disabled)  { opacity: 0.85; }
+
+    .inline-error {
+      font-size: 13px; color: var(--red); margin-top: 10px;
+      padding: 8px 12px; background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.2); border-radius: 6px;
+    }
+    .inline-success {
+      font-size: 13px; color: var(--green); margin-top: 10px;
+      padding: 8px 12px; background: rgba(34,197,94,0.1);
+      border: 1px solid rgba(34,197,94,0.2); border-radius: 6px;
+    }
+
+    /* Spinner */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      width: 14px; height: 14px; border: 2px solid rgba(0,0,0,0.3);
+      border-top-color: #000; border-radius: 50%;
+      animation: spin 0.7s linear infinite; flex-shrink: 0;
+    }
+    .spinner-muted {
+      border: 2px solid rgba(255,255,255,0.1);
+      border-top-color: rgba(255,255,255,0.5);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-brand">Shana Gates · Blog System</div>
+    <div class="header-title">Review Post</div>
+    <div class="header-meta" id="headerMeta">Loading…</div>
+  </header>
+
+  <div class="back-bar">
+    <a class="back-link" href="/admin/va-queue/">‹ Back to Queue</a>
+  </div>
+
+  <main id="mainContent">
+    <div class="loading-state" id="loadingState">Loading post…</div>
+  </main>
+
+  <script>
+    if (!localStorage.getItem('sg_auth')) {
+      window.location.href = '/admin/assistant/login.html'
+    }
+
+    const CATEGORY_LABELS = {
+      'market-update':'Market Update','investor-tips':'Investor Tips','seller-tips':'Seller Tips',
+      'local-happenings':'Local Happenings','trending-topics':'Trending Topics',
+      'buying-tips':'Market Update','selling-tips':'Seller Tips','investment':'Investor Tips',
+      'community-spotlight':'Local Happenings','local-area':'Local Happenings','news':'Trending Topics',
+      'market-insight':'Market Update',
+    }
+
+    const slug = new URLSearchParams(location.search).get('slug')
+    if (!slug) {
+      document.getElementById('loadingState').textContent = 'No slug provided.'
+    }
+
+    let currentPost = null
+    let pendingImageBase64 = null
+
+    function formatDate(iso) {
+      return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    }
+
+    function resizeImageToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          const img = new Image()
+          img.onload = () => {
+            const canvas = document.createElement('canvas')
+            canvas.width = 1280
+            canvas.height = 720
+            const ctx = canvas.getContext('2d')
+            // Cover fit: crop to 16:9
+            const srcAR = img.width / img.height
+            const dstAR = 1280 / 720
+            let sx = 0, sy = 0, sw = img.width, sh = img.height
+            if (srcAR > dstAR) {
+              sw = img.height * dstAR
+              sx = (img.width - sw) / 2
+            } else {
+              sh = img.width / dstAR
+              sy = (img.height - sh) / 2
+            }
+            ctx.drawImage(img, sx, sy, sw, sh, 0, 0, 1280, 720)
+            resolve(canvas.toDataURL('image/jpeg', 0.88))
+          }
+          img.onerror = reject
+          img.src = e.target.result
+        }
+        reader.onerror = reject
+        reader.readAsDataURL(file)
+      })
+    }
+
+    function render(post) {
+      currentPost = post
+      const status = post.workflowStatus || 'media_pending'
+      const isPending = status === 'media_pending'
+      const isReady   = status === 'media_ready'
+      const catLabel  = CATEGORY_LABELS[post.category] || post.category
+
+      document.getElementById('headerMeta').textContent = post.title
+      document.title = `Review: ${post.title} — Shana Gates`
+
+      const thumbHtml = post.heroImageUrl
+        ? `<img id="thumbImg" class="thumb-img" src="${post.heroImageUrl}" alt="">`
+        : `<div class="thumb-placeholder" id="thumbImg">🌵</div>`
+
+      document.getElementById('mainContent').innerHTML = `
+        <!-- Post Info -->
+        <div class="card">
+          <div class="card-title">Post Info</div>
+          <div class="post-title">${post.title}</div>
+          ${post.excerpt ? `<div class="post-excerpt">${post.excerpt}</div>` : ''}
+          <div class="meta-row">
+            <span class="status-badge status-${status}" id="statusBadge">${isPending ? 'Needs Review' : 'Ready'}</span>
+            <span class="cat-badge">${catLabel}</span>
+            <span class="post-date">${formatDate(post.publishedAt)}</span>
+            ${post.sourceUrl ? `<a class="source-link" href="${post.sourceUrl}" target="_blank" rel="noopener">View Source ↗</a>` : ''}
+          </div>
+        </div>
+
+        <!-- Thumbnail -->
+        <div class="card">
+          <div class="card-title">Hero Image / Thumbnail</div>
+          <div class="thumb-wrap">${thumbHtml}</div>
+          <label class="file-label">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Replace Thumbnail
+            <input class="file-input" type="file" id="fileInput" accept="image/*">
+          </label>
+          <div class="file-hint" id="fileHint">JPEG, PNG, or WebP — will be resized to 1280×720</div>
+        </div>
+
+        <!-- Social Caption -->
+        <div class="card">
+          <div class="card-title">Social Caption</div>
+          <textarea id="captionArea" placeholder="Add a social media caption…">${post.socialCopy || ''}</textarea>
+          <button class="gen-btn" id="genBtn">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            Generate Caption
+          </button>
+          <div id="genError"></div>
+        </div>
+
+        <!-- Actions -->
+        <div class="card">
+          <div class="card-title">Actions</div>
+          <div class="actions">
+            <button class="btn btn-amber" id="markReadyBtn" ${!isPending ? 'disabled' : ''}>
+              Mark Ready
+            </button>
+            <button class="btn btn-green" id="publishBtn" ${!isReady ? 'disabled' : ''}>
+              Publish to Website
+            </button>
+          </div>
+          <div id="actionError"></div>
+          <div id="actionSuccess"></div>
+        </div>
+      `
+
+      // File input
+      document.getElementById('fileInput').addEventListener('change', async (e) => {
+        const file = e.target.files[0]
+        if (!file) return
+        document.getElementById('fileHint').textContent = 'Resizing…'
+        try {
+          pendingImageBase64 = await resizeImageToBase64(file)
+          const el = document.getElementById('thumbImg')
+          if (el.tagName === 'IMG') {
+            el.src = pendingImageBase64
+          } else {
+            el.outerHTML = `<img id="thumbImg" class="thumb-img" src="${pendingImageBase64}" alt="">`
+          }
+          document.getElementById('fileHint').textContent = 'New thumbnail ready — click Mark Ready to save.'
+        } catch {
+          document.getElementById('fileHint').textContent = 'Could not process image. Try a different file.'
+        }
+      })
+
+      // Generate caption
+      document.getElementById('genBtn').addEventListener('click', async () => {
+        const btn = document.getElementById('genBtn')
+        btn.disabled = true
+        btn.innerHTML = `<span class="spinner spinner-muted"></span> Generating…`
+        document.getElementById('genError').innerHTML = ''
+        try {
+          const r = await fetch('/api/blog/generate-caption', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ slug: post.slug }),
+          })
+          if (r.status === 401) { window.location.href = '/admin/assistant/login.html'; return }
+          const d = await r.json()
+          if (!r.ok) throw new Error(d.error || 'Failed')
+          document.getElementById('captionArea').value = d.caption
+        } catch (err) {
+          document.getElementById('genError').innerHTML = `<div class="inline-error">${err.message}</div>`
+        } finally {
+          btn.disabled = false
+          btn.innerHTML = `<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> Generate Caption`
+        }
+      })
+
+      // Mark Ready
+      document.getElementById('markReadyBtn').addEventListener('click', async () => {
+        const btn = document.getElementById('markReadyBtn')
+        btn.disabled = true
+        btn.innerHTML = `<span class="spinner"></span> Saving…`
+        document.getElementById('actionError').innerHTML = ''
+        document.getElementById('actionSuccess').innerHTML = ''
+        const body = {
+          slug: post.slug,
+          socialCopy: document.getElementById('captionArea').value,
+        }
+        if (pendingImageBase64) body.heroImageBase64 = pendingImageBase64
+        try {
+          const r = await fetch('/api/blog/queue-mark-ready', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+          })
+          if (r.status === 401) { window.location.href = '/admin/assistant/login.html'; return }
+          const d = await r.json()
+          if (!r.ok) throw new Error(d.error || 'Failed')
+          window.location.reload()
+        } catch (err) {
+          document.getElementById('actionError').innerHTML = `<div class="inline-error">${err.message}</div>`
+          btn.disabled = false
+          btn.textContent = 'Mark Ready'
+        }
+      })
+
+      // Publish
+      document.getElementById('publishBtn').addEventListener('click', async () => {
+        const btn = document.getElementById('publishBtn')
+        btn.disabled = true
+        btn.innerHTML = `<span class="spinner"></span> Publishing…`
+        document.getElementById('actionError').innerHTML = ''
+        try {
+          const r = await fetch('/api/blog/queue-publish', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ slug: post.slug }),
+          })
+          if (r.status === 401) { window.location.href = '/admin/assistant/login.html'; return }
+          const d = await r.json()
+          if (!r.ok) throw new Error(d.error || 'Publish failed')
+          window.location.href = '/admin/va-queue/?published=1'
+        } catch (err) {
+          document.getElementById('actionError').innerHTML = `<div class="inline-error">${err.message}</div>`
+          btn.disabled = false
+          btn.textContent = 'Publish to Website'
+        }
+      })
+    }
+
+    async function loadPost() {
+      if (!slug) return
+      try {
+        const r = await fetch(`/api/blog/queue-post?slug=${encodeURIComponent(slug)}`)
+        if (r.status === 401) { window.location.href = '/admin/assistant/login.html'; return }
+        const d = await r.json()
+        if (!r.ok) throw new Error(d.error || 'Not found')
+        render(d.post)
+      } catch (err) {
+        document.getElementById('loadingState').innerHTML =
+          `<div style="text-align:center;padding:40px 20px;color:var(--muted);font-size:14px;">
+            <strong style="color:var(--text);display:block;margin-bottom:6px;">Error loading post</strong>${err.message}
+          </div>`
+      }
+    }
+
+    loadPost()
+  </script>
+</body>
+</html>

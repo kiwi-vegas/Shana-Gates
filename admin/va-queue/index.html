@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="/images/favcon.png" />
+  <title>Publish Queue — Shana Gates</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bronze: #B8975A;
+      --bg:     #0a0a0a;
+      --surf:   #141414;
+      --surf2:  #1c1c1c;
+      --border: rgba(255,255,255,0.08);
+      --text:   #fff;
+      --muted:  rgba(255,255,255,0.45);
+      --amber:  #f59e0b;
+      --blue:   #3b82f6;
+      --green:  #22c55e;
+      --font:   system-ui, -apple-system, sans-serif;
+    }
+    body { background: var(--bg); color: var(--text); font-family: var(--font); -webkit-font-smoothing: antialiased; min-height: 100vh; }
+
+    header { background: var(--surf); border-bottom: 1px solid var(--border); padding: 24px 32px 20px; }
+    .header-brand { color: var(--bronze); font-size: 11px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 4px; }
+    .header-title { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+    .header-meta { color: var(--muted); font-size: 13px; }
+
+    main { max-width: 860px; margin: 0 auto; padding: 36px 24px 100px; }
+
+    .section-label {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--muted);
+      margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+    }
+    .section-label .count-badge {
+      background: rgba(255,255,255,0.08);
+      border-radius: 100px; padding: 2px 8px;
+      font-size: 11px; color: var(--muted);
+    }
+    .section { margin-bottom: 40px; }
+
+    /* Post card */
+    .post-card {
+      background: var(--surf);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 10px;
+      display: flex; align-items: center; gap: 16px;
+      text-decoration: none; color: inherit;
+      transition: border-color 0.15s;
+    }
+    .post-card:hover { border-color: rgba(184,151,90,0.35); }
+
+    .post-thumb {
+      width: 72px; height: 48px; border-radius: 6px;
+      object-fit: cover; flex-shrink: 0; background: var(--surf2);
+    }
+    .post-thumb-placeholder {
+      width: 72px; height: 48px; border-radius: 6px;
+      background: var(--surf2); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; color: rgba(255,255,255,0.15);
+    }
+
+    .post-body { flex: 1; min-width: 0; }
+    .post-title { font-size: 14px; font-weight: 600; line-height: 1.4; margin-bottom: 4px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .post-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .post-date { font-size: 12px; color: var(--muted); }
+
+    .status-badge {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 3px 8px; border-radius: 100px;
+    }
+    .status-media_pending { background: rgba(245,158,11,0.15); color: var(--amber); border: 1px solid rgba(245,158,11,0.25); }
+    .status-media_ready   { background: rgba(59,130,246,0.15); color: var(--blue);  border: 1px solid rgba(59,130,246,0.25); }
+
+    .cat-badge {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+      padding: 2px 7px; border-radius: 100px;
+      background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.45);
+    }
+
+    .post-arrow { color: rgba(255,255,255,0.2); font-size: 18px; flex-shrink: 0; }
+    .post-card:hover .post-arrow { color: var(--bronze); }
+
+    /* Success banner */
+    .success-banner {
+      background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.25);
+      border-radius: 10px; padding: 12px 18px; margin-bottom: 24px;
+      font-size: 14px; color: #22c55e; display: flex; align-items: center; gap: 10px;
+    }
+
+    /* Empty states */
+    .empty-msg { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 14px; }
+    .empty-msg strong { color: var(--text); display: block; margin-bottom: 6px; font-size: 16px; }
+
+    /* Loading */
+    .skeleton {
+      background: var(--surf); border: 1px solid var(--border); border-radius: 12px;
+      padding: 18px 20px; margin-bottom: 10px; display: flex; gap: 16px; align-items: center;
+    }
+    .skel-thumb { width: 72px; height: 48px; border-radius: 6px; background: var(--surf2); flex-shrink: 0; animation: shimmer 1.5s infinite; }
+    .skel-body { flex: 1; }
+    .skel-line { height: 12px; border-radius: 4px; background: var(--surf2); margin-bottom: 8px; animation: shimmer 1.5s infinite; }
+    .skel-line.w60 { width: 60%; }
+    .skel-line.w30 { width: 30%; }
+    @keyframes shimmer { 0%,100%{ opacity:0.4; } 50%{ opacity:0.8; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-brand">Shana Gates · Blog System</div>
+    <div class="header-title">Publish Queue</div>
+    <div class="header-meta" id="headerMeta">Loading…</div>
+  </header>
+
+  <main>
+    <!-- Published success banner -->
+    <div class="success-banner" id="publishedBanner" style="display:none;">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      Post published successfully and is now live on the blog.
+    </div>
+
+    <!-- Needs media review -->
+    <div class="section" id="pendingSection" style="display:none;">
+      <div class="section-label">
+        Needs Review
+        <span class="count-badge" id="pendingCount">0</span>
+      </div>
+      <div id="pendingList"></div>
+    </div>
+
+    <!-- Ready to publish -->
+    <div class="section" id="readySection" style="display:none;">
+      <div class="section-label">
+        Ready to Publish
+        <span class="count-badge" id="readyCount">0</span>
+      </div>
+      <div id="readyList"></div>
+    </div>
+
+    <!-- Loading skeletons -->
+    <div id="loadingState">
+      <div class="section-label" style="margin-bottom:16px;">Loading…</div>
+      <div class="skeleton"><div class="skel-thumb"></div><div class="skel-body"><div class="skel-line w60"></div><div class="skel-line w30"></div></div></div>
+      <div class="skeleton"><div class="skel-thumb"></div><div class="skel-body"><div class="skel-line w60"></div><div class="skel-line w30"></div></div></div>
+      <div class="skeleton"><div class="skel-thumb"></div><div class="skel-body"><div class="skel-line w60"></div><div class="skel-line w30"></div></div></div>
+    </div>
+
+    <!-- Empty state -->
+    <div id="emptyState" style="display:none;">
+      <div class="empty-msg"><strong>Queue is empty</strong>Publish some articles from the blog picker to see them here for review.</div>
+    </div>
+  </main>
+
+  <script>
+    if (!localStorage.getItem('sg_auth')) {
+      window.location.href = '/admin/assistant/login.html'
+    }
+
+    if (new URLSearchParams(location.search).get('published') === '1') {
+      document.getElementById('publishedBanner').style.display = 'flex'
+      history.replaceState(null, '', '/admin/va-queue/')
+    }
+
+    const CATEGORY_LABELS = {
+      'market-update':'Market Update','investor-tips':'Investor Tips','seller-tips':'Seller Tips',
+      'local-happenings':'Local Happenings','trending-topics':'Trending Topics',
+      'buying-tips':'Market Update','selling-tips':'Seller Tips','investment':'Investor Tips',
+      'community-spotlight':'Local Happenings','local-area':'Local Happenings','news':'Trending Topics',
+      'market-insight':'Market Update',
+    }
+
+    function formatDate(iso) {
+      return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    }
+
+    function cardHtml(post) {
+      const thumb = post.heroImageUrl
+        ? `<img class="post-thumb" src="${post.heroImageUrl}" alt="${post.title}" loading="lazy">`
+        : `<div class="post-thumb-placeholder">🌵</div>`
+      const statusClass = `status-${post.workflowStatus || 'media_pending'}`
+      const statusLabel = post.workflowStatus === 'media_ready' ? 'Ready' : 'Needs Review'
+      const catLabel = CATEGORY_LABELS[post.category] || post.category
+      return `
+        <a class="post-card" href="/admin/va-queue/editor.html?slug=${encodeURIComponent(post.slug)}">
+          ${thumb}
+          <div class="post-body">
+            <div class="post-title">${post.title}</div>
+            <div class="post-meta">
+              <span class="status-badge ${statusClass}">${statusLabel}</span>
+              <span class="cat-badge">${catLabel}</span>
+              <span class="post-date">${formatDate(post.publishedAt)}</span>
+            </div>
+          </div>
+          <div class="post-arrow">›</div>
+        </a>`
+    }
+
+    async function loadQueue() {
+      try {
+        const res = await fetch('/api/blog/queue')
+        if (res.status === 401) { window.location.href = '/admin/assistant/login.html'; return }
+        const data = await res.json()
+        const posts = data.posts || []
+
+        document.getElementById('loadingState').style.display = 'none'
+
+        const pending = posts.filter(p => p.workflowStatus === 'media_pending' || !p.workflowStatus)
+        const ready   = posts.filter(p => p.workflowStatus === 'media_ready')
+
+        document.getElementById('headerMeta').textContent =
+          `${posts.length} post${posts.length !== 1 ? 's' : ''} awaiting review`
+
+        if (!posts.length) {
+          document.getElementById('emptyState').style.display = 'block'
+          return
+        }
+
+        if (pending.length) {
+          document.getElementById('pendingSection').style.display = 'block'
+          document.getElementById('pendingCount').textContent = pending.length
+          document.getElementById('pendingList').innerHTML = pending.map(cardHtml).join('')
+        }
+
+        if (ready.length) {
+          document.getElementById('readySection').style.display = 'block'
+          document.getElementById('readyCount').textContent = ready.length
+          document.getElementById('readyList').innerHTML = ready.map(cardHtml).join('')
+        }
+      } catch (err) {
+        document.getElementById('loadingState').innerHTML =
+          `<div class="empty-msg"><strong>Error loading queue</strong>${err.message}</div>`
+      }
+    }
+
+    loadQueue()
+  </script>
+</body>
+</html>

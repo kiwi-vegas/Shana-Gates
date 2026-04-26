@@ -12,6 +12,8 @@ import type { HeroImageResult } from './blog-images'
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
+export type BlogWorkflowStatus = 'media_pending' | 'media_ready' | 'published'
+
 export interface BlogPostSummary {
   _id: string
   title: string
@@ -22,6 +24,8 @@ export interface BlogPostSummary {
   heroImageUrl: string | null
   pipeline: string
   city?: string
+  workflowStatus?: BlogWorkflowStatus
+  socialCopy?: string
 }
 
 export interface BlogPostFull extends BlogPostSummary {
@@ -67,25 +71,26 @@ export async function publishBlogPost(
     heroImageUrl,
     sourceUrl: post.sourceUrl || '',
     sourceTitle: post.sourceTitle || '',
+    workflowStatus: 'media_pending', // hidden until reviewed + published via VA queue
   }
 
   // Store full post
   await redis.set(`blog_post:${post.slug}`, JSON.stringify(full))
 
-  // Update index (summaries only, sorted desc by publishedAt)
+  // Add to queue (not the public index — stays hidden until publishQueuedPost() is called)
   const summary: BlogPostSummary = {
     _id, title: full.title, slug: full.slug, publishedAt,
     category: full.category, excerpt: full.excerpt,
     heroImageUrl, pipeline: full.pipeline, city: full.city,
+    workflowStatus: 'media_pending',
   }
-  const raw = await redis.get<string>('blog_posts_index')
-  const existing: BlogPostSummary[] = raw
-    ? (typeof raw === 'string' ? JSON.parse(raw) : (raw as BlogPostSummary[]))
+  const qRaw = await redis.get<string>('blog_posts_queue')
+  const queue: BlogPostSummary[] = qRaw
+    ? (typeof qRaw === 'string' ? JSON.parse(qRaw) : (qRaw as BlogPostSummary[]))
     : []
-  const filtered = existing.filter((p) => p.slug !== post.slug)
-  filtered.unshift(summary)
-  filtered.sort((a, b) => b.publishedAt.localeCompare(a.publishedAt))
-  await redis.set('blog_posts_index', JSON.stringify(filtered))
+  const qFiltered = queue.filter((p) => p.slug !== post.slug)
+  qFiltered.unshift(summary)
+  await redis.set('blog_posts_queue', JSON.stringify(qFiltered))
 
   return { _id, slug: post.slug }
 }
@@ -103,6 +108,74 @@ export async function getPostBySlug(slug: string): Promise<BlogPostFull | null> 
   const raw = await redis.get<string>(`blog_post:${slug}`)
   if (!raw) return null
   return typeof raw === 'string' ? JSON.parse(raw) : (raw as BlogPostFull)
+}
+
+// ── VA Queue management ────────────────────────────────────────────────────
+
+export async function getQueuedPosts(): Promise<BlogPostSummary[]> {
+  const raw = await redis.get<string>('blog_posts_queue')
+  if (!raw) return []
+  return typeof raw === 'string' ? JSON.parse(raw) : (raw as BlogPostSummary[])
+}
+
+export async function markPostReady(
+  slug: string,
+  socialCopy: string,
+  heroImageUrl?: string
+): Promise<void> {
+  const key = `blog_post:${slug}`
+  const raw = await redis.get<string>(key)
+  if (!raw) throw new Error(`Post not found: ${slug}`)
+  const post: BlogPostFull = typeof raw === 'string' ? JSON.parse(raw) : raw
+  post.workflowStatus = 'media_ready'
+  post.socialCopy = socialCopy
+  if (heroImageUrl !== undefined) post.heroImageUrl = heroImageUrl
+  await redis.set(key, JSON.stringify(post))
+
+  // Mirror status into queue summary
+  const qRaw = await redis.get<string>('blog_posts_queue')
+  const queue: BlogPostSummary[] = qRaw
+    ? (typeof qRaw === 'string' ? JSON.parse(qRaw) : (qRaw as BlogPostSummary[]))
+    : []
+  const idx = queue.findIndex((p) => p.slug === slug)
+  if (idx >= 0) {
+    queue[idx].workflowStatus = 'media_ready'
+    queue[idx].socialCopy = socialCopy
+    if (heroImageUrl !== undefined) queue[idx].heroImageUrl = heroImageUrl
+    await redis.set('blog_posts_queue', JSON.stringify(queue))
+  }
+}
+
+export async function publishQueuedPost(slug: string): Promise<void> {
+  const key = `blog_post:${slug}`
+  const raw = await redis.get<string>(key)
+  if (!raw) throw new Error(`Post not found: ${slug}`)
+  const post: BlogPostFull = typeof raw === 'string' ? JSON.parse(raw) : raw
+  post.workflowStatus = 'published'
+  await redis.set(key, JSON.stringify(post))
+
+  // Remove from queue
+  const qRaw = await redis.get<string>('blog_posts_queue')
+  const queue: BlogPostSummary[] = qRaw
+    ? (typeof qRaw === 'string' ? JSON.parse(qRaw) : (qRaw as BlogPostSummary[]))
+    : []
+  const filteredQueue = queue.filter((p) => p.slug !== slug)
+  await redis.set('blog_posts_queue', JSON.stringify(filteredQueue))
+
+  // Add to public index, sorted desc by publishedAt
+  const summary: BlogPostSummary = {
+    _id: post._id, title: post.title, slug: post.slug, publishedAt: post.publishedAt,
+    category: post.category, excerpt: post.excerpt, heroImageUrl: post.heroImageUrl,
+    pipeline: post.pipeline, city: post.city, workflowStatus: 'published',
+  }
+  const iRaw = await redis.get<string>('blog_posts_index')
+  const index: BlogPostSummary[] = iRaw
+    ? (typeof iRaw === 'string' ? JSON.parse(iRaw) : (iRaw as BlogPostSummary[]))
+    : []
+  const filteredIndex = index.filter((p) => p.slug !== slug)
+  filteredIndex.unshift(summary)
+  filteredIndex.sort((a, b) => b.publishedAt.localeCompare(a.publishedAt))
+  await redis.set('blog_posts_index', JSON.stringify(filteredIndex))
 }
 
 // ── Community page overrides ───────────────────────────────────────────────
