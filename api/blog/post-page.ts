@@ -578,7 +578,7 @@ export default async function handler(req: any, res: any) {
       const SELLER_URL = 'https://search.searchcoachellavalleyhomes.com/seller'
       // Split on existing <a> tags so we never double-link
       const parts = html.split(/(<a\\b[^>]*>[\\s\\S]*?<\\/a>)/i)
-      const pattern = /\\b(home equity|equity in (?:your|their|the) (?:home|property)|property equity|(?:your|their|the) home(?:'s)? (?:value|worth)|(?:your|their|the) property(?:'s)? value|home value|property value|what (?:your|the|their) home is worth|home(?:'s)? worth)\\b/gi
+      const pattern = /\\b(home equity|property equity|equity in (?:your|their|the) (?:home|property)|home value|property value|home valuation|property valuation|home appraisal|property appraisal|value of (?:your|their|the) (?:home|property)|(?:your|their|the) home(?:'s)? (?:value|worth|equity)|(?:your|their|the) property(?:'s)? (?:value|worth|equity)|what (?:your|the|their) home is worth|what(?:'s)? (?:your|the|their) (?:home|property) worth|(?:your|their|the) home(?:'s)? current (?:value|worth)|estimated (?:home|property) value|home(?:'s)? worth)\\b/gi
       return parts.map((part, i) => {
         if (i % 2 === 1) return part // already inside an anchor tag
         return part.replace(pattern, '<a href="' + SELLER_URL + '" target="_blank" rel="noopener" class="equity-link">$1</a>')
@@ -596,6 +596,30 @@ export default async function handler(req: any, res: any) {
       window.YLOPO_HOSTNAME = 'search.searchcoachellavalleyhomes.com'
       window.YLOPO_WIDGETS = { domain: 'search.searchcoachellavalleyhomes.com' }
       const dataSearch = JSON.stringify({ locations: [{ city: cityName, state: 'CA' }], propertyTypes: ['house', 'condo', 'townhouse'], limit: 12 })
+      document.getElementById('ylopoWidget').innerHTML = '<div class="YLOPO_resultsWidget" data-search=\\'' + dataSearch.replace(/'/g, "\\\\'") + '\\'></div>'
+      const s = document.createElement('script')
+      s.src = 'https://search.searchcoachellavalleyhomes.com/build/js/widgets-1.0.0.js'
+      document.body.appendChild(s)
+      section.style.display = 'block'
+    }
+
+    function renderCVWidget() {
+      const section = document.getElementById('cityListingsSection')
+      if (!section) return
+      document.getElementById('listingsHeading').textContent = 'Homes for Sale in the Coachella Valley'
+      document.getElementById('listingsSub').textContent = 'Browse active listings across Palm Springs, Palm Desert, La Quinta & more'
+      document.getElementById('listingsViewAll').href =
+        'https://search.searchcoachellavalleyhomes.com/search?s[orderBy]=sourceCreationDate%2Cdesc&s[page]=1'
+      window.YLOPO_HOSTNAME = 'search.searchcoachellavalleyhomes.com'
+      window.YLOPO_WIDGETS = { domain: 'search.searchcoachellavalleyhomes.com' }
+      const locations = [
+        {city:'Palm Springs',state:'CA'},{city:'Palm Desert',state:'CA'},
+        {city:'Rancho Mirage',state:'CA'},{city:'Indian Wells',state:'CA'},
+        {city:'La Quinta',state:'CA'},{city:'Indio',state:'CA'},
+        {city:'Cathedral City',state:'CA'},{city:'Desert Hot Springs',state:'CA'},
+        {city:'Coachella',state:'CA'}
+      ]
+      const dataSearch = JSON.stringify({ locations, propertyTypes: ['house','condo','townhouse'], limit: 12 })
       document.getElementById('ylopoWidget').innerHTML = '<div class="YLOPO_resultsWidget" data-search=\\'' + dataSearch.replace(/'/g, "\\\\'") + '\\'></div>'
       const s = document.createElement('script')
       s.src = 'https://search.searchcoachellavalleyhomes.com/build/js/widgets-1.0.0.js'
@@ -658,6 +682,9 @@ export default async function handler(req: any, res: any) {
         renderCityLinkCard(post.city)
         const cityMeta = CITY_META[post.city]
         if (cityMeta) renderYlopoWidget(cityMeta.name)
+        else renderCVWidget()
+      } else {
+        renderCVWidget()
       }
 
       if (post.sourceUrl && post.sourceTitle) {
