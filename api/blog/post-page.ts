@@ -575,7 +575,7 @@ export default async function handler(req: any, res: any) {
 
     // Open all external links in a new tab (entity links from Markdown, etc.)
     function openExternalLinksInNewTab(html) {
-      return html.replace(/<a (href="https?:\/\/[^"]+")([^>]*)>/gi, function(m, href, rest) {
+      return html.replace(/<a (href="https?:[^"]+")([^>]*)>/gi, function(m, href, rest) {
         if (rest.indexOf('target=') !== -1) return m
         return '<a ' + href + rest + ' target="_blank" rel="noopener noreferrer">'
       })
