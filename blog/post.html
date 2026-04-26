@@ -564,7 +564,16 @@
 
     async function loadPost() {
       const params = new URLSearchParams(window.location.search)
-      const slug = params.get('slug')
+      let slug = params.get('slug')
+
+      if (!slug) {
+        // Support path-format URLs: /blog/post/SLUG
+        const pathParts = window.location.pathname.replace(/\/$/, '').split('/')
+        const postIdx = pathParts.lastIndexOf('post')
+        if (postIdx !== -1 && pathParts[postIdx + 1]) {
+          slug = decodeURIComponent(pathParts[postIdx + 1])
+        }
+      }
 
       if (!slug) {
         window.location.href = '/blog/'

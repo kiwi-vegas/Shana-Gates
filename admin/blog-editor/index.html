@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blog Editor — Shana Gates</title>
+  <link rel="icon" type="image/png" href="/images/favcon.png" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bronze: #B8975A;
+      --bg: #0a0a0a;
+      --surface: #141414;
+      --border: rgba(255,255,255,0.08);
+      --text: #fff;
+      --muted: rgba(255,255,255,0.45);
+      --font: system-ui, -apple-system, sans-serif;
+    }
+    body { background: var(--bg); color: var(--text); font-family: var(--font); -webkit-font-smoothing: antialiased; }
+    header {
+      background: rgba(10,10,10,0.95);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+    .logo img { height: 40px; }
+    .logo-text { font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--bronze); }
+    .back-link { font-size: 13px; color: var(--muted); text-decoration: none; }
+    .back-link:hover { color: var(--bronze); }
+    main { max-width: 960px; margin: 0 auto; padding: 40px 24px; }
+    h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+    .subtitle { color: var(--muted); font-size: 14px; margin-bottom: 32px; }
+    .post-list { display: flex; flex-direction: column; gap: 12px; }
+    .post-row {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .post-info { flex: 1; min-width: 0; }
+    .post-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .post-meta { font-size: 12px; color: var(--muted); display: flex; gap: 12px; }
+    .post-slug { font-size: 11px; color: rgba(255,255,255,0.25); font-family: monospace; margin-top: 2px; }
+    .cat-select {
+      background: #1e1e1e;
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 13px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      min-width: 160px;
+    }
+    .save-btn {
+      background: var(--bronze);
+      color: #000;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .save-btn:hover { background: #d4aa6a; }
+    .save-btn:disabled { opacity: 0.4; cursor: default; }
+    .save-btn.saved { background: #22c55e; color: #fff; }
+    .loading { text-align: center; padding: 80px 0; color: var(--muted); }
+    .empty { text-align: center; padding: 80px 0; color: var(--muted); }
+    .cat-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="logo" href="/admin/assistant/">
+      <img src="/images/logo.png" alt="Shana Gates" />
+      <span class="logo-text">Blog Editor</span>
+    </a>
+    <a class="back-link" href="/admin/va-queue/">← VA Queue</a>
+  </header>
+  <main>
+    <h1>Published Posts</h1>
+    <p class="subtitle">Edit category and title for published blog posts.</p>
+    <div id="postList" class="post-list">
+      <div class="loading">Loading posts…</div>
+    </div>
+  </main>
+
+  <script>
+    const CATEGORIES = [
+      { value: 'market-update',    label: 'Market Update' },
+      { value: 'investor-tips',    label: 'Investor Tips' },
+      { value: 'seller-tips',      label: 'Seller Tips' },
+      { value: 'local-happenings', label: 'Local Happenings' },
+      { value: 'trending-topics',  label: 'Trending Topics' },
+    ]
+
+    const CAT_COLORS = {
+      'market-update':    '#4338CA',
+      'investor-tips':    '#0891B2',
+      'seller-tips':      '#D97706',
+      'local-happenings': '#16A34A',
+      'trending-topics':  '#9333EA',
+    }
+
+    async function loadPosts() {
+      const res = await fetch('/api/blog/posts?limit=100')
+      if (!res.ok) throw new Error('Failed to load posts')
+      const { posts } = await res.json()
+      return posts
+    }
+
+    function renderPost(post) {
+      const color = CAT_COLORS[post.category] || '#607D8B'
+      const date = new Date(post.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+
+      const opts = CATEGORIES.map(c =>
+        `<option value="${c.value}" ${c.value === post.category ? 'selected' : ''}>${c.label}</option>`
+      ).join('')
+
+      const row = document.createElement('div')
+      row.className = 'post-row'
+      row.dataset.slug = post.slug
+      row.innerHTML = `
+        <div class="post-info">
+          <div class="post-title">${post.title}</div>
+          <div class="post-meta">
+            <span class="cat-badge" style="background:${color}22;color:${color};" data-badge>${CATEGORIES.find(c=>c.value===post.category)?.label || post.category}</span>
+            <span>${date}</span>
+          </div>
+          <div class="post-slug">${post.slug}</div>
+        </div>
+        <select class="cat-select" data-cat>
+          ${opts}
+        </select>
+        <button class="save-btn" data-save>Save</button>
+      `
+
+      const select = row.querySelector('[data-cat]')
+      const saveBtn = row.querySelector('[data-save]')
+      const badge = row.querySelector('[data-badge]')
+
+      select.addEventListener('change', () => {
+        saveBtn.classList.remove('saved')
+        saveBtn.textContent = 'Save'
+      })
+
+      saveBtn.addEventListener('click', async () => {
+        const newCat = select.value
+        saveBtn.disabled = true
+        saveBtn.textContent = 'Saving…'
+        try {
+          const r = await fetch('/api/blog/update-post', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ slug: post.slug, category: newCat }),
+          })
+          const data = await r.json()
+          if (!r.ok) throw new Error(data.error || 'Save failed')
+          const catLabel = CATEGORIES.find(c => c.value === newCat)?.label || newCat
+          const newColor = CAT_COLORS[newCat] || '#607D8B'
+          badge.textContent = catLabel
+          badge.style.background = newColor + '22'
+          badge.style.color = newColor
+          saveBtn.classList.add('saved')
+          saveBtn.textContent = 'Saved ✓'
+          saveBtn.disabled = false
+        } catch (err) {
+          alert('Error: ' + err.message)
+          saveBtn.textContent = 'Save'
+          saveBtn.disabled = false
+        }
+      })
+
+      return row
+    }
+
+    async function init() {
+      // Require auth
+      if (!localStorage.getItem('sg_auth')) {
+        window.location.href = '/admin/assistant/login.html'
+        return
+      }
+
+      const list = document.getElementById('postList')
+      try {
+        const posts = await loadPosts()
+        if (!posts.length) {
+          list.innerHTML = '<div class="empty">No published posts yet.</div>'
+          return
+        }
+        list.innerHTML = ''
+        posts.forEach(p => list.appendChild(renderPost(p)))
+      } catch (err) {
+        list.innerHTML = `<div class="empty">Error loading posts: ${err.message}</div>`
+      }
+    }
+
+    init()
+  </script>
+</body>
+</html>
