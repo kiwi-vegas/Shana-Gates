@@ -121,7 +121,8 @@ export async function getQueuedPosts(): Promise<BlogPostSummary[]> {
 export async function markPostReady(
   slug: string,
   socialCopy: string,
-  heroImageUrl?: string
+  heroImageUrl?: string,
+  title?: string
 ): Promise<void> {
   const key = `blog_post:${slug}`
   const raw = await redis.get<string>(key)
@@ -130,6 +131,7 @@ export async function markPostReady(
   post.workflowStatus = 'media_ready'
   post.socialCopy = socialCopy
   if (heroImageUrl !== undefined) post.heroImageUrl = heroImageUrl
+  if (title?.trim()) post.title = title.trim()
   await redis.set(key, JSON.stringify(post))
 
   // Mirror status into queue summary
@@ -142,6 +144,7 @@ export async function markPostReady(
     queue[idx].workflowStatus = 'media_ready'
     queue[idx].socialCopy = socialCopy
     if (heroImageUrl !== undefined) queue[idx].heroImageUrl = heroImageUrl
+    if (title?.trim()) queue[idx].title = title.trim()
     await redis.set('blog_posts_queue', JSON.stringify(queue))
   }
 }
