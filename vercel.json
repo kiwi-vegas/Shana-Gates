@@ -32,6 +32,9 @@
     },
     "api/blog/inject-post.ts": {
       "maxDuration": 60
+    },
+    "api/blog/fix-broken-links.ts": {
+      "maxDuration": 60
     }
   },
   "crons": [

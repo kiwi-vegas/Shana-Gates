@@ -15,18 +15,23 @@ export async function autoLinkEntities(body: string): Promise<string> {
     max_tokens: 800,
     messages: [{
       role: 'user',
-      content: `This is a Coachella Valley real estate blog post. Identify named entities that have well-known official public websites: major festivals, events, parks, organizations, government agencies, sports venues, schools, museums, or specific named businesses.
+      content: `This is a Coachella Valley real estate blog post. Identify named entities that have well-known, widely-recognized official public websites: major festivals, parks, sports venues, museums, or specific named businesses.
 
 Return ONLY a JSON array — no explanation, no markdown fences:
 [{"entity":"Coachella Music Festival","url":"https://www.coachella.com"},{"entity":"BNP Paribas Open","url":"https://bnpparibasopen.com"}]
 
-Rules:
+CRITICAL — URL accuracy:
+- ONLY include a URL if you are 100% certain it is the correct, currently-live official site. If you would even hesitate, OMIT the entity entirely.
+- Prefer well-known commercial/event domains (coachella.com, stagecoachfestival.com, bnpparibasopen.com, modernismweek.com, mccallumtheatre.org, psmuseum.org, nps.gov/jotr).
+- DO NOT GUESS county or local government URLs. They have inconsistent naming (e.g., riversidecountyassessor.org does NOT exist; the real domain is rivcoacr.org). When in doubt, OMIT.
+- Avoid: school district URLs, county clerk URLs, county tax URLs, niche local business URLs unless you are certain.
+
+Other rules:
 - Only entities EXPLICITLY named in the text (use exact capitalization from the text)
-- Only URLs you are highly confident are correct and stable (official websites, not Wikipedia)
-- Max 12 entities
+- Max 10 entities (fewer is better than wrong)
 - EXCLUDE: Shana Gates, Craft & Bauer, Real Broker, Claude, Anthropic, YLOPO, Vercel
-- EXCLUDE vague references like "local restaurants", "the city", "nearby businesses"
-- INCLUDE: specific named festivals (Coachella, Stagecoach, BNP Paribas Open, Modernism Week), city governments (City of Palm Springs), named parks (Joshua Tree National Park, Indian Canyons), named schools, named cultural venues (Palm Springs Art Museum, McCallum Theatre)
+- EXCLUDE vague references like "local restaurants", "the county", "the city assessor"
+- INCLUDE: nationally-known festivals, named national/state parks (Joshua Tree National Park, Indian Canyons), nationally-known cultural venues (Palm Springs Art Museum, McCallum Theatre)
 
 Blog post:
 ${body.slice(0, 3500)}`,

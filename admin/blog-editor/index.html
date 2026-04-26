@@ -103,9 +103,14 @@
         <div style="font-size:14px;font-weight:600;margin-bottom:4px;">Entity Link Enrichment</div>
         <div style="font-size:13px;color:rgba(255,255,255,0.45);">Auto-link festival names, parks, government agencies, and major organizations in the last 6 posts.</div>
       </div>
-      <button id="enrichBtn" onclick="enrichPosts()" style="background:#B8975A;color:#000;font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;white-space:nowrap;">
-        Enrich Last 6 Posts
-      </button>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button id="fixLinksBtn" onclick="fixBrokenLinks()" style="background:transparent;color:#B8975A;font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:10px 20px;border:1px solid rgba(184,151,90,0.5);border-radius:6px;cursor:pointer;white-space:nowrap;">
+          Fix Broken Links
+        </button>
+        <button id="enrichBtn" onclick="enrichPosts()" style="background:#B8975A;color:#000;font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;white-space:nowrap;">
+          Enrich Last 6 Posts
+        </button>
+      </div>
     </div>
     <div id="postList" class="post-list">
       <div class="loading">Loading posts…</div>
@@ -219,6 +224,25 @@
         posts.forEach(p => list.appendChild(renderPost(p)))
       } catch (err) {
         list.innerHTML = `<div class="empty">Error loading posts: ${err.message}</div>`
+      }
+    }
+
+    async function fixBrokenLinks() {
+      const btn = document.getElementById('fixLinksBtn')
+      btn.disabled = true
+      btn.textContent = 'Fixing…'
+      try {
+        const r = await fetch('/api/blog/fix-broken-links', { method: 'POST' })
+        const data = await r.json()
+        if (!r.ok) throw new Error(data.error || 'Failed')
+        const fixed = data.postsUpdated ?? 0
+        const total = data.results?.reduce((sum, x) => sum + (x.changes || 0), 0) ?? 0
+        alert(`Done! ${fixed} post${fixed !== 1 ? 's' : ''} updated. ${total} broken link${total !== 1 ? 's' : ''} replaced.`)
+      } catch (err) {
+        alert('Error: ' + err.message)
+      } finally {
+        btn.disabled = false
+        btn.textContent = 'Fix Broken Links'
       }
     }
 

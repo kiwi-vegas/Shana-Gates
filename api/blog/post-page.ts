@@ -576,6 +576,14 @@ export default async function handler(req: any, res: any) {
       'coachella':          { name: 'Coachella',          page: '/coachella.html',          ylopoCity: 'Coachella' },
     }
 
+    // Last-line-of-defense URL fixups for broken links discovered after publishing.
+    // Source of truth is api/blog/fix-broken-links.ts — keep in sync.
+    function fixKnownBrokenLinks(html) {
+      return html
+        .replace(/https:\\/\\/www\\.riversidecountyassessor\\.org\\/?/g, 'https://www.rivcoacr.org/')
+        .replace(/https:\\/\\/www\\.rivcoclerk\\.org\\/?/g, 'https://rivcocob.org/')
+    }
+
     // Open all external links in a new tab (entity links from Markdown, etc.)
     function openExternalLinksInNewTab(html) {
       return html.replace(/<a (href="https?:[^"]+")([^>]*)>/gi, function(m, href, rest) {
@@ -687,7 +695,7 @@ export default async function handler(req: any, res: any) {
         '<span class="category-badge" style="background:' + color + '22;color:' + color + ';">' + label + '</span>' +
         '<span class="post-date">' + date + '</span>'
 
-      document.getElementById('postBody').innerHTML = openExternalLinksInNewTab(addEquityLinks(marked.parse(post.body || '')))
+      document.getElementById('postBody').innerHTML = openExternalLinksInNewTab(fixKnownBrokenLinks(addEquityLinks(marked.parse(post.body || ''))))
 
       if (post.city) {
         renderCityLinkCard(post.city)
