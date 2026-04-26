@@ -343,6 +343,24 @@
       scrollbar-width: none;
     }
     .filter-bar::-webkit-scrollbar { display: none; }
+    .select-all-btn {
+      margin-left: auto;
+      flex-shrink: 0;
+      padding: 6px 12px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: var(--font);
+      transition: color 0.15s, border-color 0.15s;
+      white-space: nowrap;
+    }
+    .select-all-btn:hover { color: var(--bronze); border-color: rgba(184,151,90,0.4); }
     .filter-tab {
       flex-shrink: 0;
       padding: 14px 16px;
@@ -402,6 +420,7 @@
     <button class="filter-tab" data-cat="seller-tips" onclick="setFilter(this,'seller-tips')">Seller Tips <span class="tab-count" id="cnt-seller-tips">0</span></button>
     <button class="filter-tab" data-cat="local-happenings" onclick="setFilter(this,'local-happenings')">Local Happenings <span class="tab-count" id="cnt-local-happenings">0</span></button>
     <button class="filter-tab" data-cat="trending-topics" onclick="setFilter(this,'trending-topics')">Trending Topics <span class="tab-count" id="cnt-trending-topics">0</span></button>
+    <button class="select-all-btn" id="selectAllBtn" onclick="toggleSelectAll()">Select All</button>
   </div>
 
   <main id="main">
@@ -587,10 +606,22 @@
       if (selectedIds.has(id)) {
         selectedIds.delete(id)
         document.querySelector(`[data-id="${id}"]`).classList.remove('selected')
-      } else if (selectedIds.size < 5) {
+      } else {
         selectedIds.add(id)
         document.querySelector(`[data-id="${id}"]`).classList.add('selected')
       }
+      updatePublishBar()
+    }
+
+    function toggleSelectAll() {
+      const allVisible = filteredArticles.map(a => a.id)
+      const allSelected = allVisible.every(id => selectedIds.has(id))
+      if (allSelected) {
+        allVisible.forEach(id => selectedIds.delete(id))
+      } else {
+        allVisible.forEach(id => selectedIds.add(id))
+      }
+      renderArticleList(filteredArticles)
       updatePublishBar()
     }
 
@@ -598,13 +629,20 @@
       const count = selectedIds.size
       const countEl = document.getElementById('publishCount')
       const btn = document.getElementById('publishBtn')
+      const selBtn = document.getElementById('selectAllBtn')
       countEl.innerHTML = `<strong>${count}</strong> article${count !== 1 ? 's' : ''} selected`
       if (count === 0) {
         btn.disabled = true
-        btn.textContent = 'Select articles to publish'
+        btn.textContent = 'Select articles to queue'
       } else {
         btn.disabled = false
-        btn.textContent = `Add Photos + Publish →`
+        btn.textContent = `Queue for Review →`
+      }
+      // Update Select All label based on whether all visible are selected
+      if (selBtn && filteredArticles.length) {
+        const allVisible = filteredArticles.map(a => a.id)
+        const allSelected = allVisible.every(id => selectedIds.has(id))
+        selBtn.textContent = allSelected ? 'Clear All' : 'Select All'
       }
     }
 
@@ -860,9 +898,9 @@
 
       const overlay = document.getElementById('publishOverlay')
       const status = document.getElementById('publishStatus')
-      document.querySelector('#publishOverlay small').textContent = 'Writing posts with inline photos…'
+      document.querySelector('#publishOverlay small').textContent = 'Writing posts with inline photos. Posts go to the review queue — not live until approved.'
       overlay.classList.add('visible')
-      status.textContent = `Writing & publishing with photos…`
+      status.textContent = `Writing posts with photos…`
 
       try {
         const res = await fetch('/api/blog/publish', {
@@ -874,10 +912,8 @@
         try { data = await res.json() } catch { throw new Error(`Server error (${res.status}) — check Vercel function logs for details.`) }
         if (!res.ok) throw new Error(data.error || 'Publish failed')
 
-        status.textContent = `✓ Published ${data.published} post${data.published !== 1 ? 's' : ''}!`
-        const firstSlug = data.posts?.[0]?.slug
-        const dest = firstSlug ? `/blog/post.html?slug=${encodeURIComponent(firstSlug)}` : '/blog/'
-        setTimeout(() => { window.location.href = dest }, 2000)
+        status.textContent = `✓ ${data.published} post${data.published !== 1 ? 's' : ''} added to review queue!`
+        setTimeout(() => { window.location.href = '/admin/va-queue/' }, 2000)
       } catch (err) {
         overlay.classList.remove('visible')
         alert(`Error: ${err.message}`)
@@ -890,7 +926,7 @@
       const status = document.getElementById('publishStatus')
       overlay.classList.add('visible')
       status.textContent = `Writing ${selectedIds.size} post${selectedIds.size !== 1 ? 's' : ''}…`
-      document.querySelector('#publishOverlay small').textContent = 'This usually takes 30–60 seconds per post'
+      document.querySelector('#publishOverlay small').textContent = 'This usually takes 30–60 seconds per post. Posts go to the review queue — not live until approved.'
 
       try {
         const res = await fetch('/api/blog/publish', {
@@ -902,10 +938,8 @@
         try { data = await res.json() } catch { throw new Error(`Server error (${res.status}) — check Vercel function logs for details.`) }
         if (!res.ok) throw new Error(data.error || 'Publish failed')
 
-        status.textContent = `✓ Published ${data.published} post${data.published !== 1 ? 's' : ''}!`
-        const firstSlug = data.posts?.[0]?.slug
-        const dest = firstSlug ? `/blog/post.html?slug=${encodeURIComponent(firstSlug)}` : '/blog/'
-        setTimeout(() => { window.location.href = dest }, 2000)
+        status.textContent = `✓ ${data.published} post${data.published !== 1 ? 's' : ''} added to review queue!`
+        setTimeout(() => { window.location.href = '/admin/va-queue/' }, 2000)
       } catch (err) {
         overlay.classList.remove('visible')
         alert(`Error: ${err.message}`)
