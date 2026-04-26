@@ -98,6 +98,15 @@
   <main>
     <h1>Published Posts</h1>
     <p class="subtitle">Edit category and title for published blog posts.</p>
+    <div style="margin-bottom:28px;padding:20px 24px;background:#141414;border:1px solid rgba(255,255,255,0.08);border-radius:10px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+      <div>
+        <div style="font-size:14px;font-weight:600;margin-bottom:4px;">Entity Link Enrichment</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.45);">Auto-link festival names, parks, government agencies, and major organizations in the last 6 posts.</div>
+      </div>
+      <button id="enrichBtn" onclick="enrichPosts()" style="background:#B8975A;color:#000;font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;white-space:nowrap;">
+        Enrich Last 6 Posts
+      </button>
+    </div>
     <div id="postList" class="post-list">
       <div class="loading">Loading posts…</div>
     </div>
@@ -210,6 +219,28 @@
         posts.forEach(p => list.appendChild(renderPost(p)))
       } catch (err) {
         list.innerHTML = `<div class="empty">Error loading posts: ${err.message}</div>`
+      }
+    }
+
+    async function enrichPosts() {
+      const btn = document.getElementById('enrichBtn')
+      btn.disabled = true
+      btn.textContent = 'Enriching… (30–60s)'
+      try {
+        const r = await fetch('/api/blog/enrich-posts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ limit: 6 }),
+        })
+        const data = await r.json()
+        if (!r.ok) throw new Error(data.error || 'Failed')
+        const enriched = data.results?.filter(x => x.status === 'enriched').length ?? 0
+        alert(`Done! ${enriched} post${enriched !== 1 ? 's' : ''} enriched with entity links. Reload the page to see updated posts.`)
+      } catch (err) {
+        alert('Error: ' + err.message)
+      } finally {
+        btn.disabled = false
+        btn.textContent = 'Enrich Last 6 Posts'
       }
     }
 

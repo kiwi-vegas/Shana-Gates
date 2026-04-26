@@ -573,6 +573,14 @@ export default async function handler(req: any, res: any) {
       'coachella':          { name: 'Coachella',          page: '/coachella.html',          ylopoCity: 'Coachella' },
     }
 
+    // Open all external links in a new tab (entity links from Markdown, etc.)
+    function openExternalLinksInNewTab(html) {
+      return html.replace(/<a (href="https?:\/\/[^"]+")([^>]*)>/gi, function(m, href, rest) {
+        if (rest.indexOf('target=') !== -1) return m
+        return '<a ' + href + rest + ' target="_blank" rel="noopener noreferrer">'
+      })
+    }
+
     // Wrap equity / home-value phrases in a link to the seller equity page
     function addEquityLinks(html) {
       const SELLER_URL = 'https://search.searchcoachellavalleyhomes.com/seller'
@@ -676,7 +684,7 @@ export default async function handler(req: any, res: any) {
         '<span class="category-badge" style="background:' + color + '22;color:' + color + ';">' + label + '</span>' +
         '<span class="post-date">' + date + '</span>'
 
-      document.getElementById('postBody').innerHTML = addEquityLinks(marked.parse(post.body || ''))
+      document.getElementById('postBody').innerHTML = openExternalLinksInNewTab(addEquityLinks(marked.parse(post.body || '')))
 
       if (post.city) {
         renderCityLinkCard(post.city)

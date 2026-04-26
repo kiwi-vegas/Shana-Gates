@@ -2,6 +2,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import type { ScoredArticle } from './blog-store'
 import type { WeeklyTopic } from './blog-store'
 import { detectCity } from './blog-image-gen'
+import { autoLinkEntities } from './blog-entity-links'
 
 // ── Shared post structure ─────────────────────────────────────────────────
 
@@ -105,13 +106,15 @@ Write the full blog post now. Make it 600–800 words. Follow the post structure
     .join('')
 
   const title = extractTitle(body, article.title)
+  const excerpt = extractExcerpt(body)
   const city = cityToSlug(detectCity(title + ' ' + article.title + ' ' + article.summary + ' ' + (article.whyItMatters || '')))
+  const enrichedBody = await autoLinkEntities(body).catch(() => body)
 
   return {
     title,
     slug: slugify(title),
-    excerpt: extractExcerpt(body),
-    body,
+    excerpt,
+    body: enrichedBody,
     category: article.category,
     sourceUrl: article.url,
     sourceTitle: article.title,
@@ -149,13 +152,15 @@ Use the target keywords naturally in the title, first paragraph, subheadings, an
     .join('')
 
   const title = extractTitle(body, topic.title)
+  const excerpt = extractExcerpt(body)
   const city = cityToSlug(detectCity(title + ' ' + topic.title + ' ' + (topic.angle || '') + ' ' + (topic.researchContext || '')))
+  const enrichedBody = await autoLinkEntities(body).catch(() => body)
 
   return {
     title,
     slug: slugify(title),
-    excerpt: extractExcerpt(body),
-    body,
+    excerpt,
+    body: enrichedBody,
     category: topic.category,
     sourceUrl: '',
     sourceTitle: '',

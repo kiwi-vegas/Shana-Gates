@@ -123,6 +123,36 @@ Authorization: Bearer {CRON_SECRET}
 
 ---
 
+## Auto Entity Linking
+
+Every blog post is automatically enriched with outbound links to official websites for named entities mentioned in the content — festivals, parks, government agencies, schools, sports venues, museums, and named organizations.
+
+**How it works:**
+- After Claude Sonnet writes a post body, `lib/blog-entity-links.ts` sends the text to Claude Haiku
+- Haiku identifies named entities that have known official websites (e.g. Coachella Music Festival, BNP Paribas Open, City of Palm Springs, Joshua Tree National Park, Palm Springs Art Museum)
+- First occurrence of each entity is wrapped in a Markdown link: `[Coachella Music Festival](https://www.coachella.com)`
+- Links open in a new tab (`target="_blank"`)
+- Runs on every new post automatically (daily + weekly + events pipelines)
+
+**Equity / home-value phrases** are separately auto-linked to the seller valuation page at `https://search.searchcoachellavalleyhomes.com/seller` — phrases like "home equity," "home value," "property valuation," "what your home is worth," etc.
+
+**Retroactive enrichment:**
+To enrich existing published posts, go to `/admin/blog-editor/` and click **"Enrich Last 6 Posts"**. This calls `POST /api/blog/enrich-posts` (maxDuration: 120s) which processes the N most recent posts and updates their bodies in Redis.
+
+**What IS auto-linked:**
+- Named festivals (Coachella, Stagecoach, BNP Paribas Open, Modernism Week, etc.)
+- City governments (City of Palm Springs, City of Palm Desert, etc.)
+- Named parks (Joshua Tree National Park, Indian Canyons, etc.)
+- Named cultural venues (Palm Springs Art Museum, McCallum Theatre, etc.)
+- Named schools, universities, community organizations
+
+**What is NOT auto-linked:**
+- Shana Gates, Craft & Bauer, Real Broker (Shana's own brand)
+- Vague references ("local restaurants," "the city," "nearby businesses")
+- Generic service categories
+
+---
+
 ## Daily Research — Market & Topic Priorities
 
 **ALL articles must be about the Coachella Valley, Palm Springs area, or directly relevant California real estate law/policy.**

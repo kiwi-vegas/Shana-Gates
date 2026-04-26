@@ -26,6 +26,9 @@
     },
     "api/cron/events.ts": {
       "maxDuration": 120
+    },
+    "api/blog/enrich-posts.ts": {
+      "maxDuration": 120
     }
   },
   "crons": [
