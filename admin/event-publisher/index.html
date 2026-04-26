@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="/images/favcon.png" />
+  <title>Event Blog Publisher — Shana Gates</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bronze: #B8975A;
+      --teal:   #1A444C;
+      --bg:     #0a0a0a;
+      --surf:   #141414;
+      --surf2:  #1c1c1c;
+      --border: rgba(255,255,255,0.08);
+      --text:   #fff;
+      --muted:  rgba(255,255,255,0.45);
+      --green:  #4CAF50;
+      --font:   system-ui, -apple-system, sans-serif;
+    }
+    body { background: var(--bg); color: var(--text); font-family: var(--font); -webkit-font-smoothing: antialiased; min-height: 100vh; }
+
+    /* Header */
+    header { background: var(--surf); border-bottom: 1px solid var(--border); padding: 24px 32px 20px; }
+    .header-brand { color: var(--bronze); font-size: 11px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 4px; }
+    .header-title { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+    .header-meta { color: var(--muted); font-size: 13px; }
+
+    /* Layout */
+    main { max-width: 860px; margin: 0 auto; padding: 36px 24px 100px; }
+
+    /* Notice banner */
+    .notice {
+      background: rgba(184,151,90,0.1);
+      border: 1px solid rgba(184,151,90,0.3);
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.75);
+      margin-bottom: 32px;
+      display: flex; align-items: flex-start; gap: 10px;
+    }
+    .notice svg { flex-shrink: 0; margin-top: 1px; }
+
+    /* Article cards */
+    .cards { display: flex; flex-direction: column; gap: 16px; margin-bottom: 32px; }
+    .card {
+      background: var(--surf);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      display: flex; gap: 18px; align-items: flex-start;
+    }
+    .card:hover { border-color: rgba(184,151,90,0.3); }
+    .card.selected { border-color: rgba(184,151,90,0.5); background: rgba(184,151,90,0.05); }
+
+    /* Custom checkbox */
+    .card-checkbox {
+      width: 20px; height: 20px; border-radius: 5px;
+      border: 2px solid rgba(255,255,255,0.2);
+      flex-shrink: 0; margin-top: 2px;
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .card.selected .card-checkbox { background: var(--bronze); border-color: var(--bronze); }
+    .card-checkbox svg { display: none; }
+    .card.selected .card-checkbox svg { display: block; }
+
+    .card-body { flex: 1; }
+    .card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
+    .card-title { font-size: 16px; font-weight: 600; line-height: 1.3; }
+    .cat-badge {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 3px 8px; border-radius: 100px; flex-shrink: 0;
+    }
+    .cat-community { background: rgba(26,68,76,0.6); color: #6fb8c2; border: 1px solid rgba(111,184,194,0.2); }
+    .cat-lifestyle  { background: rgba(184,151,90,0.15); color: var(--bronze); border: 1px solid rgba(184,151,90,0.25); }
+    .card-summary { font-size: 13px; color: rgba(255,255,255,0.65); line-height: 1.6; margin-bottom: 10px; }
+    .card-events { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
+    .card-events li {
+      font-size: 11px; color: rgba(255,255,255,0.5);
+      background: var(--surf2); border: 1px solid var(--border);
+      border-radius: 6px; padding: 3px 8px;
+    }
+    .city-tag {
+      font-size: 11px; color: rgba(255,255,255,0.4);
+      display: flex; align-items: center; gap: 4px;
+      margin-top: 10px;
+    }
+
+    /* Publish bar */
+    .publish-bar {
+      background: var(--surf);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      flex-wrap: wrap;
+    }
+    .publish-count { font-size: 14px; color: var(--muted); }
+    .publish-count strong { color: var(--text); }
+    .publish-btn {
+      background: var(--bronze);
+      color: #000;
+      border: none; border-radius: 8px;
+      padding: 12px 28px;
+      font-size: 14px; font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .publish-btn:hover:not(:disabled) { opacity: 0.88; }
+    .publish-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* Progress state */
+    .progress-section { display: none; margin-top: 32px; }
+    .progress-section.visible { display: block; }
+    .progress-title { font-size: 14px; font-weight: 600; margin-bottom: 14px; }
+    .progress-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 16px;
+      background: var(--surf);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+    .progress-item .dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+    }
+    .dot-pending  { background: rgba(255,255,255,0.2); }
+    .dot-working  { background: var(--bronze); animation: pulse 1s infinite; }
+    .dot-done     { background: var(--green); }
+    .dot-error    { background: #ef4444; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+    /* Success panel */
+    .success-section { display: none; margin-top: 32px; }
+    .success-section.visible { display: block; }
+    .success-banner {
+      background: rgba(74,197,80,0.1);
+      border: 1px solid rgba(74,197,80,0.25);
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      font-size: 14px; color: rgba(255,255,255,0.8);
+    }
+    .published-links { display: flex; flex-direction: column; gap: 10px; }
+    .pub-link {
+      display: flex; align-items: center; gap: 12px;
+      background: var(--surf); border: 1px solid var(--border);
+      border-radius: 8px; padding: 12px 16px;
+      text-decoration: none; color: var(--text);
+      font-size: 13px;
+      transition: border-color 0.15s;
+    }
+    .pub-link:hover { border-color: rgba(184,151,90,0.4); }
+    .pub-link-arrow { color: var(--bronze); font-size: 16px; margin-left: auto; }
+
+    .error-section { display: none; margin-top: 20px; }
+    .error-section.visible { display: block; }
+    .error-list { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); border-radius: 8px; padding: 14px 16px; font-size: 13px; color: rgba(255,255,255,0.7); }
+    .error-list li { margin-bottom: 6px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-brand">Shana Gates · Blog System</div>
+    <div class="header-title">Event Blog Publisher</div>
+    <div class="header-meta">May 2026 · Coachella Valley events — select posts and publish</div>
+  </header>
+
+  <main>
+    <div class="notice">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#B8975A" stroke-width="1.5"/><path d="M8 5v4M8 11v.5" stroke="#B8975A" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Each post takes <strong>2–3 minutes</strong> to write and generate a hero image. Publishing 4 posts takes about 10 minutes. Keep this tab open while publishing.
+    </div>
+
+    <div class="cards" id="cards"></div>
+
+    <div class="publish-bar">
+      <div class="publish-count"><strong id="selectedCount">4</strong> posts selected</div>
+      <button class="publish-btn" id="publishBtn" onclick="publish()">Publish Selected Posts →</button>
+    </div>
+
+    <div class="progress-section" id="progressSection">
+      <div class="progress-title">Publishing…</div>
+      <div id="progressList"></div>
+    </div>
+
+    <div class="success-section" id="successSection">
+      <div class="success-banner">✓ Published successfully! Posts are live on the blog.</div>
+      <div class="published-links" id="publishedLinks"></div>
+    </div>
+
+    <div class="error-section" id="errorSection">
+      <ul class="error-list" id="errorList"></ul>
+    </div>
+  </main>
+
+  <script>
+    const ARTICLES = [
+      {
+        id: 'ev-may-2026-01',
+        title: 'What\'s Happening in the Coachella Valley This May',
+        category: 'community',
+        city: null,
+        url: 'https://visitgreaterpalmsprings.com/blog/post/may-in-greater-palm-springs/',
+        source: 'Visit Greater Palm Springs',
+        publishedDate: new Date().toISOString().split('T')[0],
+        score: 9,
+        summary: 'May 2026 brings a packed lineup to the Coachella Valley. The Taste of Jalisco Festival kicks off May 1–3 in Cathedral City with Lucha Libre, folklórico dance, and tequila tastings. Concert season heats up with Sheryl Crow at Agua Caliente (May 2), John Fogerty (May 9), Lady A at Fantasy Springs (May 16), and Maná closing out the month at Acrisure Arena (May 31). The Palm Springs 70MM Film Festival (May 29–31) screens rare large-format classics including Close Encounters and 2001: A Space Odyssey. Greater Palm Springs Restaurant Week begins May 29 with prix fixe menus across all nine cities.',
+        whyItMatters: 'A vibrant year-round events calendar is one of the most underappreciated reasons buyers choose the Coachella Valley — this post helps buyers and sellers see the lifestyle that comes with a home here.',
+        events: ['Taste of Jalisco May 1–3', 'Sheryl Crow May 2', 'John Fogerty May 9', 'Lady A May 16', 'Maná May 31', '70MM Film Fest May 29–31', 'Restaurant Week starts May 29'],
+      },
+      {
+        id: 'ev-may-2026-02',
+        title: 'Free Events & Farmers Markets in the Coachella Valley This May',
+        category: 'community',
+        city: null,
+        url: 'https://villagefest.org/',
+        source: 'Palm Springs VillageFest',
+        publishedDate: new Date().toISOString().split('T')[0],
+        score: 8,
+        summary: 'May is packed with free weekly events for Coachella Valley locals. Palm Springs VillageFest returns every Thursday evening on Palm Canyon Drive — 200+ vendors, food, and live entertainment drawing 4,000 visitors per week. Palm Desert\'s Concerts in the Park series runs every Thursday night in Civic Center Park (free admission, tribute bands including Elton John and Pat Benatar tributes). The Palm Springs Certified Farmers Market runs every Saturday morning through the end of May — its final weeks of the outdoor season. The Palm Springs Art Museum offers free admission every Thursday evening. The Lofts Art Walk is May 9.',
+        whyItMatters: 'The free community events calendar is a big part of what makes living in the Coachella Valley so appealing — this post speaks directly to the lifestyle value that supports home values here.',
+        events: ['VillageFest every Thursday', 'Concerts in the Park every Thursday (free)', 'Farmers Market every Saturday', 'Art Museum free Thursdays', 'Lofts Art Walk May 9'],
+      },
+      {
+        id: 'ev-may-2026-03',
+        title: 'Memorial Day Weekend in Palm Springs: Your Local\'s Guide',
+        category: 'community',
+        city: 'palm-springs',
+        url: 'https://palmspringsairmuseum.org/memorial-day-flower-drop/',
+        source: 'Palm Springs Air Museum',
+        publishedDate: new Date().toISOString().split('T')[0],
+        score: 9,
+        summary: 'Memorial Day Weekend is one of Palm Springs\' biggest celebrations of the year. The LGBTQ+ Memorial Day Weekend and Desertopia festival (May 21–25) draws visitors from across Southern California with pool parties, DJ nights, and queer desert events. The Palm Springs Air Museum hosts its iconic annual Flower Drop on May 25 — a B-25 Mitchell WWII bomber releases 3,000+ carnations over the airport in a stunning tribute, with flight exhibitions all day. On May 15, the Agua Caliente Band of Cahuilla Indians celebrates the 150th anniversary of their reservation with a free public cultural celebration featuring a Native American market, bird singing, and traditional dance.',
+        whyItMatters: 'Palm Springs\' massive Memorial Day weekend appeal is proof of the year-round demand that keeps the real estate market strong — understanding this helps buyers see the long-term value of a Palm Springs home.',
+        events: ['LGBTQ+ Memorial Day / Desertopia May 21–25', 'Air Museum Flower Drop May 25', 'Agua Caliente 150th Anniversary May 15'],
+      },
+      {
+        id: 'ev-may-2026-04',
+        title: 'Greater Palm Springs Restaurant Week 2026: The Local\'s Guide',
+        category: 'lifestyle',
+        city: null,
+        url: 'https://www.visitgreaterpalmsprings.com/restaurant-week/',
+        source: 'Visit Greater Palm Springs',
+        publishedDate: new Date().toISOString().split('T')[0],
+        score: 8,
+        summary: 'Greater Palm Springs Restaurant Week returns May 29 – June 7, 2026 with special prix fixe menus at restaurants across all nine Coachella Valley cities. Lunch and brunch menus are priced at $15–$35; dinner menus at $39–$59. Presented by Agua Caliente Casinos, the 10-day event gives locals and visitors a perfect excuse to explore neighborhoods they haven\'t tried — from Palm Springs and Palm Desert to La Quinta and Indio. It\'s one of the valley\'s most anticipated culinary events and a great way for new residents to discover their new dining scene.',
+        whyItMatters: 'Restaurant Week showcases the valley\'s exceptional dining culture — a key lifestyle amenity that buyers researching a move to the Coachella Valley want to know about.',
+        events: ['May 29 – June 7 valley-wide', '$15–$35 lunch prix fixe', '$39–$59 dinner prix fixe', 'All 9 Coachella Valley cities'],
+      },
+    ]
+
+    const selected = new Set(ARTICLES.map(a => a.id))
+
+    function renderCards() {
+      const container = document.getElementById('cards')
+      container.innerHTML = ARTICLES.map(a => {
+        const isSelected = selected.has(a.id)
+        const catClass = a.category === 'lifestyle' ? 'cat-lifestyle' : 'cat-community'
+        const events = a.events.map(e => `<li>${e}</li>`).join('')
+        const cityTag = a.city ? `<div class="city-tag"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1C4.067 1 2.5 2.567 2.5 4.5c0 2.625 3.5 6.5 3.5 6.5s3.5-3.875 3.5-6.5C9.5 2.567 7.933 1 6 1zm0 5a1.5 1.5 0 110-3 1.5 1.5 0 010 3z" fill="rgba(255,255,255,0.3)"/></svg>${a.city.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}</div>` : ''
+        return `
+        <div class="card${isSelected ? ' selected' : ''}" onclick="toggleCard('${a.id}')" data-id="${a.id}">
+          <div class="card-checkbox">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3.5 3.5L10 3" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="card-body">
+            <div class="card-header">
+              <div class="card-title">${a.title}</div>
+              <span class="cat-badge ${catClass}">${a.category}</span>
+            </div>
+            <div class="card-summary">${a.summary}</div>
+            <ul class="card-events">${events}</ul>
+            ${cityTag}
+          </div>
+        </div>`
+      }).join('')
+      updateCount()
+    }
+
+    function toggleCard(id) {
+      if (selected.has(id)) { selected.delete(id) } else { selected.add(id) }
+      renderCards()
+    }
+
+    function updateCount() {
+      document.getElementById('selectedCount').textContent = selected.size
+      document.getElementById('publishBtn').disabled = selected.size === 0
+    }
+
+    async function publish() {
+      const toPublish = ARTICLES.filter(a => selected.has(a.id))
+      if (toPublish.length === 0) return
+
+      // Disable controls
+      document.getElementById('publishBtn').disabled = true
+      document.querySelectorAll('.card').forEach(c => c.style.pointerEvents = 'none')
+
+      // Show progress
+      const progressSection = document.getElementById('progressSection')
+      const progressList = document.getElementById('progressList')
+      progressSection.classList.add('visible')
+      progressList.innerHTML = toPublish.map(a => `
+        <div class="progress-item" id="prog-${a.id}">
+          <div class="dot dot-pending" id="dot-${a.id}"></div>
+          <span id="label-${a.id}">${a.title}</span>
+        </div>`).join('')
+
+      // Mark first as working
+      setDot(toPublish[0].id, 'working', 'Writing & generating image…')
+
+      // Strip non-API fields before sending
+      const apiArticles = toPublish.map(({ id, title, category, url, source, publishedDate, score, summary, whyItMatters }) =>
+        ({ id, title, category, url, source, publishedDate, score, summary, whyItMatters })
+      )
+
+      let result
+      try {
+        const resp = await fetch('/api/blog/publish-custom', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ articles: apiArticles }),
+        })
+        if (resp.status === 401) { window.location.href = '/admin/assistant/login.html'; return }
+        result = await resp.json()
+      } catch (err) {
+        progressSection.classList.remove('visible')
+        showError(['Network error — please try again.'])
+        document.getElementById('publishBtn').disabled = false
+        return
+      }
+
+      // Mark all done
+      toPublish.forEach(a => setDot(a.id, 'done'))
+
+      // Show success
+      if (result.published > 0) {
+        const successSection = document.getElementById('successSection')
+        const linksEl = document.getElementById('publishedLinks')
+        successSection.classList.add('visible')
+        linksEl.innerHTML = (result.posts || []).map(p => `
+          <a class="pub-link" href="/blog/post/${p.slug}" target="_blank">
+            <span>${p.title}</span>
+            <span class="pub-link-arrow">→</span>
+          </a>`).join('')
+      }
+
+      if (result.errors?.length) showError(result.errors)
+    }
+
+    function setDot(id, state, labelOverride) {
+      const dot = document.getElementById('dot-' + id)
+      if (!dot) return
+      dot.className = 'dot dot-' + state
+      if (labelOverride) {
+        const label = document.getElementById('label-' + id)
+        if (label) label.textContent = ARTICLES.find(a => a.id === id)?.title + ' — ' + labelOverride
+      }
+    }
+
+    function showError(msgs) {
+      const section = document.getElementById('errorSection')
+      const list = document.getElementById('errorList')
+      section.classList.add('visible')
+      list.innerHTML = msgs.map(m => `<li>${m}</li>`).join('')
+    }
+
+    renderCards()
+  </script>
+</body>
+</html>
