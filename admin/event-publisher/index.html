@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" type="image/png" href="/images/favcon.png" />
-  <title>Event Blog Publisher — Shana Gates</title>
+  <title>Event Articles — Shana Gates</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -168,31 +168,21 @@
 <body>
   <header>
     <div class="header-brand">Shana Gates · Blog System</div>
-    <div class="header-title">Event Blog Publisher</div>
-    <div class="header-meta">May 2026 · Coachella Valley events — select posts and publish</div>
+    <div class="header-title">Event Articles</div>
+    <div class="header-meta">May 2026 · Select events to add to the Blog Picker</div>
   </header>
 
   <main>
     <div class="notice">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#B8975A" stroke-width="1.5"/><path d="M8 5v4M8 11v.5" stroke="#B8975A" stroke-width="1.5" stroke-linecap="round"/></svg>
-      Each post takes <strong>2–3 minutes</strong> to write and generate a hero image. Publishing 4 posts takes about 10 minutes. Keep this tab open while publishing.
+      These event articles will be <strong>added to your Blog Picker</strong> under the Local Happenings tab — then you publish from there as normal (with photo review).
     </div>
 
     <div class="cards" id="cards"></div>
 
     <div class="publish-bar">
       <div class="publish-count"><strong id="selectedCount">4</strong> posts selected</div>
-      <button class="publish-btn" id="publishBtn" onclick="publish()">Publish Selected Posts →</button>
-    </div>
-
-    <div class="progress-section" id="progressSection">
-      <div class="progress-title">Publishing…</div>
-      <div id="progressList"></div>
-    </div>
-
-    <div class="success-section" id="successSection">
-      <div class="success-banner">✓ Published successfully! Posts are live on the blog.</div>
-      <div class="published-links" id="publishedLinks"></div>
+      <button class="publish-btn" id="publishBtn" onclick="addToPicker()">Add to Blog Picker →</button>
     </div>
 
     <div class="error-section" id="errorSection">
@@ -294,73 +284,34 @@
       document.getElementById('publishBtn').disabled = selected.size === 0
     }
 
-    async function publish() {
-      const toPublish = ARTICLES.filter(a => selected.has(a.id))
-      if (toPublish.length === 0) return
+    async function addToPicker() {
+      const toAdd = ARTICLES.filter(a => selected.has(a.id))
+      if (toAdd.length === 0) return
 
-      // Disable controls
       document.getElementById('publishBtn').disabled = true
+      document.getElementById('publishBtn').textContent = 'Adding…'
       document.querySelectorAll('.card').forEach(c => c.style.pointerEvents = 'none')
 
-      // Show progress
-      const progressSection = document.getElementById('progressSection')
-      const progressList = document.getElementById('progressList')
-      progressSection.classList.add('visible')
-      progressList.innerHTML = toPublish.map(a => `
-        <div class="progress-item" id="prog-${a.id}">
-          <div class="dot dot-pending" id="dot-${a.id}"></div>
-          <span id="label-${a.id}">${a.title}</span>
-        </div>`).join('')
-
-      // Mark first as working
-      setDot(toPublish[0].id, 'working', 'Writing & generating image…')
-
-      // Strip non-API fields before sending
-      const apiArticles = toPublish.map(({ id, title, category, url, source, publishedDate, score, summary, whyItMatters }) =>
+      const apiArticles = toAdd.map(({ id, title, category, url, source, publishedDate, score, summary, whyItMatters }) =>
         ({ id, title, category, url, source, publishedDate, score, summary, whyItMatters })
       )
 
-      let result
       try {
-        const resp = await fetch('/api/blog/publish-custom', {
+        const resp = await fetch('/api/blog/inject-articles', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ articles: apiArticles }),
         })
         if (resp.status === 401) { window.location.href = '/admin/assistant/login.html'; return }
-        result = await resp.json()
+        if (!resp.ok) throw new Error('Server error')
+        // Redirect to blog picker with a slight delay so user sees success
+        document.getElementById('publishBtn').textContent = '✓ Added! Redirecting to picker…'
+        setTimeout(() => { window.location.href = '/admin/blog-picker/' }, 1000)
       } catch (err) {
-        progressSection.classList.remove('visible')
-        showError(['Network error — please try again.'])
         document.getElementById('publishBtn').disabled = false
-        return
-      }
-
-      // Mark all done
-      toPublish.forEach(a => setDot(a.id, 'done'))
-
-      // Show success
-      if (result.published > 0) {
-        const successSection = document.getElementById('successSection')
-        const linksEl = document.getElementById('publishedLinks')
-        successSection.classList.add('visible')
-        linksEl.innerHTML = (result.posts || []).map(p => `
-          <a class="pub-link" href="/blog/post/${p.slug}" target="_blank">
-            <span>${p.title}</span>
-            <span class="pub-link-arrow">→</span>
-          </a>`).join('')
-      }
-
-      if (result.errors?.length) showError(result.errors)
-    }
-
-    function setDot(id, state, labelOverride) {
-      const dot = document.getElementById('dot-' + id)
-      if (!dot) return
-      dot.className = 'dot dot-' + state
-      if (labelOverride) {
-        const label = document.getElementById('label-' + id)
-        if (label) label.textContent = ARTICLES.find(a => a.id === id)?.title + ' — ' + labelOverride
+        document.getElementById('publishBtn').textContent = 'Add to Blog Picker →'
+        document.querySelectorAll('.card').forEach(c => c.style.pointerEvents = '')
+        showError(['Could not add articles — please try again.'])
       }
     }
 

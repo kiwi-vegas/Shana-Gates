@@ -139,11 +139,11 @@ For each category, Claude generates 2–3 original blog topic ideas based on cur
 
 | Category | Focus |
 |---|---|
-| **Local Area Topic** | Seasonal events, local amenities, lifestyle features, things to do in specific cities |
-| **Market Insight** | MLS data analysis, price trends, inventory interpretation for the valley |
-| **Buyer/Seller Advice** | Desert-specific buying tips, pricing strategies, staging for desert buyers, seasonal timing |
-| **Community Spotlight** | Deep-dive on one Coachella Valley city — lifestyle, market, what makes it unique |
-| **Investment** | STR ROI analysis, vacation property buying guide, desert market investment outlook |
+| **Market Updates** | MLS data analysis, price trends, inventory interpretation, CA law changes affecting buyers/sellers |
+| **Investor Tips** | STR ROI analysis, vacation property buying guide, desert market investment outlook, short-term rental rules |
+| **Seller Tips** | Desert-specific pricing strategies, staging for desert buyers, seasonal timing, listing advice |
+| **Local Happenings** | Seasonal events, farmers markets, community news, local amenities, things to do in specific CV cities |
+| **Trending Topics** | Celebrity real estate news, interesting property sales, viral housing topics with real estate angles |
 
 **Compliance:** Never mention school quality, ratings, or test scores in any of these topics.
 
@@ -159,21 +159,20 @@ See **[THUMBNAIL.md](./THUMBNAIL.md)** for the full thumbnail spec — city dete
 
 **Title:** Coachella Valley Real Estate Blog
 
-Both blog posts are fetched from Sanity CDN and merged into a single feed sorted by `publishedAt` descending.
+Both blog posts are fetched from Redis and merged into a single feed sorted by `publishedAt` descending.
 
 ### Category Filter Tabs
 
-| Tab label | Filter value | Pipeline source |
+| Tab label | Filter value | Old aliases (still accepted) |
 |---|---|---|
-| All | *(none)* | Both |
-| Market Update | `market-update` | Daily |
-| Local Area | `local-area` | Weekly |
-| Market Insight | `market-insight` | Weekly |
-| Buying Tips | `buying-tips` | Both |
-| Selling Tips | `selling-tips` | Both |
-| Community Spotlight | `community-spotlight` | Weekly |
-| Investment | `investment` | Both |
-| News | `news` | Daily |
+| All Posts | *(none)* | — |
+| Market Updates | `market-update` | `market-insight`, `buying-tips` |
+| Investor Tips | `investor-tips` | `investment` |
+| Seller Tips | `seller-tips` | `selling-tips` |
+| Local Happenings | `local-happenings` | `local-area`, `community-spotlight` |
+| Trending Topics | `trending-topics` | `news` |
+
+Old category values from pre-2026 posts are normalized to the new taxonomy via `normalizeCategory()` in both `blog/index.html` and `admin/blog-picker/index.html`.
 
 ---
 
@@ -188,16 +187,24 @@ Both blog posts are fetched from Sanity CDN and merged into a single feed sorted
 
 ## Article Categories
 
-| Category | Label | Color |
+Five canonical categories used by the research pipeline, blog picker, and public blog:
+
+| Category value | Label | Color |
 |---|---|---|
-| `market-update` | Market Update | Blue `#2563eb` |
-| `buying-tips` | Buying Tips | Green `#4CAF50` |
-| `selling-tips` | Selling Tips | Sky `#0ea5e9` |
-| `community-spotlight` | Community Spotlight | Purple `#9C27B0` |
-| `investment` | Investment | Orange `#FF9800` |
-| `news` | News | Slate `#607D8B` |
-| `local-area` | Local Area | Amber `#D97706` |
-| `market-insight` | Market Insight | Indigo `#4338CA` |
+| `market-update` | Market Updates | Blue `#2563eb` |
+| `investor-tips` | Investor Tips | Orange `#FF9800` |
+| `seller-tips` | Seller Tips | Sky `#0ea5e9` |
+| `local-happenings` | Local Happenings | Amber `#D97706` |
+| `trending-topics` | Trending Topics | Purple `#9C27B0` |
+
+**Why these five:**
+- **Market Updates** — the core real estate intelligence feed (prices, inventory, law changes, mortgage rates)
+- **Investor Tips** — dedicated STR/vacation rental/investment content for the valley's high investor-owner population
+- **Seller Tips** — staging, pricing, timing advice relevant to the strong CV seller market
+- **Local Happenings** — events, community news, things to do — drives engagement from non-buyers who later become clients
+- **Trending Topics** — celebrity real estate, viral housing news — high-traffic content with broad real estate appeal
+
+Old category values (`buying-tips`, `selling-tips`, `investment`, `community-spotlight`, `local-area`, `news`, `market-insight`) are preserved in Redis/posts for backward compatibility. The `normalizeCategory()` function in the frontend maps them to the nearest new category for display and filtering.
 
 ---
 
@@ -543,10 +550,13 @@ GET /api/blog/weekly-topics?secret=YOUR_ADMIN_SECRET
 | `api/cron/weekly.ts` | Weekly topic research cron (Sat 8 PM PT) |
 | `api/blog/publish.ts` | Daily publish endpoint (1–5 articles) |
 | `api/blog/publish-weekly.ts` | Weekly publish endpoint (1+ topics) |
+| `api/blog/publish-custom.ts` | Custom publish endpoint — accepts raw article objects, bypasses Redis daily cache |
+| `api/blog/inject-articles.ts` | Merge custom articles into today's daily Redis store (used by event publisher) |
 | `api/blog/articles.ts` | Returns stored daily articles from Redis |
 | `api/blog/weekly-topics.ts` | Returns stored weekly topics from Redis |
-| `admin/blog-picker/index.html` | Daily article selection UI |
+| `admin/blog-picker/index.html` | Daily article selection UI — category tabs: Market Updates, Investor Tips, Seller Tips, Local Happenings, Trending Topics |
 | `admin/weekly-picker/index.html` | Weekly topic selection UI (category tabs) |
+| `admin/event-publisher/index.html` | Curated event articles — injects into daily store, redirects to blog picker |
 | `blog/index.html` | Blog listing — fetches from Sanity CDN, category filter |
 | `blog/post.html` | Individual blog post — reads `?slug=` param |
 

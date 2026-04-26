@@ -331,8 +331,54 @@
     .upload-zone.has-upload { border-color: var(--bronze); border-style: solid; }
     .upload-zone.has-upload .upload-zone-title { color: var(--bronze); }
 
+    /* ── Category filter bar ── */
+    .filter-bar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .filter-bar::-webkit-scrollbar { display: none; }
+    .filter-tab {
+      flex-shrink: 0;
+      padding: 14px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--muted);
+      cursor: pointer;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      font-family: var(--font);
+      transition: color 0.15s, border-color 0.15s;
+      white-space: nowrap;
+    }
+    .filter-tab:hover { color: rgba(255,255,255,0.7); }
+    .filter-tab.active { color: var(--bronze); border-bottom-color: var(--bronze); }
+    .filter-tab .tab-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 6px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 100px;
+      font-size: 10px;
+      font-weight: 700;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 5px;
+    }
+    .filter-tab.active .tab-count { background: rgba(184,151,90,0.2); color: var(--bronze); }
+
     @media (max-width: 640px) {
       header { flex-direction: column; align-items: flex-start; gap: 8px; padding: 16px; }
+      .filter-bar { padding: 0 16px; }
       main { padding: 24px 16px 100px; }
       .publish-bar { padding: 12px 16px; }
       .photo-grid { gap: 6px; }
@@ -348,6 +394,15 @@
     </div>
     <div class="header-meta" id="headerMeta">Loading today's articles…</div>
   </header>
+
+  <div class="filter-bar" id="filterBar">
+    <button class="filter-tab active" data-cat="" onclick="setFilter(this,'')">All <span class="tab-count" id="cnt-all">—</span></button>
+    <button class="filter-tab" data-cat="market-update" onclick="setFilter(this,'market-update')">Market Updates <span class="tab-count" id="cnt-market-update">0</span></button>
+    <button class="filter-tab" data-cat="investor-tips" onclick="setFilter(this,'investor-tips')">Investor Tips <span class="tab-count" id="cnt-investor-tips">0</span></button>
+    <button class="filter-tab" data-cat="seller-tips" onclick="setFilter(this,'seller-tips')">Seller Tips <span class="tab-count" id="cnt-seller-tips">0</span></button>
+    <button class="filter-tab" data-cat="local-happenings" onclick="setFilter(this,'local-happenings')">Local Happenings <span class="tab-count" id="cnt-local-happenings">0</span></button>
+    <button class="filter-tab" data-cat="trending-topics" onclick="setFilter(this,'trending-topics')">Trending Topics <span class="tab-count" id="cnt-trending-topics">0</span></button>
+  </div>
 
   <main id="main">
     <!-- Loading skeletons -->
@@ -375,15 +430,50 @@
   </div>
 
   <script>
+    // New 5-category taxonomy
     const CATEGORY_COLORS = {
-      'market-update': '#2563eb', 'buying-tips': '#4CAF50', 'selling-tips': '#0ea5e9',
-      'community-spotlight': '#9C27B0', 'investment': '#FF9800', 'news': '#607D8B',
-      'local-area': '#D97706', 'market-insight': '#4338CA',
+      'market-update':    '#2563eb',
+      'investor-tips':    '#FF9800',
+      'seller-tips':      '#0ea5e9',
+      'local-happenings': '#D97706',
+      'trending-topics':  '#9C27B0',
+      // legacy → keep display consistent
+      'buying-tips':        '#2563eb',
+      'selling-tips':       '#0ea5e9',
+      'investment':         '#FF9800',
+      'community-spotlight':'#D97706',
+      'local-area':         '#D97706',
+      'news':               '#9C27B0',
+      'market-insight':     '#2563eb',
     }
     const CATEGORY_LABELS = {
-      'market-update': 'Market Update', 'buying-tips': 'Buying Tips', 'selling-tips': 'Selling Tips',
-      'community-spotlight': 'Community Spotlight', 'investment': 'Investment', 'news': 'News',
-      'local-area': 'Local Area', 'market-insight': 'Market Insight',
+      'market-update':    'Market Update',
+      'investor-tips':    'Investor Tips',
+      'seller-tips':      'Seller Tips',
+      'local-happenings': 'Local Happenings',
+      'trending-topics':  'Trending Topics',
+      // legacy
+      'buying-tips':        'Market Update',
+      'selling-tips':       'Seller Tips',
+      'investment':         'Investor Tips',
+      'community-spotlight':'Local Happenings',
+      'local-area':         'Local Happenings',
+      'news':               'Trending Topics',
+      'market-insight':     'Market Update',
+    }
+
+    // Maps legacy and new category values to the 5 canonical tab keys
+    function normalizeCategory(cat) {
+      const map = {
+        'market-insight':     'market-update',
+        'buying-tips':        'market-update',
+        'selling-tips':       'seller-tips',
+        'investment':         'investor-tips',
+        'community-spotlight':'local-happenings',
+        'local-area':         'local-happenings',
+        'news':               'trending-topics',
+      }
+      return map[cat] || cat
     }
 
     // Auth check
@@ -392,11 +482,38 @@
     }
 
     let articles = []
+    let filteredArticles = []
+    let activeCategory = ''
     let selectedIds = new Set()
     let currentDate = ''
     let step = 'selecting'          // 'selecting' | 'reviewing'
     let imageSuggestions = []
     let imageApprovals = {}         // key: "${itemId}_${sectionIndex}", value: {sectionIndex, altText, photo} | null
+
+    function setFilter(btn, cat) {
+      activeCategory = cat
+      document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'))
+      btn.classList.add('active')
+      filteredArticles = cat
+        ? articles.filter(a => normalizeCategory(a.category) === cat)
+        : articles
+      renderArticleList(filteredArticles)
+    }
+
+    function updateTabCounts(arts) {
+      const tabs = ['market-update', 'investor-tips', 'seller-tips', 'local-happenings', 'trending-topics']
+      const counts = {}
+      tabs.forEach(t => counts[t] = 0)
+      arts.forEach(a => {
+        const norm = normalizeCategory(a.category)
+        if (counts[norm] !== undefined) counts[norm]++
+      })
+      document.getElementById('cnt-all').textContent = arts.length
+      tabs.forEach(t => {
+        const el = document.getElementById('cnt-' + t)
+        if (el) el.textContent = counts[t]
+      })
+    }
 
     const params = new URLSearchParams(window.location.search)
     const dateParam = params.get('date') || ''
@@ -411,12 +528,14 @@
 
     function renderArticles(data) {
       articles = data.articles || []
+      filteredArticles = articles
       currentDate = data.date || new Date().toISOString().split('T')[0]
 
       document.getElementById('headerMeta').textContent =
         `${articles.length} articles for ${new Date(currentDate + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}`
 
       document.getElementById('loadingState').style.display = 'none'
+      updateTabCounts(articles)
 
       if (!articles.length) {
         document.getElementById('articlesContainer').innerHTML = `
@@ -430,11 +549,21 @@
         return
       }
 
-      document.getElementById('articlesContainer').innerHTML = articles.map(a => {
+      renderArticleList(filteredArticles)
+    }
+
+    function renderArticleList(arts) {
+      const container = document.getElementById('articlesContainer')
+      if (!arts.length) {
+        container.innerHTML = `<div class="state-msg"><h2>No articles in this category today</h2><p>Try a different filter or check back after the next research run.</p></div>`
+        return
+      }
+      container.innerHTML = arts.map(a => {
         const color = CATEGORY_COLORS[a.category] || '#607D8B'
         const label = CATEGORY_LABELS[a.category] || a.category
+        const isSelected = selectedIds.has(a.id)
         return `
-          <div class="article-card" data-id="${a.id}" onclick="toggleArticle('${a.id}')">
+          <div class="article-card${isSelected ? ' selected' : ''}" data-id="${a.id}" onclick="toggleArticle('${a.id}')">
             <div class="checkbox">
               <svg class="checkbox-check" width="13" height="10" viewBox="0 0 13 10" fill="none">
                 <path d="M1.5 5L5 8.5L11.5 1.5" stroke="#000" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>

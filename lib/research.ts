@@ -2,42 +2,59 @@ import Anthropic from '@anthropic-ai/sdk'
 import { tavily } from '@tavily/core'
 import type { ScoredArticle } from './blog-store'
 
-// ── Coachella Valley topic queries (rotate 8 of 25 per day) ───────────────
+// ── Coachella Valley topic queries (rotate 8 of 35 per day) ───────────────
+// Covers all 5 categories: market-update, investor-tips, seller-tips,
+// local-happenings, trending-topics
 
 const TOPIC_QUERIES = [
+  // Market Updates
   'Coachella Valley real estate market trends 2026',
   'Palm Springs home prices housing market',
   'Palm Desert real estate news',
   'La Quinta Indian Wells Rancho Mirage housing market',
   'California real estate law changes 2026',
-  'Palm Springs short-term rental ordinance Airbnb',
-  'Coachella Valley luxury home sales',
-  'California property tax Prop 19 homeowners',
-  'Coachella Valley investment property vacation rental ROI',
   'Palm Springs housing inventory buyers market',
-  'California HOA law changes homeowners',
-  'Coachella Valley new development construction',
-  'Desert real estate appreciation forecast',
-  'Coachella Festival Stagecoach housing demand',
-  'Palm Springs snowbird real estate demand',
-  'California first-time homebuyer programs 2026',
-  'Coachella Valley retirement communities active adult',
-  'La Quinta PGA West golf community real estate',
-  'Cathedral City Indio Coachella housing market',
-  'Palm Desert El Paseo luxury real estate',
   'California mortgage rates affordability 2026',
-  'Desert Hot Springs real estate investment',
-  'Rancho Mirage Indian Wells luxury market update',
-  'Coachella Valley commercial real estate development',
+  'Desert real estate appreciation forecast',
   'Southern California housing market forecast',
+  'Cathedral City Indio Coachella housing market',
+  'California HOA law changes homeowners',
+  'California property tax Prop 19 homeowners',
+  // Investor Tips
+  'Palm Springs short-term rental ordinance Airbnb',
+  'Coachella Valley investment property vacation rental ROI',
+  'Desert Hot Springs real estate investment',
+  'Coachella Valley STR permit regulations 2026',
+  'Airbnb VRBO vacation rental income Coachella Valley',
+  'Rancho Mirage Indian Wells luxury market investment',
+  // Seller Tips
+  'home selling tips pricing strategy Coachella Valley 2026',
+  'California home staging tips desert properties',
+  'best time to sell home Palm Springs market',
+  'Coachella Valley luxury home sales seller tips',
+  'how to price home desert real estate market',
+  // Local Happenings
+  'Coachella Valley events things to do 2026',
+  'Palm Springs community events farmers market 2026',
+  'Palm Desert La Quinta local events activities',
+  'Coachella Valley lifestyle amenities outdoor recreation',
+  'Coachella Festival Stagecoach housing demand event impact',
+  'Palm Springs snowbird season community events',
+  'Coachella Valley new restaurant development lifestyle',
+  // Trending Topics
+  'celebrity real estate news 2026 famous home sale',
+  'viral real estate trends 2026 interesting housing story',
+  'luxury celebrity estate auction notable home',
+  'Coachella Valley notable development project 2026',
+  'California housing news trending real estate story',
 ]
 
 function getDailyQueries(date: string): string[] {
-  // Deterministic rotation based on date
+  // Deterministic rotation based on date — picks 10 queries spread across all 5 categories
   const seed = date.replace(/-/g, '')
   const offset = parseInt(seed.slice(-2), 10) % TOPIC_QUERIES.length
   const rotated = [...TOPIC_QUERIES.slice(offset), ...TOPIC_QUERIES.slice(0, offset)]
-  return rotated.slice(0, 8)
+  return rotated.slice(0, 10)
 }
 
 // ── Tavily search ─────────────────────────────────────────────────────────
@@ -73,13 +90,11 @@ SCORING RULES:
 - Score 1–4: Tangentially relevant or mostly about other markets
 
 CATEGORIES (pick the single best fit):
-- market-update: prices, inventory, market conditions, forecasts
-- buying-tips: homebuyer advice, financing, offers, inspections
-- selling-tips: seller strategy, staging, pricing, timing
-- community-spotlight: specific Coachella Valley city or neighborhood features
-- investment: rental properties, ROI, STR, vacation homes
-- news: policy, law, regulatory changes, major developments
-- local-area: lifestyle, events, amenities, things to do in the valley
+- market-update: prices, inventory, market conditions, forecasts, mortgage rates, CA law changes affecting buyers/sellers, market analysis
+- investor-tips: rental properties, ROI, STR/Airbnb, vacation homes, investment strategy, cap rates, short-term rental rules
+- seller-tips: seller strategy, staging, pricing, timing, listing advice, preparing a home to sell
+- local-happenings: Coachella Valley events, things to do, farmers markets, festivals, community news, city spotlight, local lifestyle, dining, outdoor recreation
+- trending-topics: celebrity real estate news, viral or pop-culture real estate stories, notable property sales, interesting housing trends making national news, major development announcements
 
 COMPLIANCE — never select or recommend articles that mention:
 - School quality, ratings, or test scores

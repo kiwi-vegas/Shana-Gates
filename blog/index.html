@@ -343,15 +343,12 @@
   </div>
 
   <div class="filter-bar" id="filterBar">
-    <button class="filter-btn active" data-category="">All</button>
-    <button class="filter-btn" data-category="market-update">Market Update</button>
-    <button class="filter-btn" data-category="market-insight">Market Insight</button>
-    <button class="filter-btn" data-category="local-area">Local Area</button>
-    <button class="filter-btn" data-category="buying-tips">Buying Tips</button>
-    <button class="filter-btn" data-category="selling-tips">Selling Tips</button>
-    <button class="filter-btn" data-category="community-spotlight">Community</button>
-    <button class="filter-btn" data-category="investment">Investment</button>
-    <button class="filter-btn" data-category="news">News</button>
+    <button class="filter-btn active" data-category="">All Posts</button>
+    <button class="filter-btn" data-category="market-update">Market Updates</button>
+    <button class="filter-btn" data-category="investor-tips">Investor Tips</button>
+    <button class="filter-btn" data-category="seller-tips">Seller Tips</button>
+    <button class="filter-btn" data-category="local-happenings">Local Happenings</button>
+    <button class="filter-btn" data-category="trending-topics">Trending Topics</button>
   </div>
 
   <div class="blog-container">
@@ -377,25 +374,48 @@
 
   <script>
     const CATEGORY_COLORS = {
-      'market-update': '#2563eb',
-      'buying-tips': '#4CAF50',
-      'selling-tips': '#0ea5e9',
-      'community-spotlight': '#9C27B0',
-      'investment': '#FF9800',
-      'news': '#607D8B',
-      'local-area': '#D97706',
-      'market-insight': '#4338CA',
+      'market-update':    '#2563eb',
+      'investor-tips':    '#FF9800',
+      'seller-tips':      '#0ea5e9',
+      'local-happenings': '#D97706',
+      'trending-topics':  '#9C27B0',
+      // legacy aliases
+      'buying-tips':         '#2563eb',
+      'selling-tips':        '#0ea5e9',
+      'investment':          '#FF9800',
+      'community-spotlight': '#D97706',
+      'local-area':          '#D97706',
+      'news':                '#9C27B0',
+      'market-insight':      '#2563eb',
     }
 
     const CATEGORY_LABELS = {
-      'market-update': 'Market Update',
-      'buying-tips': 'Buying Tips',
-      'selling-tips': 'Selling Tips',
-      'community-spotlight': 'Community Spotlight',
-      'investment': 'Investment',
-      'news': 'News',
-      'local-area': 'Local Area',
-      'market-insight': 'Market Insight',
+      'market-update':    'Market Update',
+      'investor-tips':    'Investor Tips',
+      'seller-tips':      'Seller Tips',
+      'local-happenings': 'Local Happenings',
+      'trending-topics':  'Trending Topics',
+      // legacy aliases
+      'buying-tips':         'Market Update',
+      'selling-tips':        'Seller Tips',
+      'investment':          'Investor Tips',
+      'community-spotlight': 'Local Happenings',
+      'local-area':          'Local Happenings',
+      'news':                'Trending Topics',
+      'market-insight':      'Market Update',
+    }
+
+    function normalizeCategory(cat) {
+      const map = {
+        'market-insight':     'market-update',
+        'buying-tips':        'market-update',
+        'selling-tips':       'seller-tips',
+        'investment':         'investor-tips',
+        'community-spotlight':'local-happenings',
+        'local-area':         'local-happenings',
+        'news':               'trending-topics',
+      }
+      return map[cat] || cat
     }
 
     let allPosts = []
@@ -449,7 +469,7 @@
 
     function filterPosts() {
       if (!activeCategory) return renderPosts(allPosts)
-      renderPosts(allPosts.filter(p => p.category === activeCategory))
+      renderPosts(allPosts.filter(p => normalizeCategory(p.category) === activeCategory))
     }
 
     // Filter buttons
