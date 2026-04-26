@@ -88,7 +88,7 @@ export default async function handler(req: any, res: any) {
   <script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
 
   <!-- Slug injected server-side so JS doesn't need to parse the URL -->
-  <script>const PAGE_SLUG = '${esc(slug)}';</script>
+  <script>window.PAGE_SLUG = '${esc(slug)}';</script>
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
