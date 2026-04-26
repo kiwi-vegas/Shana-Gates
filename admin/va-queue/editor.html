@@ -23,145 +23,186 @@
     }
     body { background: var(--bg); color: var(--text); font-family: var(--font); -webkit-font-smoothing: antialiased; min-height: 100vh; }
 
-    header { background: var(--surf); border-bottom: 1px solid var(--border); padding: 24px 32px 20px; }
-    .header-brand { color: var(--bronze); font-size: 11px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 4px; }
-    .header-title { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
-    .header-meta { color: var(--muted); font-size: 13px; }
-
-    .back-bar { max-width: 860px; margin: 0 auto; padding: 20px 24px 0; }
-    .back-link { color: var(--muted); font-size: 13px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: color 0.15s; }
+    /* ── Top nav bar ── */
+    .topbar {
+      background: var(--surf); border-bottom: 1px solid var(--border);
+      padding: 0 32px; height: 52px;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 16px; }
+    .back-link {
+      color: var(--muted); font-size: 13px; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 6px; transition: color 0.15s;
+    }
     .back-link:hover { color: var(--bronze); }
+    .topbar-sep { width: 1px; height: 20px; background: var(--border); }
+    .topbar-title { font-size: 14px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 480px; }
+    .status-pill {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 4px 10px; border-radius: 100px; flex-shrink: 0;
+    }
+    .status-media_pending { background: rgba(245,158,11,0.15); color: var(--amber); border: 1px solid rgba(245,158,11,0.3); }
+    .status-media_ready   { background: rgba(59,130,246,0.15);  color: var(--blue);  border: 1px solid rgba(59,130,246,0.3); }
 
-    main { max-width: 860px; margin: 0 auto; padding: 24px 24px 100px; }
+    /* ── Editor grid ── */
+    .editor-wrap { max-width: 1120px; margin: 0 auto; padding: 32px 24px 80px; }
+    .editor-grid {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 20px;
+      align-items: start;
+    }
+    @media (max-width: 860px) {
+      .editor-grid { grid-template-columns: 1fr; }
+    }
 
-    /* Loading */
-    .loading-state { text-align: center; padding: 60px 20px; color: var(--muted); font-size: 14px; }
-
-    /* Card sections */
+    /* ── Card ── */
     .card {
       background: var(--surf); border: 1px solid var(--border);
       border-radius: 12px; padding: 24px; margin-bottom: 16px;
     }
-    .card-title {
-      font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+    .card:last-child { margin-bottom: 0; }
+    .card-label {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.14em;
       text-transform: uppercase; color: var(--muted); margin-bottom: 16px;
     }
 
-    /* Post info */
-    .post-title { font-size: 20px; font-weight: 700; line-height: 1.35; margin-bottom: 10px; }
-    .post-excerpt { font-size: 14px; color: rgba(255,255,255,0.7); line-height: 1.6; margin-bottom: 14px; }
-    .meta-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-    .status-badge {
-      font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
-      padding: 3px 8px; border-radius: 100px;
-    }
-    .status-media_pending { background: rgba(245,158,11,0.15); color: var(--amber); border: 1px solid rgba(245,158,11,0.25); }
-    .status-media_ready   { background: rgba(59,130,246,0.15);  color: var(--blue);  border: 1px solid rgba(59,130,246,0.25); }
+    /* ── Article section ── */
+    .meta-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
     .cat-badge {
       font-size: 10px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
-      padding: 2px 7px; border-radius: 100px;
-      background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.45);
+      padding: 2px 8px; border-radius: 100px;
+      background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.5);
     }
     .post-date { font-size: 12px; color: var(--muted); }
+    .post-title { font-size: 20px; font-weight: 700; line-height: 1.35; margin-bottom: 10px; }
+    .post-excerpt { font-size: 14px; color: rgba(255,255,255,0.65); line-height: 1.6; margin-bottom: 12px; }
     .source-link { font-size: 12px; color: var(--bronze); text-decoration: none; }
     .source-link:hover { text-decoration: underline; }
 
-    /* Thumbnail */
-    .thumb-wrap { position: relative; margin-bottom: 16px; }
-    .thumb-img {
-      width: 100%; max-width: 480px; aspect-ratio: 16/9;
-      object-fit: cover; border-radius: 8px; background: var(--surf2);
-      display: block;
+    /* ── Caption section ── */
+    .caption-hint { font-size: 12px; color: var(--muted); line-height: 1.5; margin-bottom: 12px; }
+    .gen-btn {
+      background: none; border: 1px solid var(--border);
+      color: var(--muted); border-radius: 7px;
+      padding: 7px 14px; font-size: 12px; font-weight: 600; cursor: pointer;
+      font-family: var(--font); transition: border-color 0.15s, color 0.15s;
+      display: inline-flex; align-items: center; gap: 6px; margin-bottom: 12px;
     }
-    .thumb-placeholder {
-      width: 100%; max-width: 480px; aspect-ratio: 16/9;
-      background: var(--surf2); border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 36px; color: rgba(255,255,255,0.1);
-    }
-    .file-label {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: var(--surf2); border: 1px solid var(--border);
-      border-radius: 8px; padding: 9px 16px;
-      font-size: 13px; color: var(--muted); cursor: pointer;
-      transition: border-color 0.15s, color 0.15s;
-    }
-    .file-label:hover { border-color: rgba(184,151,90,0.4); color: var(--text); }
-    .file-input { display: none; }
-    .file-hint { font-size: 12px; color: var(--muted); margin-top: 8px; }
-
-    /* Caption */
+    .gen-btn:hover:not(:disabled) { border-color: rgba(184,151,90,0.4); color: var(--text); }
+    .gen-btn:disabled { opacity: 0.4; cursor: not-allowed; }
     textarea {
       width: 100%; background: var(--surf2); border: 1px solid var(--border);
       border-radius: 8px; padding: 12px; color: var(--text);
       font-family: var(--font); font-size: 14px; line-height: 1.6;
-      resize: vertical; min-height: 100px;
-      transition: border-color 0.15s;
+      resize: vertical; min-height: 110px; transition: border-color 0.15s;
     }
     textarea:focus { outline: none; border-color: rgba(184,151,90,0.4); }
-    .gen-btn {
-      margin-top: 10px;
+    .url-hint { font-size: 12px; color: var(--muted); margin-top: 8px; }
+
+    /* ── Thumbnail builder ── */
+    .builder-sublabel { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+    .prompt-area {
+      font-size: 13px; line-height: 1.65; min-height: 140px;
+      color: rgba(255,255,255,0.7); font-family: 'Courier New', monospace;
+    }
+    .copy-row { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; flex-wrap: wrap; gap: 8px; }
+    .copy-btn {
       background: none; border: 1px solid var(--border);
-      color: var(--muted); border-radius: 8px;
-      padding: 8px 16px; font-size: 13px; cursor: pointer;
-      transition: border-color 0.15s, color 0.15s;
+      color: var(--muted); border-radius: 7px;
+      padding: 7px 14px; font-size: 12px; font-weight: 600; cursor: pointer;
+      font-family: var(--font); transition: border-color 0.15s, color 0.15s;
       display: inline-flex; align-items: center; gap: 6px;
     }
-    .gen-btn:hover:not(:disabled) { border-color: rgba(184,151,90,0.4); color: var(--text); }
-    .gen-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .copy-btn:hover { border-color: rgba(184,151,90,0.4); color: var(--text); }
+    .copy-hint { font-size: 12px; color: var(--muted); }
 
-    /* Actions */
-    .actions { display: flex; gap: 12px; flex-wrap: wrap; }
-    .btn {
-      padding: 11px 24px; border-radius: 8px; font-size: 14px; font-weight: 600;
-      cursor: pointer; border: none; transition: opacity 0.15s, transform 0.1s;
-      display: inline-flex; align-items: center; gap: 8px;
+    /* ── Right column: Thumbnail preview ── */
+    .thumb-preview-wrap {
+      width: 100%; aspect-ratio: 16/9; border-radius: 8px;
+      background: var(--surf2); border: 1px solid var(--border);
+      overflow: hidden; margin-bottom: 14px;
+      display: flex; align-items: center; justify-content: center;
     }
-    .btn:active:not(:disabled) { transform: scale(0.98); }
-    .btn:disabled { opacity: 0.35; cursor: not-allowed; }
-    .btn-amber  { background: var(--amber); color: #000; }
-    .btn-green  { background: var(--green); color: #000; }
-    .btn-amber:hover:not(:disabled)  { opacity: 0.85; }
-    .btn-green:hover:not(:disabled)  { opacity: 0.85; }
+    .thumb-preview-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .thumb-placeholder-inner { display: flex; flex-direction: column; align-items: center; gap: 8px; color: rgba(255,255,255,0.15); font-size: 13px; }
+    .thumb-placeholder-inner svg { opacity: 0.3; }
+    .upload-label {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; padding: 10px 16px; border-radius: 8px;
+      background: var(--surf2); border: 1px solid var(--border);
+      font-size: 13px; color: var(--muted); cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .upload-label:hover { border-color: rgba(184,151,90,0.4); color: var(--text); }
+    .upload-input { display: none; }
+    .upload-hint { font-size: 11px; color: var(--muted); text-align: center; margin-top: 6px; }
 
+    /* ── Right column: Publish ── */
+    .publish-card { position: sticky; top: 24px; }
+    .publish-bullets { font-size: 13px; color: rgba(255,255,255,0.6); line-height: 1.7; margin-bottom: 20px; }
+    .publish-bullets ul { list-style: disc; padding-left: 18px; margin-top: 6px; }
+    .publish-bullets p { margin-bottom: 4px; font-size: 13px; }
+    .btn-publish {
+      width: 100%; padding: 13px; border-radius: 8px;
+      background: var(--green); color: #000;
+      border: none; font-size: 15px; font-weight: 700; cursor: pointer;
+      font-family: var(--font); display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: opacity 0.15s;
+    }
+    .btn-publish:hover:not(:disabled) { opacity: 0.85; }
+    .btn-publish:disabled { opacity: 0.3; cursor: not-allowed; }
+    .btn-mark-ready {
+      width: 100%; padding: 11px; border-radius: 8px; margin-top: 10px;
+      background: none; border: 1px solid rgba(245,158,11,0.4);
+      color: var(--amber); font-size: 14px; font-weight: 600; cursor: pointer;
+      font-family: var(--font); transition: background 0.15s, border-color 0.15s;
+    }
+    .btn-mark-ready:hover:not(:disabled) { background: rgba(245,158,11,0.08); }
+    .btn-mark-ready:disabled { opacity: 0.3; cursor: not-allowed; }
+    .publish-prereq { font-size: 12px; color: var(--muted); text-align: center; margin-top: 10px; line-height: 1.5; }
+
+    /* ── Feedback messages ── */
     .inline-error {
       font-size: 13px; color: var(--red); margin-top: 10px;
-      padding: 8px 12px; background: rgba(239,68,68,0.1);
+      padding: 8px 12px; background: rgba(239,68,68,0.08);
       border: 1px solid rgba(239,68,68,0.2); border-radius: 6px;
     }
-    .inline-success {
-      font-size: 13px; color: var(--green); margin-top: 10px;
-      padding: 8px 12px; background: rgba(34,197,94,0.1);
-      border: 1px solid rgba(34,197,94,0.2); border-radius: 6px;
-    }
 
-    /* Spinner */
+    /* ── Spinner ── */
     @keyframes spin { to { transform: rotate(360deg); } }
     .spinner {
-      width: 14px; height: 14px; border: 2px solid rgba(0,0,0,0.3);
+      width: 13px; height: 13px; border: 2px solid rgba(0,0,0,0.2);
       border-top-color: #000; border-radius: 50%;
       animation: spin 0.7s linear infinite; flex-shrink: 0;
     }
     .spinner-muted {
-      border: 2px solid rgba(255,255,255,0.1);
-      border-top-color: rgba(255,255,255,0.5);
+      border-color: rgba(255,255,255,0.1); border-top-color: rgba(255,255,255,0.5);
     }
+    .spinner-green { border-color: rgba(0,0,0,0.15); border-top-color: #000; }
+
+    /* ── Loading state ── */
+    .loading-state { text-align: center; padding: 80px 24px; color: var(--muted); font-size: 14px; }
   </style>
 </head>
 <body>
-  <header>
-    <div class="header-brand">Shana Gates · Blog System</div>
-    <div class="header-title">Review Post</div>
-    <div class="header-meta" id="headerMeta">Loading…</div>
-  </header>
 
-  <div class="back-bar">
-    <a class="back-link" href="/admin/va-queue/">‹ Back to Queue</a>
+  <div class="topbar" id="topbar">
+    <div class="topbar-left">
+      <a class="back-link" href="/admin/va-queue/">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Back to Queue
+      </a>
+      <div class="topbar-sep"></div>
+      <div class="topbar-title" id="topbarTitle">Loading…</div>
+    </div>
+    <div class="status-pill status-media_pending" id="statusPill">Media Pending</div>
   </div>
 
-  <main id="mainContent">
-    <div class="loading-state" id="loadingState">Loading post…</div>
-  </main>
+  <div class="editor-wrap">
+    <div id="loadingState" class="loading-state">Loading post…</div>
+    <div id="editorGrid" class="editor-grid" style="display:none;"></div>
+  </div>
 
   <script>
     if (!localStorage.getItem('sg_auth')) {
@@ -177,15 +218,26 @@
     }
 
     const slug = new URLSearchParams(location.search).get('slug')
-    if (!slug) {
-      document.getElementById('loadingState').textContent = 'No slug provided.'
-    }
+    if (!slug) document.getElementById('loadingState').textContent = 'No slug provided.'
 
     let currentPost = null
     let pendingImageBase64 = null
 
     function formatDate(iso) {
-      return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+      return new Date(iso).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+    }
+
+    function buildImagePrompt(post) {
+      const catLabel = CATEGORY_LABELS[post.category] || post.category
+      const location = post.city
+        ? post.city.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) + ', Coachella Valley, CA'
+        : 'Coachella Valley, CA'
+      return `YouTube-style real estate thumbnail for a blog post titled "${post.title}".
+Community: ${location}
+Topic: ${catLabel}
+Context: ${post.excerpt || ''}
+
+Style: bold text overlay, professional real estate feel, bright and eye-catching. Feature Coachella Valley desert scenery, a modern home, or a local landmark. Avoid generic stock-photo looks.`
     }
 
     function resizeImageToBase64(file) {
@@ -195,20 +247,13 @@
           const img = new Image()
           img.onload = () => {
             const canvas = document.createElement('canvas')
-            canvas.width = 1280
-            canvas.height = 720
+            canvas.width = 1280; canvas.height = 720
             const ctx = canvas.getContext('2d')
-            // Cover fit: crop to 16:9
             const srcAR = img.width / img.height
             const dstAR = 1280 / 720
             let sx = 0, sy = 0, sw = img.width, sh = img.height
-            if (srcAR > dstAR) {
-              sw = img.height * dstAR
-              sx = (img.width - sw) / 2
-            } else {
-              sh = img.width / dstAR
-              sy = (img.height - sh) / 2
-            }
+            if (srcAR > dstAR) { sw = img.height * dstAR; sx = (img.width - sw) / 2 }
+            else { sh = img.width / dstAR; sy = (img.height - sh) / 2 }
             ctx.drawImage(img, sx, sy, sw, sh, 0, 0, 1280, 720)
             resolve(canvas.toDataURL('image/jpeg', 0.88))
           }
@@ -226,83 +271,120 @@
       const isPending = status === 'media_pending'
       const isReady   = status === 'media_ready'
       const catLabel  = CATEGORY_LABELS[post.category] || post.category
+      const prompt    = buildImagePrompt(post)
 
-      document.getElementById('headerMeta').textContent = post.title
-      document.title = `Review: ${post.title} — Shana Gates`
+      document.getElementById('topbarTitle').textContent = post.title
+      document.title = `Review: ${post.title}`
+      const pill = document.getElementById('statusPill')
+      pill.className = `status-pill status-${status}`
+      pill.textContent = isPending ? 'Media Pending' : 'Ready to Publish'
 
       const thumbHtml = post.heroImageUrl
-        ? `<img id="thumbImg" class="thumb-img" src="${post.heroImageUrl}" alt="">`
-        : `<div class="thumb-placeholder" id="thumbImg">🌵</div>`
+        ? `<img id="thumbImg" src="${post.heroImageUrl}" alt="">`
+        : `<div class="thumb-placeholder-inner" id="thumbImg">
+            <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+            <span>No thumbnail yet</span>
+          </div>`
 
-      document.getElementById('mainContent').innerHTML = `
-        <!-- Post Info -->
-        <div class="card">
-          <div class="card-title">Post Info</div>
-          <div class="post-title">${post.title}</div>
-          ${post.excerpt ? `<div class="post-excerpt">${post.excerpt}</div>` : ''}
-          <div class="meta-row">
-            <span class="status-badge status-${status}" id="statusBadge">${isPending ? 'Needs Review' : 'Ready'}</span>
-            <span class="cat-badge">${catLabel}</span>
-            <span class="post-date">${formatDate(post.publishedAt)}</span>
-            ${post.sourceUrl ? `<a class="source-link" href="${post.sourceUrl}" target="_blank" rel="noopener">View Source ↗</a>` : ''}
+      document.getElementById('editorGrid').innerHTML = `
+        <!-- ═══ LEFT COLUMN ═══ -->
+        <div class="editor-left">
+
+          <!-- Article -->
+          <div class="card">
+            <div class="card-label">Article</div>
+            <div class="meta-row">
+              <span class="cat-badge">${catLabel}</span>
+              <span class="post-date">${formatDate(post.publishedAt)}</span>
+              ${post.sourceUrl ? `<a class="source-link" href="${post.sourceUrl}" target="_blank" rel="noopener">View Source ↗</a>` : ''}
+            </div>
+            <div class="post-title">${post.title}</div>
+            ${post.excerpt ? `<div class="post-excerpt">${post.excerpt}</div>` : ''}
           </div>
-        </div>
 
-        <!-- Thumbnail -->
-        <div class="card">
-          <div class="card-title">Hero Image / Thumbnail</div>
-          <div class="thumb-wrap">${thumbHtml}</div>
-          <label class="file-label">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            Replace Thumbnail
-            <input class="file-input" type="file" id="fileInput" accept="image/*">
-          </label>
-          <div class="file-hint" id="fileHint">JPEG, PNG, or WebP — will be resized to 1280×720</div>
-        </div>
-
-        <!-- Social Caption -->
-        <div class="card">
-          <div class="card-title">Social Caption</div>
-          <textarea id="captionArea" placeholder="Add a social media caption…">${post.socialCopy || ''}</textarea>
-          <button class="gen-btn" id="genBtn">
-            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-            Generate Caption
-          </button>
-          <div id="genError"></div>
-        </div>
-
-        <!-- Actions -->
-        <div class="card">
-          <div class="card-title">Actions</div>
-          <div class="actions">
-            <button class="btn btn-amber" id="markReadyBtn" ${!isPending ? 'disabled' : ''}>
-              Mark Ready
+          <!-- Facebook caption -->
+          <div class="card">
+            <div class="card-label">Facebook Post Caption</div>
+            <div class="caption-hint">This text will be posted to Shana's Facebook page. Edit it before publishing.</div>
+            <button class="gen-btn" id="genBtn">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              Generate Caption
             </button>
-            <button class="btn btn-green" id="publishBtn" ${!isReady ? 'disabled' : ''}>
-              Publish to Website
-            </button>
+            <textarea id="captionArea" placeholder="Facebook post caption will appear here after generating or editing…">${post.socialCopy || ''}</textarea>
+            <div class="url-hint">The blog post URL will be appended automatically when published.</div>
+            <div id="genError"></div>
           </div>
-          <div id="actionError"></div>
-          <div id="actionSuccess"></div>
+
+          <!-- Thumbnail builder -->
+          <div class="card">
+            <div class="card-label">Thumbnail Builder</div>
+            <div class="builder-sublabel">Image Prompt</div>
+            <textarea class="prompt-area" id="promptArea" readonly>${prompt}</textarea>
+            <div class="copy-row">
+              <button class="copy-btn" id="copyBtn" onclick="copyPrompt()">
+                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                Copy Prompt
+              </button>
+              <span class="copy-hint">Paste into ChatGPT, Gemini, or Midjourney</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ═══ RIGHT COLUMN ═══ -->
+        <div class="editor-right">
+
+          <!-- Thumbnail preview -->
+          <div class="card">
+            <div class="card-label">Thumbnail Preview</div>
+            <div class="thumb-preview-wrap" id="thumbWrap">${thumbHtml}</div>
+            <label class="upload-label">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Upload Thumbnail
+              <input class="upload-input" type="file" id="fileInput" accept="image/*">
+            </label>
+            <div class="upload-hint" id="uploadHint">JPEG, PNG, or WebP — resized to 1280×720 automatically</div>
+          </div>
+
+          <!-- Publish -->
+          <div class="card publish-card">
+            <div class="card-label">Publish</div>
+            <div class="publish-bullets">
+              <p>Pressing Publish will:</p>
+              <ul>
+                <li>Make the post live on the website</li>
+              </ul>
+            </div>
+            <button class="btn-publish" id="publishBtn" ${!isReady ? 'disabled' : ''}>
+              Publish
+            </button>
+            <button class="btn-mark-ready" id="markReadyBtn" ${!isPending ? 'disabled' : ''}>
+              Mark as Ready
+            </button>
+            <div class="publish-prereq" id="publishPrereq" ${isReady ? 'style="display:none"' : ''}>
+              Upload a thumbnail, then click<br>"Mark as Ready" first.
+            </div>
+            <div id="actionError"></div>
+          </div>
+
         </div>
       `
 
-      // File input
+      document.getElementById('editorGrid').style.display = 'grid'
+      document.getElementById('loadingState').style.display = 'none'
+
+      // File upload
       document.getElementById('fileInput').addEventListener('change', async (e) => {
         const file = e.target.files[0]
         if (!file) return
-        document.getElementById('fileHint').textContent = 'Resizing…'
+        document.getElementById('uploadHint').textContent = 'Resizing…'
         try {
           pendingImageBase64 = await resizeImageToBase64(file)
-          const el = document.getElementById('thumbImg')
-          if (el.tagName === 'IMG') {
-            el.src = pendingImageBase64
-          } else {
-            el.outerHTML = `<img id="thumbImg" class="thumb-img" src="${pendingImageBase64}" alt="">`
-          }
-          document.getElementById('fileHint').textContent = 'New thumbnail ready — click Mark Ready to save.'
+          document.getElementById('thumbWrap').innerHTML =
+            `<img id="thumbImg" src="${pendingImageBase64}" alt="">`
+          document.getElementById('uploadHint').textContent = 'New thumbnail ready — click Mark as Ready to save.'
         } catch {
-          document.getElementById('fileHint').textContent = 'Could not process image. Try a different file.'
+          document.getElementById('uploadHint').textContent = 'Could not process image. Try a different file.'
         }
       })
 
@@ -330,17 +412,13 @@
         }
       })
 
-      // Mark Ready
+      // Mark as Ready
       document.getElementById('markReadyBtn').addEventListener('click', async () => {
         const btn = document.getElementById('markReadyBtn')
         btn.disabled = true
-        btn.innerHTML = `<span class="spinner"></span> Saving…`
+        btn.textContent = 'Saving…'
         document.getElementById('actionError').innerHTML = ''
-        document.getElementById('actionSuccess').innerHTML = ''
-        const body = {
-          slug: post.slug,
-          socialCopy: document.getElementById('captionArea').value,
-        }
+        const body = { slug: post.slug, socialCopy: document.getElementById('captionArea').value }
         if (pendingImageBase64) body.heroImageBase64 = pendingImageBase64
         try {
           const r = await fetch('/api/blog/queue-mark-ready', {
@@ -355,7 +433,7 @@
         } catch (err) {
           document.getElementById('actionError').innerHTML = `<div class="inline-error">${err.message}</div>`
           btn.disabled = false
-          btn.textContent = 'Mark Ready'
+          btn.textContent = 'Mark as Ready'
         }
       })
 
@@ -363,7 +441,7 @@
       document.getElementById('publishBtn').addEventListener('click', async () => {
         const btn = document.getElementById('publishBtn')
         btn.disabled = true
-        btn.innerHTML = `<span class="spinner"></span> Publishing…`
+        btn.innerHTML = `<span class="spinner spinner-green"></span> Publishing…`
         document.getElementById('actionError').innerHTML = ''
         try {
           const r = await fetch('/api/blog/queue-publish', {
@@ -378,8 +456,19 @@
         } catch (err) {
           document.getElementById('actionError').innerHTML = `<div class="inline-error">${err.message}</div>`
           btn.disabled = false
-          btn.textContent = 'Publish to Website'
+          btn.innerHTML = 'Publish'
         }
+      })
+    }
+
+    function copyPrompt() {
+      const text = document.getElementById('promptArea').value
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('copyBtn')
+        btn.innerHTML = `<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Copied!`
+        setTimeout(() => {
+          btn.innerHTML = `<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy Prompt`
+        }, 2000)
       })
     }
 
@@ -393,9 +482,7 @@
         render(d.post)
       } catch (err) {
         document.getElementById('loadingState').innerHTML =
-          `<div style="text-align:center;padding:40px 20px;color:var(--muted);font-size:14px;">
-            <strong style="color:var(--text);display:block;margin-bottom:6px;">Error loading post</strong>${err.message}
-          </div>`
+          `<div style="color:var(--muted);font-size:14px;"><strong style="color:var(--text);display:block;margin-bottom:6px;">Error loading post</strong>${err.message}</div>`
       }
     }
 
