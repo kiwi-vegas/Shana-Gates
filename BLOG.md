@@ -2,10 +2,11 @@
 
 ## Overview
 
-Two automated pipelines feed the `/blog` listing page:
+Three automated pipelines feed the `/blog` listing page:
 
 1. **Daily news pipeline** — Tavily researches Coachella Valley real estate news, Claude Opus scores top articles, Shana picks 1–5 to publish via a morning email digest, Claude Sonnet writes full posts with AI hero images, published to Sanity CMS
 2. **Weekly original content pipeline** — Every Saturday night, Claude researches 2–3 original topic ideas per category (5 categories = ~10–15 total), Shana gets a Sunday morning email, picks topics to write, Claude writes full posts, published to Sanity CMS
+3. **Monthly events pipeline** — On the 25th of each month, Tavily searches for events in all 9 Coachella Valley cities for the *upcoming* month, Claude aggregates into 5–8 article briefs, automatically visible in the Blog Picker under Local Happenings
 
 Both appear together on `/blog`, merged and sorted by `publishedAt` descending. A category filter bar at the top lets readers filter by type.
 
@@ -75,6 +76,50 @@ Shana opens email Sunday morning
 **Excluded from weekly automation** (require Shana's input to do manually):
 - **Listing Spotlight** — needs specific property URLs from Shana
 - **Repurposed Social Post** — needs a YouTube or Instagram link from Shana
+
+---
+
+## Pipeline 3: Monthly Events Flow
+
+```
+25th of every month at 7:00 AM PT (Vercel Cron)
+  └─ /api/cron/events
+       ├─ Determines next month name + year (handles Dec→Jan year rollover)
+       ├─ Runs 8 Tavily searches in parallel:
+       │    ├─ "Coachella Valley events {Month} {Year}"
+       │    ├─ "Greater Palm Springs things to do {Month} {Year}"
+       │    ├─ "Palm Springs events {Month} {Year}"
+       │    ├─ "Palm Desert events {Month} {Year}"
+       │    ├─ "La Quinta Rancho Mirage Indian Wells events {Month} {Year}"
+       │    ├─ "Indio Cathedral City events {Month} {Year}"
+       │    ├─ "Coachella Valley concerts festivals {Month} {Year}"
+       │    └─ "Palm Springs VillageFest farmers market free events {Year}"
+       ├─ Claude Haiku aggregates into 5–8 article briefs with rules:
+       │    ├─ Always: valley-wide roundup ("What's Happening in the Coachella Valley This {Month} {Year}")
+       │    ├─ Always: free events article ("Free Events & Farmers Markets in the Coachella Valley: {Month} {Year}")
+       │    ├─ City-specific article if a city has 3+ distinct events
+       │    └─ Optional theme articles (concerts, dining, outdoor activities)
+       ├─ Every title includes month + year (required)
+       └─ Stored in Upstash Redis: event_articles:{YYYY-MM} (20-day TTL)
+
+Blog Picker (/admin/blog-picker/) fetches /api/blog/articles which:
+  ├─ Always merges current month's event articles
+  └─ Also merges next month's event articles when day of month >= 24
+```
+
+**Result:** From the 25th of every month, Shana automatically sees next month's event article
+briefs in the Local Happenings tab of her Blog Picker — no manual setup needed.
+
+**Redis key:** `event_articles:{YYYY-MM}` (e.g. `event_articles:2026-05`)
+**TTL:** 20 days — covers the pre-month window plus the full publishing month
+**Categories:** All articles use `local-happenings`
+**Article IDs:** `ev-{YYYY}-{MM}-{01..08}` (deterministic, safe to re-run)
+
+**Triggering manually:**
+```
+POST /api/cron/events
+Authorization: Bearer {CRON_SECRET}
+```
 
 ---
 

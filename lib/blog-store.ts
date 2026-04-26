@@ -69,6 +69,21 @@ export async function getShownCount(articleId: string): Promise<number> {
   return count ?? 0
 }
 
+// ── Monthly event articles ─────────────────────────────────────────────────
+// Key: event_articles:{YYYY-MM}  TTL: 20 days (covers the pre-month research window + full month)
+
+export async function storeEventArticles(yearMonth: string, articles: ScoredArticle[]): Promise<void> {
+  const key = `event_articles:${yearMonth}`
+  await redis.set(key, JSON.stringify(articles), { ex: 60 * 60 * 24 * 20 })
+}
+
+export async function getEventArticles(yearMonth: string): Promise<ScoredArticle[]> {
+  const key = `event_articles:${yearMonth}`
+  const raw = await redis.get<string>(key)
+  if (!raw) return []
+  return typeof raw === 'string' ? JSON.parse(raw) : (raw as ScoredArticle[])
+}
+
 // ── Weekly topics ──────────────────────────────────────────────────────────
 
 export async function storeWeeklyTopics(topics: WeeklyTopic[]): Promise<void> {
