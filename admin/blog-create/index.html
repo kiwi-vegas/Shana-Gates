@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Manual Post — Shana Gates</title>
+  <link rel="icon" type="image/png" href="/images/favcon.png" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bronze: #B8975A;
+      --bg: #0a0a0a;
+      --surface: #141414;
+      --border: rgba(255,255,255,0.08);
+      --text: #fff;
+      --muted: rgba(255,255,255,0.45);
+      --font: system-ui, -apple-system, sans-serif;
+    }
+    body { background: var(--bg); color: var(--text); font-family: var(--font); -webkit-font-smoothing: antialiased; }
+    header {
+      background: rgba(10,10,10,0.95);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+    .logo img { height: 40px; }
+    .logo-text { font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--bronze); }
+    .back-link { font-size: 13px; color: var(--muted); text-decoration: none; }
+    .back-link:hover { color: var(--bronze); }
+    main { max-width: 880px; margin: 0 auto; padding: 40px 24px 80px; }
+    h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+    .subtitle { color: var(--muted); font-size: 14px; margin-bottom: 32px; }
+    .row { margin-bottom: 22px; }
+    .row label { display: block; font-size: 12px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+    .row .hint { font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 6px; }
+    input[type="text"], select, textarea {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 14px;
+      padding: 11px 14px;
+      border-radius: 8px;
+      transition: border-color 0.15s;
+    }
+    input[type="text"]:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--bronze);
+    }
+    textarea {
+      min-height: 480px;
+      resize: vertical;
+      font-family: ui-monospace, Menlo, Monaco, Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    @media (max-width: 600px) { .grid-2 { grid-template-columns: 1fr; } }
+    .checkbox-row { display: flex; align-items: center; gap: 10px; padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+    .checkbox-row input { width: 16px; height: 16px; accent-color: var(--bronze); }
+    .checkbox-row label { font-size: 13px; color: var(--text); margin: 0; text-transform: none; letter-spacing: 0; font-weight: 500; }
+    .checkbox-row .hint-inline { color: var(--muted); font-size: 12px; }
+    .actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 28px;
+      flex-wrap: wrap;
+    }
+    .submit-btn {
+      flex: 1;
+      min-width: 200px;
+      background: var(--bronze);
+      color: #000;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 14px 24px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .submit-btn:hover:not(:disabled) { opacity: 0.85; }
+    .submit-btn:disabled { opacity: 0.5; cursor: default; }
+    .secondary-btn {
+      background: transparent;
+      border: 1px solid rgba(184,151,90,0.5);
+      color: var(--bronze);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 13px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .secondary-btn:hover { border-color: var(--bronze); }
+    .word-count { font-size: 12px; color: var(--muted); }
+    #status { margin-top: 16px; font-size: 14px; }
+    #status.success { color: #22c55e; }
+    #status.error { color: #ef4444; }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="logo" href="/admin/assistant/">
+      <img src="/images/logo.png" alt="Shana Gates" />
+      <span class="logo-text">Create Manual Post</span>
+    </a>
+    <a class="back-link" href="/admin/va-queue/">VA Queue →</a>
+  </header>
+
+  <main>
+    <h1>Create Manual Post</h1>
+    <p class="subtitle">Write a post directly into the review queue. Auto-links festival names, parks, and named entities. From the queue you'll add the thumbnail and publish.</p>
+
+    <div class="row">
+      <label for="title">Title</label>
+      <input id="title" type="text" />
+    </div>
+
+    <div class="grid-2">
+      <div class="row">
+        <label for="category">Category</label>
+        <select id="category">
+          <option value="market-update">Market Update</option>
+          <option value="investor-tips">Investor Tips</option>
+          <option value="seller-tips" selected>Seller Tips</option>
+          <option value="local-happenings">Local Happenings</option>
+          <option value="trending-topics">Trending Topics</option>
+        </select>
+      </div>
+      <div class="row">
+        <label for="city">City (optional)</label>
+        <select id="city">
+          <option value="">— General Coachella Valley —</option>
+          <option value="palm-springs">Palm Springs</option>
+          <option value="palm-desert">Palm Desert</option>
+          <option value="rancho-mirage">Rancho Mirage</option>
+          <option value="indian-wells">Indian Wells</option>
+          <option value="la-quinta">La Quinta</option>
+          <option value="indio">Indio</option>
+          <option value="cathedral-city">Cathedral City</option>
+          <option value="desert-hot-springs">Desert Hot Springs</option>
+          <option value="coachella">Coachella</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row">
+      <label for="excerpt">Excerpt (optional)</label>
+      <input id="excerpt" type="text" placeholder="Auto-extracted from first paragraph if blank" />
+    </div>
+
+    <div class="row">
+      <label for="body">Body (Markdown) — <span class="word-count" id="wordCount">0 words</span></label>
+      <textarea id="body" placeholder="# Title&#10;&#10;Body content in markdown…"></textarea>
+      <div class="hint">Use # for the H1 title (already in body), ## for sections, **bold**, [link text](url) for manual links.</div>
+    </div>
+
+    <div class="row">
+      <div class="checkbox-row">
+        <input id="autoLink" type="checkbox" checked />
+        <label for="autoLink">Auto-link named entities <span class="hint-inline">(festivals, parks, government agencies, etc.)</span></label>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="secondary-btn" type="button" onclick="loadDraft()">Load Property Tax Draft</button>
+      <button class="submit-btn" type="button" id="submitBtn" onclick="submitPost()">Add to Review Queue →</button>
+    </div>
+
+    <div id="status"></div>
+  </main>
+
+  <script>
+    if (!localStorage.getItem('sg_auth')) {
+      window.location.href = '/admin/assistant/login.html'
+    }
+
+    const PROPERTY_TAX_DRAFT = {
+      title: 'Are You Overpaying Property Taxes in Greater Palm Springs?',
+      category: 'seller-tips',
+      city: '',
+      excerpt: '',
+      body: `# Are You Overpaying Property Taxes in Greater Palm Springs?
+
+**Could you be paying more property tax than you actually owe — without ever realizing it?**
+
+Most homeowners in Palm Springs and across the Coachella Valley simply pay their tax bill the moment it shows up, never stopping to ask whether the county's assessed value of their home is actually accurate. In a market that's moved as much as ours has the past few years, that assessed value can drift away from reality — sometimes in your favor, sometimes not.
+
+In just a few quick steps, I'll show you how to spot whether your assessed value looks too high, and what to do about it if it does.
+
+## Step 1: Do a 2-Minute Value Check
+
+Before assuming your tax bill is correct, run through this quick check:
+
+- **Find your assessed value.** It's right at the top of your property tax bill, or you can search your address on the Riverside County Assessor's website.
+- **Compare to recent sales.** Look at what similar homes in your neighborhood have actually sold for in the last few months — same number of bedrooms, comparable size, similar lot. (If you'd like, I'm happy to pull a quick CMA for you.)
+- **Use a simple rule of thumb.** If comparable homes are selling noticeably below your assessed value, that's a real signal you may be over-assessed.
+- **Factor in your home's condition.** If your home is older, hasn't been updated, or has deferred maintenance, the county's "one-size-fits-all" value may not reflect the real market reality of your property.
+
+The whole check usually takes about two minutes — and it can be the difference between paying a fair tax bill and quietly overpaying for years.
+
+## Step 2: Your Options If the Value Looks Off
+
+If the numbers don't add up and you think your assessed value is too high, you have a few real options:
+
+- **Start with a friendly call.** Contact the Riverside County Assessor's office and ask about an informal review. Bring evidence — recent comparable sales, photos showing your home's condition, or a recent appraisal. Many issues get resolved at this stage without ever needing a formal appeal.
+- **Consider a formal appeal.** If the informal route doesn't work, you can file a formal assessment appeal through the Riverside County Clerk of the Board during their annual filing window. Deadlines change year to year, so always check their website or call directly to confirm the current dates.
+- **Pay your bill on time anyway.** This one trips people up — even if you've filed an appeal, you still have to pay your tax bill by the due dates. If your appeal is successful, the reduction shows up later as an adjustment or refund.
+
+## Step 3: Get a Local Reality Check
+
+This is where I can help. If you'd like a quick, no-pressure opinion on whether your assessed value looks reasonable for your Palm Springs-area home, just reach out.
+
+What you'll get from me:
+
+- A quick CMA showing what similar homes in your neighborhood have actually sold for recently.
+- A plain-English read on whether an appeal looks worth exploring, or whether your value is right where it should be.
+
+One thing I'll always tell you: don't wait until the last week of the appeal window to ask for help. The earlier you start looking at this, the more time you have to gather what you need and make a calm, informed decision.
+
+## Bonus: Easy Ways Some Owners Save
+
+A few quick programs worth knowing about, especially for long-time Coachella Valley homeowners:
+
+- The **Homeowners' Exemption** for primary residences — a small but easy reduction that many homeowners simply forget to apply for.
+- **Special exemptions or postponement programs** for qualifying seniors, disabled homeowners, and disabled veterans.
+
+Eligibility rules and amounts change, so check directly with the county or a qualified tax professional to see what currently applies to your situation.
+
+## Important Note
+
+This article is general information, not legal or tax advice. Always confirm current rules, forms, and deadlines with the Riverside County Assessor, the Clerk of the Board, or a qualified tax professional before taking any action.
+
+*Wondering if your Palm Springs property might be over-assessed? Reach out anytime for a quick property tax reality check — Shana Gates, REALTOR&reg; at Craft &amp; Bauer | Real Broker. [Contact Shana &rarr;](mailto:shana@craftbauer.com)*`,
+    }
+
+    function loadDraft() {
+      document.getElementById('title').value = PROPERTY_TAX_DRAFT.title
+      document.getElementById('category').value = PROPERTY_TAX_DRAFT.category
+      document.getElementById('city').value = PROPERTY_TAX_DRAFT.city
+      document.getElementById('excerpt').value = PROPERTY_TAX_DRAFT.excerpt
+      document.getElementById('body').value = PROPERTY_TAX_DRAFT.body
+      updateWordCount()
+    }
+
+    function updateWordCount() {
+      const text = document.getElementById('body').value
+      const words = text.trim() ? text.trim().split(/\s+/).length : 0
+      document.getElementById('wordCount').textContent = words + ' words'
+    }
+
+    document.getElementById('body').addEventListener('input', updateWordCount)
+
+    // Pre-load the property tax draft on first visit
+    loadDraft()
+
+    async function submitPost() {
+      const status = document.getElementById('status')
+      const btn = document.getElementById('submitBtn')
+      status.textContent = ''
+      status.className = ''
+
+      const title = document.getElementById('title').value.trim()
+      const category = document.getElementById('category').value
+      const city = document.getElementById('city').value
+      const excerpt = document.getElementById('excerpt').value.trim()
+      const body = document.getElementById('body').value.trim()
+      const autoLink = document.getElementById('autoLink').checked
+
+      if (!title || !body) {
+        status.className = 'error'
+        status.textContent = 'Title and body are required.'
+        return
+      }
+
+      btn.disabled = true
+      btn.textContent = 'Adding to queue… (10–20s)'
+
+      try {
+        const r = await fetch('/api/blog/inject-post', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, category, city, excerpt, body, autoLink }),
+        })
+        const data = await r.json()
+        if (!r.ok) throw new Error(data.error || 'Failed to add post')
+
+        status.className = 'success'
+        status.textContent = '✓ Added to queue. Redirecting to VA Queue…'
+        setTimeout(() => { window.location.href = '/admin/va-queue/' }, 1500)
+      } catch (err) {
+        status.className = 'error'
+        status.textContent = 'Error: ' + err.message
+        btn.disabled = false
+        btn.textContent = 'Add to Review Queue →'
+      }
+    }
+  </script>
+</body>
+</html>

@@ -29,6 +29,9 @@
     },
     "api/blog/enrich-posts.ts": {
       "maxDuration": 120
+    },
+    "api/blog/inject-post.ts": {
+      "maxDuration": 60
     }
   },
   "crons": [
