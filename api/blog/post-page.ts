@@ -406,10 +406,11 @@ export default async function handler(req: any, res: any) {
 
     /* ── YLOPO listings section ── */
     .listings-section {
-      background: var(--surface);
-      border-top: 1px solid var(--border);
+      background: #fff;
+      border-top: 1px solid #e5e7eb;
       padding: 56px 32px 60px;
       margin-top: 0;
+      color: #111;
     }
     .listings-inner { max-width: 1100px; margin: 0 auto; }
     .listings-eyebrow {
@@ -419,22 +420,24 @@ export default async function handler(req: any, res: any) {
       text-transform: uppercase;
       margin-bottom: 8px;
     }
-    .listings-heading { font-size: clamp(22px, 3vw, 30px); font-weight: 700; margin-bottom: 6px; }
-    .listings-sub { color: var(--muted); font-size: 14px; margin-bottom: 28px; }
+    .listings-heading { font-size: clamp(22px, 3vw, 30px); font-weight: 700; margin-bottom: 6px; color: #111; }
+    .listings-sub { color: #555; font-size: 14px; margin-bottom: 28px; }
+    /* Reset inherited dark-theme styles inside the YLOPO widget */
+    #ylopoWidget, #ylopoWidget * { color: inherit; background: unset; }
     .listings-view-all {
       display: inline-block;
       margin-top: 24px;
-      background: transparent;
-      border: 1.5px solid rgba(184,151,90,0.5);
-      color: var(--bronze);
+      background: var(--bronze);
+      border: none;
+      color: #000;
       font-size: 14px;
-      font-weight: 600;
-      padding: 10px 24px;
+      font-weight: 700;
+      padding: 11px 26px;
       border-radius: 8px;
       text-decoration: none;
-      transition: border-color 0.15s;
+      transition: opacity 0.15s;
     }
-    .listings-view-all:hover { border-color: var(--bronze); }
+    .listings-view-all:hover { opacity: 0.85; }
 
     /* ── Back to blog ── */
     .back-bar {
