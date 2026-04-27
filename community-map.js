@@ -15,12 +15,56 @@
   'use strict'
 
   var cfg = window.CV_MAP_CONFIG
-  if (!cfg) return
+  var propCfg = window.PROPERTY_MAP_CONFIG
+  if (!cfg && !propCfg) return
 
   var TOKEN = 'pk.eyJ1IjoidmVnYXMta2l3aSIsImEiOiJjbW8waXJoaWEwOHN2MnJxYTl2bWNlaGp0In0.C57V2IUuHiNKHn5LLlbXog'
   var BRONZE = '#B8975A'
 
   mapboxgl.accessToken = TOKEN
+
+  // ── Single-property map (used on /properties/{slug}.html) ────────────────
+  // Reads window.PROPERTY_MAP_CONFIG: { lng, lat, label, container }
+  if (propCfg && propCfg.lng && propCfg.lat) {
+    var propEl = document.getElementById(propCfg.container || 'pp-map')
+    if (propEl) {
+      var initProp = function () {
+        var pmap = new mapboxgl.Map({
+          container: propEl,
+          style: 'mapbox://styles/mapbox/standard',
+          center: [propCfg.lng, propCfg.lat],
+          zoom: propCfg.zoom || 14,
+          pitch: 0,
+          bearing: 0,
+          interactive: true,
+          attributionControl: false
+        })
+        pmap.on('load', function () {
+          try { pmap.setConfigProperty('basemap', 'lightPreset', 'night') } catch (e) {}
+          var pin = document.createElement('div')
+          pin.className = 'cv-map-poi'
+          pin.style.background = BRONZE
+          pin.style.border = '2px solid #fff'
+          pin.style.boxShadow = '0 0 0 4px rgba(184,151,90,0.35)'
+          pin.style.width = '18px'
+          pin.style.height = '18px'
+          pin.style.borderRadius = '50%'
+          new mapboxgl.Marker({ element: pin, anchor: 'center' })
+            .setLngLat([propCfg.lng, propCfg.lat])
+            .addTo(pmap)
+          pmap.addControl(new mapboxgl.NavigationControl({ visualizePitch: false }), 'top-right')
+        })
+      }
+      // lazy-init when in viewport
+      new IntersectionObserver(function (entries, observer) {
+        if (entries[0].isIntersecting) {
+          initProp()
+          observer.disconnect()
+        }
+      }, { threshold: 0.1 }).observe(propEl)
+    }
+    if (!cfg) return
+  }
 
   // ── Major valley roads ───────────────────────────────────────────────────
   // I-10 (east–west freeway across the northern valley)

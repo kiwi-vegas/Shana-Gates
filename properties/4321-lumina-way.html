@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title id="pp-title">4321 Lumina Way · Palm Springs — Shana Gates</title>
+  <meta id="pp-meta-desc" name="description" content="A featured Coachella Valley property presented by Shana Gates, REALTOR® at Craft & Bauer | Real Broker." />
+  <link rel="icon" type="image/png" href="/images/favcon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/community.css" />
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.css" rel="stylesheet" />
+
+  <!-- The two-line edit per property: PROPERTY_SLUG must match a slug in /data/featured-properties.json -->
+  <script>window.PROPERTY_SLUG = '4321-lumina-way';</script>
+</head>
+<body class="property-page">
+
+  <!-- NAV -->
+  <nav>
+    <a href="/" class="nav-logo">
+      <img src="/images/C&B-logo+R.png" alt="Shana Gates" />
+    </a>
+    <ul class="nav-links">
+      <li class="nav-communities">
+        <span class="nav-communities-trigger">Communities</span>
+        <div class="communities-dropdown">
+          <a href="/palm-springs.html">Palm Springs</a>
+          <a href="/palm-desert.html">Palm Desert</a>
+          <a href="/rancho-mirage.html">Rancho Mirage</a>
+          <a href="/indian-wells.html">Indian Wells</a>
+          <a href="/la-quinta.html">La Quinta</a>
+          <a href="/indio.html">Indio</a>
+          <a href="/cathedral-city.html">Cathedral City</a>
+          <a href="/desert-hot-springs.html">Desert Hot Springs</a>
+          <a href="/coachella.html">Coachella</a>
+        </div>
+      </li>
+      <li><a href="/#featured-properties">Properties</a></li>
+      <li><a href="/blog/">Blog</a></li>
+      <li><a href="/#about">About Shana</a></li>
+      <li><a href="/#search-listings">Search</a></li>
+    </ul>
+    <a href="tel:7602324054" class="nav-cta">760.232.4054</a>
+  </nav>
+
+  <!-- HERO GALLERY -->
+  <section class="pp-hero">
+    <div class="pp-hero-track" id="pp-hero-track"></div>
+    <button class="fp-arrow fp-prev" id="pp-prev" aria-label="Previous photo" style="left:24px;">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    </button>
+    <button class="fp-arrow fp-next" id="pp-next" aria-label="Next photo" style="right:24px;">
+      <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </button>
+    <div class="pp-counter" id="pp-counter">1 / 1</div>
+  </section>
+
+  <!-- ATTRIBUTION -->
+  <p class="pp-attribution">Featured by Shana Gates · Craft &amp; Bauer | Real Broker</p>
+
+  <!-- TITLE BLOCK -->
+  <header class="pp-title-block">
+    <div>
+      <h1 class="pp-address" id="pp-address">—</h1>
+      <p class="pp-locality" id="pp-locality">—</p>
+    </div>
+    <div class="pp-price" id="pp-price">—</div>
+  </header>
+
+  <!-- STATS -->
+  <div class="pp-stats" id="pp-stats"></div>
+
+  <!-- DESCRIPTION -->
+  <article class="pp-body" id="pp-body">
+    <p>Loading property details…</p>
+  </article>
+
+  <!-- FEATURES -->
+  <section class="pp-features" id="pp-features-section" style="display:none;">
+    <h2>Property Features</h2>
+    <ul id="pp-features-list"></ul>
+  </section>
+
+  <!-- LOCATION MAP -->
+  <section class="pp-map-section">
+    <h2>Location</h2>
+    <div id="pp-map"></div>
+  </section>
+
+  <!-- NEIGHBORHOOD CARD -->
+  <section class="pp-neighborhood" id="pp-neighborhood-section" style="display:none;">
+    <div class="pp-neighborhood-card">
+      <div>
+        <p class="overline">Explore the Area</p>
+        <h3 id="pp-neighborhood-title">—</h3>
+      </div>
+      <a id="pp-neighborhood-link" class="pp-cta-btn-outline" href="#">Community Guide &rarr;</a>
+    </div>
+  </section>
+
+  <!-- SCHEDULE A SHOWING -->
+  <section class="pp-tour">
+    <img class="pp-tour-avatar" src="/images/shana%20pro.JPG" alt="Shana Gates, REALTOR®" />
+    <h2>Want to See This Home in Person?</h2>
+    <p>Reach out anytime — I'll set up a private tour at a time that works for you and walk through every detail of the property.</p>
+    <div class="pp-tour-buttons">
+      <a id="pp-tour-mailto" class="pp-cta-btn" href="mailto:shana@craftbauer.com">Request a Tour</a>
+      <a class="pp-cta-btn-outline" href="tel:7602324054">Call 760.232.4054</a>
+    </div>
+  </section>
+
+  <!-- OTHER FEATURED LISTINGS -->
+  <section class="pp-others" id="pp-others-section" style="display:none;">
+    <h2>Other Featured Listings</h2>
+    <div class="pp-others-grid" id="pp-others-grid"></div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer style="border-top:1px solid rgba(255,255,255,0.08); padding:36px 32px; text-align:center; color:var(--text-muted); font-family:var(--sans); font-size:12px;">
+    <p>&copy; 2026 Shana Gates &middot; Craft &amp; Bauer | Real Broker &middot; Coachella Valley, CA</p>
+    <p style="margin-top:8px;">DRE info — All content for informational purposes. Not legal or financial advice. <a href="/" style="color:var(--bronze);text-decoration:none;">shanasells.com</a></p>
+  </footer>
+
+  <!-- MAPBOX (loaded; community-map.js boots the property map when PROPERTY_MAP_CONFIG is set) -->
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.js"></script>
+
+  <!-- DATA BINDING -->
+  <script>
+    (function () {
+      'use strict'
+
+      var COMMUNITY_NAMES = {
+        'palm-springs': 'Palm Springs', 'palm-desert': 'Palm Desert',
+        'rancho-mirage': 'Rancho Mirage', 'indian-wells': 'Indian Wells',
+        'la-quinta': 'La Quinta', 'indio': 'Indio',
+        'cathedral-city': 'Cathedral City', 'desert-hot-springs': 'Desert Hot Springs',
+        'coachella': 'Coachella'
+      }
+
+      function formatNumber (n) {
+        return n.toLocaleString('en-US')
+      }
+
+      function $ (id) { return document.getElementById(id) }
+
+      fetch('/data/featured-properties.json')
+        .then(function (r) {
+          if (!r.ok) throw new Error('Failed to load properties data')
+          return r.json()
+        })
+        .then(function (all) {
+          var slug = window.PROPERTY_SLUG
+          var p = all.find(function (x) { return x.slug === slug })
+          if (!p) {
+            $('pp-body').innerHTML = '<p>Property not found. <a href="/" style="color:var(--bronze);">&larr; Back to home</a></p>'
+            return
+          }
+
+          // Title + meta
+          document.title = p.address + ' · ' + p.city + ' — Shana Gates'
+          if (p.tagline) {
+            $('pp-meta-desc').setAttribute('content', p.tagline)
+          }
+
+          // Title block
+          $('pp-address').textContent = p.address
+          $('pp-locality').textContent = (p.neighborhood ? p.neighborhood + ' · ' : '') +
+            p.city + ', ' + p.state + (p.zip ? ' ' + p.zip : '') +
+            (p.mls ? ' · MLS ' + p.mls : '')
+          if (p.priceDisplay) {
+            $('pp-price').textContent = p.priceDisplay
+          } else {
+            $('pp-price').textContent = 'Inquire'
+          }
+
+          // Stats
+          var stats = []
+          if (p.beds) stats.push({ value: p.beds, label: 'Beds' })
+          if (p.baths) stats.push({ value: p.baths, label: 'Baths' })
+          if (p.sqft) stats.push({ value: formatNumber(p.sqft) + ' sq ft', label: 'Living Area' })
+          if (p.lotSize) stats.push({ value: p.lotSize, label: 'Lot' })
+          if (p.yearBuilt) stats.push({ value: p.yearBuilt, label: 'Built' })
+          if (stats.length) {
+            $('pp-stats').innerHTML = stats.map(function (s) {
+              return '<div class="pp-stat"><strong>' + s.value + '</strong><span>' + s.label + '</span></div>'
+            }).join('')
+          } else {
+            $('pp-stats').style.display = 'none'
+          }
+
+          // Description
+          if (p.description) {
+            var paragraphs = p.description.split(/\n\s*\n/).map(function (para) {
+              return '<p>' + para.replace(/\n/g, ' ').trim() + '</p>'
+            }).join('')
+            $('pp-body').innerHTML = paragraphs
+          } else if (p.tagline) {
+            $('pp-body').innerHTML = '<p>' + p.tagline + '</p>'
+          }
+
+          // Features
+          if (p.features && p.features.length) {
+            $('pp-features-list').innerHTML = p.features.map(function (f) {
+              return '<li>' + f + '</li>'
+            }).join('')
+            $('pp-features-section').style.display = 'block'
+          }
+
+          // Hero gallery
+          var photos = (p.gallery && p.gallery.length) ? p.gallery : [p.heroImage]
+          var track = $('pp-hero-track')
+          track.innerHTML = photos.map(function (src, i) {
+            return '<img class="pp-hero-img' + (i === 0 ? ' active' : '') + '" src="' + src + '" alt="' + p.address + ' photo ' + (i + 1) + '"' + (i > 0 ? ' loading="lazy"' : '') + ' />'
+          }).join('')
+          $('pp-counter').textContent = '1 / ' + photos.length
+          var current = 0
+          var imgs = track.querySelectorAll('.pp-hero-img')
+          var prevBtn = $('pp-prev')
+          var nextBtn = $('pp-next')
+          function go (i) {
+            imgs[current].classList.remove('active')
+            current = (i + photos.length) % photos.length
+            imgs[current].classList.add('active')
+            $('pp-counter').textContent = (current + 1) + ' / ' + photos.length
+          }
+          prevBtn.addEventListener('click', function () { go(current - 1) })
+          nextBtn.addEventListener('click', function () { go(current + 1) })
+          if (photos.length <= 1) {
+            prevBtn.style.display = 'none'
+            nextBtn.style.display = 'none'
+          }
+
+          // Map
+          window.PROPERTY_MAP_CONFIG = { lng: p.lng, lat: p.lat, zoom: 14, container: 'pp-map' }
+          var s = document.createElement('script')
+          s.src = '/community-map.js'
+          document.body.appendChild(s)
+
+          // Neighborhood card
+          if (p.communitySlug && COMMUNITY_NAMES[p.communitySlug]) {
+            $('pp-neighborhood-title').textContent = 'Homes in ' + (p.neighborhood || COMMUNITY_NAMES[p.communitySlug])
+            $('pp-neighborhood-link').href = '/' + p.communitySlug + '.html'
+            $('pp-neighborhood-link').textContent = COMMUNITY_NAMES[p.communitySlug] + ' Community Guide →'
+            $('pp-neighborhood-section').style.display = 'block'
+          }
+
+          // Tour mailto
+          $('pp-tour-mailto').href = 'mailto:shana@craftbauer.com?subject=' +
+            encodeURIComponent('Showing request: ' + p.address + ', ' + p.city)
+
+          // Other featured listings
+          var others = all.filter(function (x) { return x.slug !== p.slug && x.status === 'active' }).slice(0, 3)
+          if (others.length) {
+            $('pp-others-grid').innerHTML = others.map(function (o) {
+              var href = o.hasDetailPage ? '/properties/' + o.slug + '.html' : (o.ylopoDetailUrl || '#')
+              var ext = o.hasDetailPage ? '' : ' target="_blank" rel="noopener"'
+              return '<a class="pp-other-card" href="' + href + '"' + ext + '>' +
+                '<img src="' + o.heroImage + '" alt="' + o.address + '" loading="lazy" />' +
+                '<div class="pp-other-overlay">' +
+                  '<div><span>' + o.city + ', ' + o.state + '</span>' +
+                  '<strong>' + o.address + '</strong></div>' +
+                '</div>' +
+                '</a>'
+            }).join('')
+            $('pp-others-section').style.display = 'block'
+          }
+        })
+        .catch(function (err) {
+          $('pp-body').innerHTML = '<p>Couldn&rsquo;t load this property. <a href="/" style="color:var(--bronze);">&larr; Back to home</a></p>'
+          console.error('[property page]', err)
+        })
+    })()
+  </script>
+
+</body>
+</html>
