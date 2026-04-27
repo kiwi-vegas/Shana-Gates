@@ -208,6 +208,31 @@ Claude gives extra weight to these high-value topics:
 
 ---
 
+## Evergreen Post Templates (High-Performing Formats)
+
+These seven templated post formats are **proven high performers** for real estate blogs and must be guaranteed in the publishing rotation. Each is designed to be filled in across the 9 CV cities so it can be reused indefinitely without going stale. The weekly research generator (`lib/weekly-research.ts`) is instructed to incorporate these formats into its topic suggestions — Shana should also be able to spin up any of these manually via the **Manual Post Creator** at `/admin/blog-create/`.
+
+| # | Template | Slot rotation | Category |
+|---|---|---|---|
+| 1 | **What Does It Cost to Buy a Home in [City] in 2026?** | Each CV city (Palm Springs, Palm Desert, Rancho Mirage, Indian Wells, La Quinta, Indio, Cathedral City, Desert Hot Springs, Coachella) | `market-update` |
+| 2 | **What Does It Cost to Sell a Home in [City]?** | Each CV city | `seller-tips` |
+| 3 | **How Do California Property Taxes Work for [City] Home Buyers?** | Each CV city, or "Greater Palm Springs" / "Coachella Valley" | `market-update` |
+| 4 | **[City A] vs. [City B]: Which Is Better for Buyers/Investors in 2026?** | Pairs: Palm Springs vs. Palm Desert · La Quinta vs. Indian Wells · Rancho Mirage vs. Indian Wells · Indio vs. Coachella · Cathedral City vs. Desert Hot Springs (rotate buyer/investor framing) | `market-update` or `investor-tips` |
+| 5 | **Is 2026 a Good Time to Buy in [Neighborhood/City]?** | Each CV city, plus notable neighborhoods (e.g. Movie Colony, Old Las Palmas, PGA West, Bighorn, Mission Hills) | `market-update` |
+| 6 | **What Happens After Your Offer Is Accepted in California?** | One general CA post; can also be cut as `[City]`-specific timeline if useful | `market-update` |
+| 7 | **What Do Flood Zones Mean for Home Buyers in [Area]?** | Coachella Valley flash-flood basins (low-lying parts of Palm Springs, Cathedral City, Indio, Coachella); also a general CV post | `market-update` |
+
+**Guardrails for these templates:**
+- Cite real numbers (closing costs, transfer tax %, agent commission ranges, FEMA flood zones) — never fabricate.
+- Always tie back to local CV market context — what's typical in the desert vs. national norms.
+- Compliance still applies — no school quality, no safety/demographic claims.
+- For Template 3 (taxes), link the Riverside County Assessor (`https://www.rivcoacr.org/`) and California State Board of Equalization where relevant.
+- For Template 7 (flood zones), reference FEMA's Flood Map Service Center (`https://msc.fema.gov/portal/home`).
+
+**Coverage tracking:** As of 2026-04-27, the post ["Are You Overpaying Property Taxes in Greater Palm Springs?"](/blog/post/are-you-overpaying-property-taxes-in-greater-palm-springs-1777243563912) partially covers Template 3 from a homeowner-not-buyer angle. The remaining six templates are unpublished and should be prioritized in upcoming weekly batches.
+
+---
+
 ## Weekly Research — Original Content Categories
 
 For each category, Claude generates 2–3 original blog topic ideas based on current Coachella Valley context:

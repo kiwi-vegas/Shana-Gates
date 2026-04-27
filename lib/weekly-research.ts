@@ -69,6 +69,21 @@ TOPIC RULES:
 - Topics should answer questions real buyers or sellers are Googling
 - Tie in current market conditions, seasonal patterns, or timely local angles when possible
 
+EVERGREEN HIGH-PERFORMING FORMATS — at least 1 of every 3 topics you generate (across all categories combined) MUST follow one of these proven templates, rotating through CV cities and pairs so the same template isn't repeated for the same city in consecutive weeks:
+1. "What Does It Cost to Buy a Home in [City] in 2026?" — fits market-update
+2. "What Does It Cost to Sell a Home in [City]?" — fits seller-tips / buying-tips
+3. "How Do California Property Taxes Work for [City] Home Buyers?" — fits market-update
+4. "[City A] vs. [City B]: Which Is Better for Buyers/Investors in 2026?" — fits market-insight or investment
+5. "Is 2026 a Good Time to Buy in [Neighborhood/City]?" — fits market-update
+6. "What Happens After Your Offer Is Accepted in California?" — fits market-update / buying-tips
+7. "What Do Flood Zones Mean for Home Buyers in [Area]?" — fits market-update
+
+City rotation pool: Palm Springs, Palm Desert, Rancho Mirage, Indian Wells, La Quinta, Indio, Cathedral City, Desert Hot Springs, Coachella.
+City-vs-city pairs: Palm Springs vs. Palm Desert · La Quinta vs. Indian Wells · Rancho Mirage vs. Indian Wells · Indio vs. Coachella · Cathedral City vs. Desert Hot Springs.
+Notable neighborhoods for Template 5: Movie Colony, Old Las Palmas, PGA West, Bighorn, Mission Hills, Andreas Hills, Sunrise Park, Vista Las Palmas.
+
+When using these templates, fill in the slot with a different city than recent weeks. The titles you return should be the FINAL, CV-specific title (e.g. "What Does It Cost to Buy a Home in La Quinta in 2026?") — not the template with placeholders.
+
 COMPLIANCE — never generate topics that mention:
 - School quality, ratings, or test scores
 - Safety of neighborhoods or demographic composition
