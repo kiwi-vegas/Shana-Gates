@@ -1719,6 +1719,159 @@
       .testimonial-card { width: 252px; }
     }
 
+    /* ============================================================
+       FROM THE BLOG — horizontal-scroll strip of 8 latest posts
+    ============================================================ */
+    #from-the-blog {
+      background: var(--dark);
+      padding: 100px 52px;
+      position: relative;
+      overflow: hidden;
+    }
+    .ftb-header {
+      max-width: 1200px;
+      margin: 0 auto 36px;
+    }
+    .ftb-carousel {
+      position: relative;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .ftb-grid {
+      display: flex;
+      gap: 18px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 18px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(184,151,90,0.4) rgba(255,255,255,0.05);
+    }
+    .ftb-grid::-webkit-scrollbar { height: 6px; }
+    .ftb-grid::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
+    .ftb-grid::-webkit-scrollbar-thumb { background: rgba(184,151,90,0.4); border-radius: 3px; }
+    .ftb-grid::-webkit-scrollbar-thumb:hover { background: rgba(184,151,90,0.7); }
+    .ftb-card {
+      flex: 0 0 calc((100% - 54px) / 4);
+      scroll-snap-align: start;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      background: var(--dark-2, #131313);
+      border: 1px solid rgba(255,255,255,0.06);
+      transition: transform 0.4s, border-color 0.3s;
+    }
+    .ftb-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(184,151,90,0.4);
+    }
+    .ftb-card-image {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      overflow: hidden;
+      background: #0d0d0d;
+    }
+    .ftb-card-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s;
+      display: block;
+    }
+    .ftb-card:hover .ftb-card-image img { transform: scale(1.05); }
+    .ftb-card-body { padding: 20px 22px 24px; }
+    .ftb-category {
+      font-family: var(--sans);
+      font-size: 9.5px;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--bronze);
+      margin-bottom: 10px;
+    }
+    .ftb-title {
+      font-family: var(--serif);
+      font-size: 19px;
+      font-weight: 500;
+      line-height: 1.25;
+      color: var(--text-light, #F2EDE4);
+      margin-bottom: 12px;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .ftb-date {
+      font-family: var(--sans);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      color: rgba(242,237,228,0.45);
+    }
+    .ftb-arrow {
+      position: absolute;
+      top: 40%;
+      transform: translateY(-50%);
+      width: 48px;
+      height: 48px;
+      background: rgba(0,0,0,0.55);
+      border: 1.5px solid rgba(255,255,255,0.6);
+      color: #fff;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      z-index: 5;
+      padding: 0;
+      transition: background 0.2s, border-color 0.2s, opacity 0.2s;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+    .ftb-arrow:hover { background: #25434B; border-color: #25434B; }
+    .ftb-arrow:disabled { opacity: 0.3; cursor: default; }
+    .ftb-arrow:disabled:hover { background: rgba(0,0,0,0.55); border-color: rgba(255,255,255,0.6); }
+    .ftb-arrow svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.5; }
+    .ftb-prev { left: -8px; }
+    .ftb-next { right: -8px; }
+    .ftb-cta-row {
+      text-align: center;
+      margin-top: 36px;
+    }
+    .ftb-cta {
+      display: inline-block;
+      font-family: var(--sans);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #25434B;
+      background: transparent;
+      border: 1.5px solid #25434B;
+      padding: 14px 32px;
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+    }
+    .ftb-cta:hover { background: #25434B; color: #fff; }
+    .ftb-empty {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 0;
+      text-align: center;
+      color: rgba(242,237,228,0.45);
+      font-family: var(--sans);
+      font-size: 13px;
+    }
+
+    @media (max-width: 1100px) {
+      .ftb-card { flex: 0 0 calc((100% - 36px) / 3); }
+    }
+    @media (max-width: 768px) {
+      #from-the-blog { padding: 64px 20px; }
+      .ftb-card { flex: 0 0 calc((100% - 18px) / 2); }
+      .ftb-arrow { display: none !important; }
+    }
+    @media (max-width: 500px) {
+      .ftb-card { flex: 0 0 80%; }
+    }
+
   </style>
 </head>
 <body>
@@ -2326,6 +2479,99 @@
 
     </div>
   </section>
+
+  <!-- ============================================================
+       FROM THE BLOG — fetched from /api/blog/posts (8 most recent)
+  ============================================================ -->
+  <section id="from-the-blog">
+    <div class="ftb-header section-header reveal">
+      <div>
+        <p class="section-eyebrow">Real Estate Insights</p>
+        <h2 class="section-title">From the <em>Blog</em></h2>
+      </div>
+    </div>
+    <div class="ftb-carousel">
+      <button class="ftb-arrow ftb-prev" id="ftb-prev" aria-label="Scroll left" style="display:none;">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      </button>
+      <button class="ftb-arrow ftb-next" id="ftb-next" aria-label="Scroll right" style="display:none;">
+        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </button>
+      <div class="ftb-grid" id="ftb-grid">
+        <!-- cards injected by JS -->
+      </div>
+    </div>
+    <div class="ftb-cta-row">
+      <a href="/blog/" class="ftb-cta">Read More on the Blog &rarr;</a>
+    </div>
+  </section>
+
+  <script>
+    (function () {
+      var CAT_LABELS = {
+        'market-update':'Market Update','investor-tips':'Investor Tips','seller-tips':'Seller Tips',
+        'community':'Community','trending-topics':'Trending Topics',
+        'local-happenings':'Community','lifestyle':'Community','community-spotlight':'Community','local-area':'Community',
+        'buying-tips':'Market Update','selling-tips':'Seller Tips','investment':'Investor Tips',
+        'news':'Trending Topics','market-insight':'Market Update'
+      }
+      function fmt (iso) { return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) }
+      function escapeAttr (s) { return String(s || '').replace(/"/g, '&quot;') }
+
+      fetch('/api/blog/posts?limit=8')
+        .then(function (r) { return r.ok ? r.json() : null })
+        .then(function (data) {
+          var grid = document.getElementById('ftb-grid')
+          if (!grid) return
+          var posts = (data && data.posts) ? data.posts.slice(0, 8) : []
+          if (!posts.length) {
+            grid.outerHTML = '<div class="ftb-empty">New posts coming soon — check back shortly.</div>'
+            return
+          }
+
+          grid.innerHTML = posts.map(function (p) {
+            var img = p.heroImageUrl
+              ? '<img src="' + escapeAttr(p.heroImageUrl) + '" alt="' + escapeAttr(p.title) + '" loading="lazy" />'
+              : ''
+            var cat = CAT_LABELS[p.category] || p.category || ''
+            return '<a class="ftb-card" href="/blog/post/' + encodeURIComponent(p.slug) + '">' +
+              '<div class="ftb-card-image">' + img + '</div>' +
+              '<div class="ftb-card-body">' +
+                (cat ? '<div class="ftb-category">' + cat + '</div>' : '') +
+                '<h3 class="ftb-title">' + (p.title || '') + '</h3>' +
+                '<div class="ftb-date">' + fmt(p.publishedAt) + '</div>' +
+              '</div>' +
+            '</a>'
+          }).join('')
+
+          requestAnimationFrame(function () {
+            var prev = document.getElementById('ftb-prev')
+            var next = document.getElementById('ftb-next')
+            if (grid.scrollWidth <= grid.clientWidth + 2) return
+            prev.style.display = 'flex'
+            next.style.display = 'flex'
+            function step () {
+              var card = grid.querySelector('.ftb-card')
+              return card ? card.offsetWidth + 18 : grid.clientWidth * 0.8
+            }
+            function update () {
+              var max = grid.scrollWidth - grid.clientWidth
+              prev.disabled = grid.scrollLeft <= 2
+              next.disabled = grid.scrollLeft >= max - 2
+            }
+            prev.addEventListener('click', function () { grid.scrollBy({ left: -step(), behavior: 'smooth' }) })
+            next.addEventListener('click', function () { grid.scrollBy({ left: step(), behavior: 'smooth' }) })
+            grid.addEventListener('scroll', update, { passive: true })
+            window.addEventListener('resize', update)
+            update()
+          })
+        })
+        .catch(function () {
+          var grid = document.getElementById('ftb-grid')
+          if (grid) grid.outerHTML = '<div class="ftb-empty">Couldn&rsquo;t load latest posts. <a href="/blog/" style="color:#25434B;">Visit the blog &rarr;</a></div>'
+        })
+    })()
+  </script>
 
   <!-- ============================================================
        SEARCH / YLOPO WIDGET
