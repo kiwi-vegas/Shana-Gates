@@ -1,0 +1,162 @@
+{
+  "palm-springs": {
+    "name": "Palm Springs",
+    "schoolDistrict": "Palm Springs Unified School District (PSUSD)",
+    "highlights": [
+      { "icon": "🏛️", "title": "Mid-Century Architecture", "body": "Home to thousands of Kaufmann Desert House–era masterpieces by Richard Neutra, Albert Frey, and Donald Wexler. Modernism Week draws 150,000 architecture lovers annually." },
+      { "icon": "🚡", "title": "Palm Springs Aerial Tramway", "body": "The world's largest rotating tram car whisks you from 2,643 ft to 8,516 ft in minutes — desert heat to pine forest, year-round hiking, and breathtaking views." },
+      { "icon": "🎨", "title": "World-Class Arts Scene", "body": "From the Palm Springs Art Museum to monthly VillageFest street fairs, the city pulses with creativity. Public art, galleries, and cultural festivals are woven into daily life." },
+      { "icon": "⛳", "title": "Golf & Outdoor Recreation", "body": "Dozens of golf courses surround the city, with Indian Canyons and hiking trails steps away. Year-round sunshine makes every outdoor activity possible every day." }
+    ],
+    "schools": {
+      "public": [
+        { "name": "Palm Springs High School", "grades": "9 – 12", "type": "PSUSD" },
+        { "name": "Raymond Cree Middle School", "grades": "6 – 8", "type": "PSUSD" },
+        { "name": "Cahuilla Elementary School", "grades": "K – 5", "type": "PSUSD" },
+        { "name": "Vista del Monte Elementary", "grades": "K – 5", "type": "PSUSD" },
+        { "name": "Katherine Finchy Elementary", "grades": "K – 5", "type": "PSUSD" }
+      ],
+      "private": [
+        { "name": "Palm Valley School", "grades": "PK – 12", "type": "Independent Private" },
+        { "name": "Desert Chapel Christian School", "grades": "K – 8", "type": "Private / Faith-Based" },
+        { "name": "Cielo Vista Charter School", "grades": "K – 8", "type": "Charter (PSUSD)" }
+      ]
+    },
+    "parks": [
+      { "name": "Ruth Hardy Park", "size": "~18 Acres", "amenities": ["8 lighted tennis courts", "Pickleball courts", "Walking paths", "Children's playground"] },
+      { "name": "Demuth Community Park", "size": "~39 Acres", "amenities": ["Sports fields", "Skate park", "BMX bike track", "Splash pad"] },
+      { "name": "Indian Canyons Trails", "size": "~4,000 Acres", "amenities": ["Andreas Canyon Loop", "Palm Canyon Trail (1,500+ palms)", "Horseback riding", "Ranger-led tours"] },
+      { "name": "Sunrise Park", "size": "~8 Acres", "amenities": ["Aquatic Center", "Softball complex", "Picnic pavilions"] }
+    ]
+  },
+  "palm-desert": {
+    "name": "Palm Desert",
+    "schoolDistrict": "Desert Sands Unified School District (DSUSD)",
+    "highlights": [
+      { "icon": "🛍️", "title": "El Paseo Shopping", "body": "The \"Rodeo Drive of the Desert\" stretches a mile of luxury boutiques, art galleries, sidewalk cafés, and fine dining — all framed by mountain views and palm trees." },
+      { "icon": "🎭", "title": "McCallum Theatre", "body": "The Coachella Valley's premier performing arts venue hosts Broadway productions, world-class musicians, and the acclaimed Off the Wall series — a true cultural anchor." },
+      { "icon": "⛳", "title": "Premier Golf", "body": "Desert Falls Country Club, Bighorn Golf Club, and The Reserve rank among the valley's most coveted fairways — all within Palm Desert's limits." },
+      { "icon": "🎓", "title": "College of the Desert", "body": "A vibrant community college campus hosting farmers markets, enrichment programs, and contributing to Palm Desert's energetic, educated community identity." }
+    ],
+    "schools": {
+      "public": [
+        { "name": "Palm Desert High School", "grades": "9 – 12", "type": "Desert Sands USD" },
+        { "name": "Col. Mitchell Paige Middle School", "grades": "6 – 8", "type": "Desert Sands USD" },
+        { "name": "Abraham Lincoln Elementary", "grades": "K – 5", "type": "Desert Sands USD" },
+        { "name": "George Washington Charter Elementary", "grades": "K – 5", "type": "Charter (DSUSD)" },
+        { "name": "Gerald R. Ford Elementary", "grades": "K – 5", "type": "Desert Sands USD" }
+      ],
+      "private": [
+        { "name": "Xavier College Preparatory High", "grades": "9 – 12", "type": "Private / Catholic" },
+        { "name": "Palm Valley School", "grades": "PK – 12", "type": "Independent Private" },
+        { "name": "Sacred Heart School", "grades": "K – 8", "type": "Private / Catholic" }
+      ]
+    },
+    "parks": [
+      { "name": "Civic Center Park", "size": "~22 Acres", "amenities": ["Walking paths", "Amphitheater", "Skate park", "Public art"] },
+      { "name": "Freedom Park", "size": "~35 Acres", "amenities": ["Sports fields", "Dog park", "Walking paths"] },
+      { "name": "Joe Mann Park", "size": "~14 Acres", "amenities": ["Tennis courts", "Playground", "Picnic facilities"] },
+      { "name": "Hovley Soccer Park", "size": "~15 Acres", "amenities": ["Multi-use soccer fields", "Walking paths"] }
+    ]
+  },
+  "indio": {
+    "name": "Indio",
+    "schoolDistrict": "Desert Sands Unified School District (DSUSD)",
+    "highlights": [
+      { "icon": "🎵", "title": "Coachella Music Festival", "body": "Every April, Empire Polo Club hosts one of the world's greatest music and arts festivals. As a resident, you're steps away from a global cultural phenomenon — and the rental income potential is extraordinary." },
+      { "icon": "🤠", "title": "Stagecoach Festival", "body": "The country music counterpart to Coachella draws massive crowds and creates robust short-term rental demand. Two major annual festivals generate rental revenue for owners." },
+      { "icon": "🌴", "title": "Date Palm Heritage", "body": "Indio is the Date Capital of the U.S. Shield Date Garden and Oasis Date Gardens have cultivated date palms since the early 20th century — a living piece of California agricultural history." },
+      { "icon": "🎰", "title": "Fantasy Springs Resort Casino", "body": "A full-resort casino with hotel, concerts, dining, and gaming — adding significant entertainment infrastructure to Indio's eastern corridor." }
+    ],
+    "schools": {
+      "public": [
+        { "name": "Indio High School", "grades": "9 – 12", "type": "Desert Sands USD" },
+        { "name": "Shadow Hills High School", "grades": "9 – 12", "type": "Desert Sands USD (north Indio)" },
+        { "name": "Colonel Mitchell Paige Middle", "grades": "6 – 8", "type": "Desert Sands USD" },
+        { "name": "Desert Ridge Academy", "grades": "K – 8", "type": "Desert Sands USD" },
+        { "name": "Jackson Elementary", "grades": "K – 5", "type": "Desert Sands USD" }
+      ],
+      "private": [
+        { "name": "The Montessori Schoolhouse", "grades": "PK – 6", "type": "Independent Private" },
+        { "name": "Coachella Valley Christian Schools", "grades": "K – 12", "type": "Private / Faith-Based" },
+        { "name": "Palm Valley School (Palm Desert campus)", "grades": "PK – 12", "type": "Independent Private" }
+      ]
+    },
+    "parks": [
+      { "name": "Empire Polo Club", "size": "130 Acres", "amenities": ["Coachella & Stagecoach Festival grounds", "Polo matches", "Year-round events"] },
+      { "name": "Miles Avenue Community Park", "size": "~22 Acres", "amenities": ["Sports fields", "Playground", "Walking paths"] },
+      { "name": "Fantasy Springs Resort", "size": "Resort Complex", "amenities": ["Casino", "Hotel", "Concert venue", "Bowling"] },
+      { "name": "Rotary Park", "size": "~10 Acres", "amenities": ["Splash pad", "Playground", "Picnic shelters"] }
+    ]
+  },
+  "desert-hot-springs": {
+    "name": "Desert Hot Springs",
+    "schoolDistrict": "Palm Springs Unified School District (PSUSD)",
+    "highlights": [
+      { "icon": "♨️", "title": "Natural Hot Springs", "body": "Natural mineral water from the Miracle Hill Aquifer feeds dozens of spas and hotels. Residents enjoy therapeutic soaking year-round — a natural amenity found nowhere else in the valley." },
+      { "icon": "🏔️", "title": "360° Mountain Views", "body": "Sitting above the valley floor, Desert Hot Springs offers unobstructed panoramas of the San Jacinto, San Gorgonio, and Little San Bernardino mountain ranges." },
+      { "icon": "🌵", "title": "Joshua Tree Proximity", "body": "The northern gateway to Joshua Tree National Park is just 20 minutes away — easy access to one of America's most spectacular parks for hiking, stargazing, and weekend adventures." },
+      { "icon": "🌡️", "title": "Cooler Desert Climate", "body": "At 1,065 feet — significantly higher than the valley floor — Desert Hot Springs enjoys average temperatures 10°F cooler than Palm Springs. Summer evenings are noticeably more comfortable." }
+    ],
+    "schools": {
+      "public": [
+        { "name": "Desert Hot Springs High School", "grades": "9 – 12", "type": "Palm Springs USD" },
+        { "name": "Desert Springs Middle School", "grades": "6 – 8", "type": "Palm Springs USD" },
+        { "name": "Two Bunch Palms Elementary", "grades": "K – 5", "type": "Palm Springs USD" },
+        { "name": "Julius Corsini Elementary", "grades": "K – 5", "type": "Palm Springs USD" },
+        { "name": "Cabot Yerxa Elementary", "grades": "K – 5", "type": "Palm Springs USD" }
+      ],
+      "private": [
+        { "name": "Desert Hot Springs Christian School", "grades": "K – 8", "type": "Private / Faith-Based" },
+        { "name": "Our Lady of Guadalupe School", "grades": "K – 8", "type": "Private / Catholic" },
+        { "name": "Palm Valley School (Palm Desert campus)", "grades": "PK – 12", "type": "Independent Private" }
+      ]
+    },
+    "parks": [
+      { "name": "Cabot's Pueblo Museum", "size": "Historic Landmark", "amenities": ["35-room Hopi-inspired pueblo", "Founder's history & artifacts", "Guided tours"] },
+      { "name": "Desert Hot Springs Community Park", "size": "~15 Acres", "amenities": ["Sports fields", "Playground", "Walking paths"] },
+      { "name": "Two Bunch Palms Resort", "size": "Destination Resort", "amenities": ["Mineral water spa", "Wellness center", "Restaurant"] },
+      { "name": "Palm Drive Trails", "size": "Walking Paths", "amenities": ["Mountain-view paths", "Connection to neighborhoods"] }
+    ]
+  },
+  "rancho-mirage": {
+    "name": "Rancho Mirage",
+    "highlights": [
+      { "icon": "🌳", "title": "Sunnylands", "body": "The Annenberg estate hosts world leaders, public garden tours, and cultural programming on 200 immaculate acres — a rare cultural anchor unique to Rancho Mirage." },
+      { "icon": "🔒", "title": "Ultimate Privacy", "body": "Some of the valley's most established guard-gated communities, celebrity residences, and discreet luxury — the kind of address that doesn't broadcast itself." },
+      { "icon": "⛳", "title": "Mission Hills & Tamarisk", "body": "Two of the desert's most celebrated golf clubs. Plus Eisenhower Medical Center, the valley's flagship medical campus, sits within city limits." }
+    ]
+  },
+  "indian-wells": {
+    "name": "Indian Wells",
+    "highlights": [
+      { "icon": "🎾", "title": "BNP Paribas Open", "body": "The 'fifth Grand Slam.' Two weeks every March, the world's tennis elite plays at the Indian Wells Tennis Garden — and residents get year-round resident discounts on facilities." },
+      { "icon": "⛳", "title": "Indian Wells Golf Resort", "body": "Two acclaimed courses (Players & Celebrity) with resident programs that make this one of the best golf-living deals in California." },
+      { "icon": "🔒", "title": "Guard-Gated Living", "body": "Nearly every neighborhood is guard-gated. Indian Wells is consistently ranked among the wealthiest cities in California, with strict architectural controls preserving the character." }
+    ]
+  },
+  "la-quinta": {
+    "name": "La Quinta",
+    "highlights": [
+      { "icon": "⛳", "title": "PGA West", "body": "Six championship courses including the famed TPC Stadium — host of multiple PGA Tour events. The La Quinta Resort built the desert's golf-vacation reputation a century ago." },
+      { "icon": "🏨", "title": "La Quinta Resort & Spa", "body": "A landmark since 1926, with adobe-style casitas spread across 45 acres of grounds. Hollywood's original desert escape." },
+      { "icon": "🏘️", "title": "Master-Planned Communities", "body": "Trilogy, Andalusia, The Hideaway, The Madison Club, and others — among the valley's most amenity-rich, fastest-appreciating master-planned developments." }
+    ]
+  },
+  "cathedral-city": {
+    "name": "Cathedral City",
+    "highlights": [
+      { "icon": "🏔️", "title": "Cathedral City Cove", "body": "Tucked into the foothills with hillside lots, mountain views, and the most affordable single-family entry point adjacent to Palm Springs." },
+      { "icon": "🎨", "title": "Vibrant Arts Scene", "body": "Public art installations, cultural festivals, and a growing dining scene make Cathedral City one of the valley's emerging design destinations." },
+      { "icon": "🤝", "title": "Inclusive Community", "body": "Cathedral City has long led the valley in community inclusivity, with active LGBTQ+ residents and diverse cultural programming." }
+    ]
+  },
+  "coachella": {
+    "name": "Coachella",
+    "highlights": [
+      { "icon": "📈", "title": "Growing Community", "body": "Coachella is the Coachella Valley's most affordable city and one of its fastest-growing — significant new construction is reshaping its housing landscape." },
+      { "icon": "🎵", "title": "Festival Proximity", "body": "Closest residential city to the Empire Polo Club festival grounds. Coachella, Stagecoach, and other event seasons make short-term rentals especially compelling." },
+      { "icon": "🏞️", "title": "Lake Cahuilla", "body": "Lake Cahuilla Veterans Regional Park — fishing, camping, hiking — sits at the city's edge. A rare natural amenity in this part of the valley." }
+    ]
+  }
+}

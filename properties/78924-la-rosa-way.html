@@ -109,6 +109,40 @@
     </div>
   </section>
 
+  <!-- LIVING IN [CITY] — community depth pulled from /data/communities.json -->
+  <section class="pp-community" id="pp-community-section" style="display:none;">
+    <h2 class="pp-community-title">Living in <em id="pp-community-name">—</em></h2>
+
+    <!-- Highlights: what makes the community special -->
+    <div class="pp-community-block" id="pp-community-highlights-block" style="display:none;">
+      <h3 class="pp-community-h3">Why You'll Love It Here</h3>
+      <div class="pp-community-highlights" id="pp-community-highlights"></div>
+    </div>
+
+    <!-- Schools -->
+    <div class="pp-community-block" id="pp-community-schools-block" style="display:none;">
+      <h3 class="pp-community-h3">Schools Serving the Area</h3>
+      <p class="pp-community-school-district" id="pp-community-school-district"></p>
+      <div class="pp-schools-grid">
+        <div class="pp-schools-col" id="pp-schools-public-col" style="display:none;">
+          <h4>Public</h4>
+          <table class="pp-schools-table" id="pp-schools-public"></table>
+        </div>
+        <div class="pp-schools-col" id="pp-schools-private-col" style="display:none;">
+          <h4>Private &amp; Charter</h4>
+          <table class="pp-schools-table" id="pp-schools-private"></table>
+        </div>
+      </div>
+      <p class="pp-schools-disclaimer">School assignments are address-specific and subject to change. Verify enrollment zoning directly with the district.</p>
+    </div>
+
+    <!-- Parks &amp; Recreation -->
+    <div class="pp-community-block" id="pp-community-parks-block" style="display:none;">
+      <h3 class="pp-community-h3">Parks &amp; Recreation</h3>
+      <div class="pp-parks-grid" id="pp-community-parks"></div>
+    </div>
+  </section>
+
   <!-- SCHEDULE A SHOWING -->
   <section class="pp-tour">
     <img class="pp-tour-avatar" src="/images/shana%20pro.JPG" alt="Shana Gates, REALTOR®" />
@@ -279,6 +313,63 @@
           // Tour mailto
           $('pp-tour-mailto').href = 'mailto:shana@craftbauer.com?subject=' +
             encodeURIComponent('Showing request: ' + p.address + ', ' + p.city)
+
+          // "Living in [City]" community-depth section
+          if (p.communitySlug) {
+            fetch('/data/communities.json').then(function (r) { return r.ok ? r.json() : null }).then(function (cdata) {
+              if (!cdata) return
+              var c = cdata[p.communitySlug]
+              if (!c) return
+              $('pp-community-name').textContent = c.name
+              $('pp-community-section').style.display = 'block'
+
+              // Highlights
+              if (c.highlights && c.highlights.length) {
+                $('pp-community-highlights').innerHTML = c.highlights.map(function (h) {
+                  return '<div class="pp-highlight-card">' +
+                    '<span class="pp-highlight-icon">' + (h.icon || '◆') + '</span>' +
+                    '<div class="pp-highlight-text">' +
+                      '<h4>' + h.title + '</h4>' +
+                      '<p>' + h.body + '</p>' +
+                    '</div>' +
+                  '</div>'
+                }).join('')
+                $('pp-community-highlights-block').style.display = 'block'
+              }
+
+              // Schools
+              if (c.schools && (c.schools.public?.length || c.schools.private?.length)) {
+                if (c.schoolDistrict) $('pp-community-school-district').textContent = c.schoolDistrict
+                function renderSchoolRows (list) {
+                  return list.map(function (s) {
+                    return '<tr><td class="school-name">' + s.name + '</td><td class="school-grades">' + s.grades + '</td><td class="school-type">' + (s.type || '') + '</td></tr>'
+                  }).join('')
+                }
+                if (c.schools.public?.length) {
+                  $('pp-schools-public').innerHTML = '<thead><tr><th>School</th><th>Grades</th><th>District</th></tr></thead><tbody>' + renderSchoolRows(c.schools.public) + '</tbody>'
+                  $('pp-schools-public-col').style.display = 'block'
+                }
+                if (c.schools.private?.length) {
+                  $('pp-schools-private').innerHTML = '<thead><tr><th>School</th><th>Grades</th><th>Type</th></tr></thead><tbody>' + renderSchoolRows(c.schools.private) + '</tbody>'
+                  $('pp-schools-private-col').style.display = 'block'
+                }
+                $('pp-community-schools-block').style.display = 'block'
+              }
+
+              // Parks &amp; Recreation
+              if (c.parks && c.parks.length) {
+                $('pp-community-parks').innerHTML = c.parks.map(function (k) {
+                  var amenities = (k.amenities || []).slice(0, 4).map(function (a) { return '<li>' + a + '</li>' }).join('')
+                  return '<div class="pp-park-card">' +
+                    '<div class="pp-park-name">' + k.name + '</div>' +
+                    (k.size ? '<div class="pp-park-size">' + k.size + '</div>' : '') +
+                    (amenities ? '<ul class="pp-park-amenities">' + amenities + '</ul>' : '') +
+                  '</div>'
+                }).join('')
+                $('pp-community-parks-block').style.display = 'block'
+              }
+            }).catch(function () { /* graceful fail — community section just stays hidden */ })
+          }
 
           // Other featured listings — horizontally scrollable, all of them
           var others = all.filter(function (x) { return x.slug !== p.slug && x.status === 'active' })

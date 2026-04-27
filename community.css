@@ -2462,28 +2462,28 @@ body.property-page { background: var(--dark); color: var(--text-light); }
   font-size: 11px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: #000;
-  background: var(--bronze);
+  color: #fff;
+  background: #25434B;
   padding: 14px 28px;
   text-decoration: none;
   border: none;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: opacity 0.2s, background 0.2s;
 }
-.pp-cta-btn:hover { opacity: 0.85; }
+.pp-cta-btn:hover { background: #2d5660; }
 .pp-cta-btn-outline {
   font-family: var(--sans);
   font-size: 11px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--bronze);
+  color: #25434B;
   background: transparent;
-  border: 1.5px solid var(--bronze);
+  border: 1.5px solid #25434B;
   padding: 13px 28px;
   text-decoration: none;
   transition: background 0.2s, color 0.2s;
 }
-.pp-cta-btn-outline:hover { background: var(--bronze); color: #000; }
+.pp-cta-btn-outline:hover { background: #25434B; color: #fff; }
 
 .pp-tour {
   max-width: 880px;
@@ -2677,4 +2677,167 @@ body.property-page { background: var(--dark); color: var(--text-light); }
 @media (max-width: 600px) {
   .pp-other-card { flex: 0 0 80%; }
   .pp-others-arrow { display: none !important; }
+}
+
+/* "Living in [City]" community-depth section on property detail pages */
+.pp-community {
+  max-width: 1100px;
+  margin: 64px auto 0;
+  padding: 0 32px;
+}
+.pp-community-title {
+  font-family: var(--serif);
+  font-size: clamp(28px, 3.6vw, 40px);
+  font-weight: 500;
+  margin-bottom: 32px;
+  line-height: 1.15;
+}
+.pp-community-title em {
+  color: var(--bronze);
+  font-style: italic;
+}
+.pp-community-block {
+  margin-bottom: 56px;
+}
+.pp-community-h3 {
+  font-family: var(--sans);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--bronze);
+  margin-bottom: 20px;
+}
+.pp-community-highlights {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+.pp-highlight-card {
+  display: flex;
+  gap: 14px;
+  padding: 20px;
+  background: var(--dark-2);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.pp-highlight-icon {
+  font-size: 26px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.pp-highlight-text h4 {
+  font-family: var(--serif);
+  font-size: 19px;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: var(--text-light);
+}
+.pp-highlight-text p {
+  font-family: var(--sans);
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--text-muted);
+}
+
+.pp-community-school-district {
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 18px;
+  font-style: italic;
+}
+.pp-schools-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+.pp-schools-col h4 {
+  font-family: var(--sans);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-light);
+  margin-bottom: 10px;
+}
+.pp-schools-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--sans);
+  font-size: 13px;
+}
+.pp-schools-table th {
+  text-align: left;
+  padding: 8px 10px;
+  font-weight: 500;
+  color: var(--bronze);
+  border-bottom: 1px solid rgba(184,151,90,0.35);
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.pp-schools-table td {
+  padding: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  color: var(--text-light);
+}
+.pp-schools-table .school-name { font-family: var(--serif); font-size: 15px; }
+.pp-schools-table .school-grades { color: var(--text-muted); white-space: nowrap; }
+.pp-schools-table .school-type { color: var(--text-muted); font-size: 12px; }
+.pp-schools-disclaimer {
+  font-family: var(--sans);
+  font-size: 11.5px;
+  font-style: italic;
+  color: rgba(242,237,228,0.45);
+  margin-top: 18px;
+}
+
+.pp-parks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 18px;
+}
+.pp-park-card {
+  background: var(--dark-2);
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 18px 20px;
+}
+.pp-park-name {
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--text-light);
+  margin-bottom: 4px;
+}
+.pp-park-size {
+  font-family: var(--sans);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bronze);
+  margin-bottom: 12px;
+}
+.pp-park-amenities {
+  list-style: none;
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.pp-park-amenities li {
+  position: relative;
+  padding-left: 16px;
+  padding-bottom: 4px;
+  line-height: 1.4;
+}
+.pp-park-amenities li::before {
+  content: '·';
+  position: absolute;
+  left: 4px;
+  top: -2px;
+  color: var(--bronze);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+@media (max-width: 700px) {
+  .pp-schools-grid { grid-template-columns: 1fr; gap: 32px; }
+  .pp-community { padding: 0 20px; }
 }
