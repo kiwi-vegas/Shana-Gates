@@ -40,7 +40,18 @@ function extractExcerpt(body: string, maxLen = 200): string {
   return (lines[0] ?? '').replace(/\*\*/g, '').slice(0, maxLen).trim()
 }
 
-const VALID_CATEGORIES = ['market-update', 'investor-tips', 'seller-tips', 'local-happenings', 'trending-topics']
+const VALID_CATEGORIES = ['market-update', 'investor-tips', 'seller-tips', 'community', 'trending-topics']
+const CATEGORY_ALIASES: Record<string, string> = {
+  'local-happenings': 'community',
+  'lifestyle': 'community',
+  'community-spotlight': 'community',
+  'local-area': 'community',
+  'buying-tips': 'market-update',
+  'selling-tips': 'seller-tips',
+  'investment': 'investor-tips',
+  'news': 'trending-topics',
+  'market-insight': 'market-update',
+}
 
 export default async function handler(req: any, res: any) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
@@ -59,7 +70,8 @@ export default async function handler(req: any, res: any) {
   if (!title?.trim() || !body?.trim() || !category?.trim()) {
     return res.status(400).json({ error: 'title, body, and category are required' })
   }
-  if (!VALID_CATEGORIES.includes(category)) {
+  const normalizedCategory = CATEGORY_ALIASES[category] || category
+  if (!VALID_CATEGORIES.includes(normalizedCategory)) {
     return res.status(400).json({ error: `category must be one of: ${VALID_CATEGORIES.join(', ')}` })
   }
 
@@ -73,7 +85,7 @@ export default async function handler(req: any, res: any) {
       slug: slugify(title),
       excerpt: (excerpt?.trim() || extractExcerpt(finalBody)),
       body: finalBody,
-      category,
+      category: normalizedCategory,
       sourceUrl: sourceUrl?.trim() || '',
       sourceTitle: sourceTitle?.trim() || '',
       pipeline: 'daily',

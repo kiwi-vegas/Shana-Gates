@@ -347,7 +347,7 @@
     <button class="filter-btn" data-category="market-update">Market Updates</button>
     <button class="filter-btn" data-category="investor-tips">Investor Tips</button>
     <button class="filter-btn" data-category="seller-tips">Seller Tips</button>
-    <button class="filter-btn" data-category="local-happenings">Local Happenings</button>
+    <button class="filter-btn" data-category="community">Community</button>
     <button class="filter-btn" data-category="trending-topics">Trending Topics</button>
   </div>
 
@@ -377,14 +377,16 @@
       'market-update':    '#2563eb',
       'investor-tips':    '#FF9800',
       'seller-tips':      '#0ea5e9',
-      'local-happenings': '#D97706',
+      'community':        '#16A34A',
       'trending-topics':  '#9C27B0',
       // legacy aliases
       'buying-tips':         '#2563eb',
       'selling-tips':        '#0ea5e9',
       'investment':          '#FF9800',
-      'community-spotlight': '#D97706',
-      'local-area':          '#D97706',
+      'local-happenings':    '#16A34A',
+      'lifestyle':           '#16A34A',
+      'community-spotlight': '#16A34A',
+      'local-area':          '#16A34A',
       'news':                '#9C27B0',
       'market-insight':      '#2563eb',
     }
@@ -393,14 +395,16 @@
       'market-update':    'Market Update',
       'investor-tips':    'Investor Tips',
       'seller-tips':      'Seller Tips',
-      'local-happenings': 'Local Happenings',
+      'community':        'Community',
       'trending-topics':  'Trending Topics',
       // legacy aliases
       'buying-tips':         'Market Update',
       'selling-tips':        'Seller Tips',
       'investment':          'Investor Tips',
-      'community-spotlight': 'Local Happenings',
-      'local-area':          'Local Happenings',
+      'local-happenings':    'Community',
+      'lifestyle':           'Community',
+      'community-spotlight': 'Community',
+      'local-area':          'Community',
       'news':                'Trending Topics',
       'market-insight':      'Market Update',
     }
@@ -411,8 +415,10 @@
         'buying-tips':        'market-update',
         'selling-tips':       'seller-tips',
         'investment':         'investor-tips',
-        'community-spotlight':'local-happenings',
-        'local-area':         'local-happenings',
+        'local-happenings':   'community',
+        'lifestyle':          'community',
+        'community-spotlight':'community',
+        'local-area':         'community',
         'news':               'trending-topics',
       }
       return map[cat] || cat

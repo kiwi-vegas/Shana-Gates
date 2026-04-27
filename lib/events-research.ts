@@ -121,7 +121,7 @@ No markdown fences, no explanation — just the raw JSON array.`
       publishedDate: new Date().toISOString().split('T')[0],
       summary: b.summary,
       score: 8,
-      category: 'local-happenings',
+      category: 'community',
       whyItMatters:
         b.whyItMatters ||
         'Local events showcase the year-round lifestyle that makes Coachella Valley homes so desirable.',

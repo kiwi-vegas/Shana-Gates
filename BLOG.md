@@ -6,7 +6,7 @@ Three automated pipelines feed the `/blog` listing page:
 
 1. **Daily news pipeline** — Tavily researches Coachella Valley real estate news, Claude Opus scores top articles, Shana picks 1–5 to publish via a morning email digest, Claude Sonnet writes full posts with AI hero images, published to Sanity CMS
 2. **Weekly original content pipeline** — Every Saturday night, Claude researches 2–3 original topic ideas per category (5 categories = ~10–15 total), Shana gets a Sunday morning email, picks topics to write, Claude writes full posts, published to Sanity CMS
-3. **Monthly events pipeline** — On the 25th of each month, Tavily searches for events in all 9 Coachella Valley cities for the *upcoming* month, Claude aggregates into 5–8 article briefs, automatically visible in the Blog Picker under Local Happenings
+3. **Monthly events pipeline** — On the 25th of each month, Tavily searches for events in all 9 Coachella Valley cities for the *upcoming* month, Claude aggregates into 5–8 article briefs, automatically visible in the Blog Picker under Community
 
 Both appear together on `/blog`, merged and sorted by `publishedAt` descending. A category filter bar at the top lets readers filter by type.
 
@@ -108,11 +108,11 @@ Blog Picker (/admin/blog-picker/) fetches /api/blog/articles which:
 ```
 
 **Result:** From the 25th of every month, Shana automatically sees next month's event article
-briefs in the Local Happenings tab of her Blog Picker — no manual setup needed.
+briefs in the Community tab of her Blog Picker — no manual setup needed.
 
 **Redis key:** `event_articles:{YYYY-MM}` (e.g. `event_articles:2026-05`)
 **TTL:** 20 days — covers the pre-month window plus the full publishing month
-**Categories:** All articles use `local-happenings`
+**Categories:** All articles use `community`
 **Article IDs:** `ev-{YYYY}-{MM}-{01..08}` (deterministic, safe to re-run)
 
 **Triggering manually:**
@@ -217,7 +217,7 @@ For each category, Claude generates 2–3 original blog topic ideas based on cur
 | **Market Updates** | MLS data analysis, price trends, inventory interpretation, CA law changes affecting buyers/sellers |
 | **Investor Tips** | STR ROI analysis, vacation property buying guide, desert market investment outlook, short-term rental rules |
 | **Seller Tips** | Desert-specific pricing strategies, staging for desert buyers, seasonal timing, listing advice |
-| **Local Happenings** | Seasonal events, farmers markets, community news, local amenities, things to do in specific CV cities |
+| **Community** | Seasonal events, farmers markets, community news, local amenities, things to do in specific CV cities |
 | **Trending Topics** | Celebrity real estate news, interesting property sales, viral housing topics with real estate angles |
 
 **Compliance:** Never mention school quality, ratings, or test scores in any of these topics.
@@ -244,7 +244,7 @@ Both blog posts are fetched from Redis and merged into a single feed sorted by `
 | Market Updates | `market-update` | `market-insight`, `buying-tips` |
 | Investor Tips | `investor-tips` | `investment` |
 | Seller Tips | `seller-tips` | `selling-tips` |
-| Local Happenings | `local-happenings` | `local-area`, `community-spotlight` |
+| Community | `community` | `local-area`, `community-spotlight` |
 | Trending Topics | `trending-topics` | `news` |
 
 Old category values from pre-2026 posts are normalized to the new taxonomy via `normalizeCategory()` in both `blog/index.html` and `admin/blog-picker/index.html`.
@@ -269,14 +269,14 @@ Five canonical categories used by the research pipeline, blog picker, and public
 | `market-update` | Market Updates | Blue `#2563eb` |
 | `investor-tips` | Investor Tips | Orange `#FF9800` |
 | `seller-tips` | Seller Tips | Sky `#0ea5e9` |
-| `local-happenings` | Local Happenings | Amber `#D97706` |
+| `community` | Community | Amber `#D97706` |
 | `trending-topics` | Trending Topics | Purple `#9C27B0` |
 
 **Why these five:**
 - **Market Updates** — the core real estate intelligence feed (prices, inventory, law changes, mortgage rates)
 - **Investor Tips** — dedicated STR/vacation rental/investment content for the valley's high investor-owner population
 - **Seller Tips** — staging, pricing, timing advice relevant to the strong CV seller market
-- **Local Happenings** — events, community news, things to do — drives engagement from non-buyers who later become clients
+- **Community** — events, community news, things to do — drives engagement from non-buyers who later become clients
 - **Trending Topics** — celebrity real estate, viral housing news — high-traffic content with broad real estate appeal
 
 Old category values (`buying-tips`, `selling-tips`, `investment`, `community-spotlight`, `local-area`, `news`, `market-insight`) are preserved in Redis/posts for backward compatibility. The `normalizeCategory()` function in the frontend maps them to the nearest new category for display and filtering.
@@ -629,7 +629,7 @@ GET /api/blog/weekly-topics?secret=YOUR_ADMIN_SECRET
 | `api/blog/inject-articles.ts` | Merge custom articles into today's daily Redis store (used by event publisher) |
 | `api/blog/articles.ts` | Returns stored daily articles from Redis |
 | `api/blog/weekly-topics.ts` | Returns stored weekly topics from Redis |
-| `admin/blog-picker/index.html` | Daily article selection UI — category tabs: Market Updates, Investor Tips, Seller Tips, Local Happenings, Trending Topics |
+| `admin/blog-picker/index.html` | Daily article selection UI — category tabs: Market Updates, Investor Tips, Seller Tips, Community, Trending Topics |
 | `admin/weekly-picker/index.html` | Weekly topic selection UI (category tabs) |
 | `admin/event-publisher/index.html` | Curated event articles — injects into daily store, redirects to blog picker |
 | `blog/index.html` | Blog listing — fetches from Sanity CDN, category filter |

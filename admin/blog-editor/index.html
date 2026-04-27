@@ -105,7 +105,7 @@
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
         <button id="fixLinksBtn" onclick="fixBrokenLinks()" style="background:transparent;color:#B8975A;font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:10px 20px;border:1px solid rgba(184,151,90,0.5);border-radius:6px;cursor:pointer;white-space:nowrap;">
-          Fix Broken Links
+          Fix Links + Migrate Categories
         </button>
         <button id="enrichBtn" onclick="enrichPosts()" style="background:#B8975A;color:#000;font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;white-space:nowrap;">
           Enrich Last 6 Posts
@@ -122,7 +122,7 @@
       { value: 'market-update',    label: 'Market Update' },
       { value: 'investor-tips',    label: 'Investor Tips' },
       { value: 'seller-tips',      label: 'Seller Tips' },
-      { value: 'local-happenings', label: 'Local Happenings' },
+      { value: 'community',        label: 'Community' },
       { value: 'trending-topics',  label: 'Trending Topics' },
     ]
 
@@ -130,8 +130,13 @@
       'market-update':    '#4338CA',
       'investor-tips':    '#0891B2',
       'seller-tips':      '#D97706',
-      'local-happenings': '#16A34A',
+      'community':        '#16A34A',
       'trending-topics':  '#9333EA',
+      // legacy aliases — display under Community
+      'local-happenings': '#16A34A',
+      'lifestyle':        '#16A34A',
+      'community-spotlight': '#16A34A',
+      'local-area':       '#16A34A',
     }
 
     async function loadPosts() {
@@ -236,8 +241,11 @@
         const data = await r.json()
         if (!r.ok) throw new Error(data.error || 'Failed')
         const fixed = data.postsUpdated ?? 0
-        const total = data.results?.reduce((sum, x) => sum + (x.changes || 0), 0) ?? 0
-        alert(`Done! ${fixed} post${fixed !== 1 ? 's' : ''} updated. ${total} broken link${total !== 1 ? 's' : ''} replaced.`)
+        const urlTotal = data.results?.reduce((sum, x) => sum + (x.urlChanges || 0), 0) ?? 0
+        const catTotal = data.results?.filter(x => x.categoryChanged).length ?? 0
+        const summaryTotal = data.summaryUpdates ?? 0
+        alert(`Done! ${fixed} post${fixed !== 1 ? 's' : ''} updated. ${urlTotal} URL${urlTotal !== 1 ? 's' : ''} replaced, ${catTotal + summaryTotal} categor${(catTotal + summaryTotal) !== 1 ? 'ies' : 'y'} migrated.`)
+        location.reload()
       } catch (err) {
         alert('Error: ' + err.message)
       } finally {

@@ -418,7 +418,7 @@
     <button class="filter-tab" data-cat="market-update" onclick="setFilter(this,'market-update')">Market Updates <span class="tab-count" id="cnt-market-update">0</span></button>
     <button class="filter-tab" data-cat="investor-tips" onclick="setFilter(this,'investor-tips')">Investor Tips <span class="tab-count" id="cnt-investor-tips">0</span></button>
     <button class="filter-tab" data-cat="seller-tips" onclick="setFilter(this,'seller-tips')">Seller Tips <span class="tab-count" id="cnt-seller-tips">0</span></button>
-    <button class="filter-tab" data-cat="local-happenings" onclick="setFilter(this,'local-happenings')">Local Happenings <span class="tab-count" id="cnt-local-happenings">0</span></button>
+    <button class="filter-tab" data-cat="community" onclick="setFilter(this,'community')">Community <span class="tab-count" id="cnt-community">0</span></button>
     <button class="filter-tab" data-cat="trending-topics" onclick="setFilter(this,'trending-topics')">Trending Topics <span class="tab-count" id="cnt-trending-topics">0</span></button>
     <button class="select-all-btn" id="selectAllBtn" onclick="toggleSelectAll()">Select All</button>
   </div>
@@ -454,14 +454,16 @@
       'market-update':    '#2563eb',
       'investor-tips':    '#FF9800',
       'seller-tips':      '#0ea5e9',
-      'local-happenings': '#D97706',
+      'community':        '#16A34A',
       'trending-topics':  '#9C27B0',
       // legacy → keep display consistent
       'buying-tips':        '#2563eb',
       'selling-tips':       '#0ea5e9',
       'investment':         '#FF9800',
-      'community-spotlight':'#D97706',
-      'local-area':         '#D97706',
+      'local-happenings':   '#16A34A',
+      'lifestyle':          '#16A34A',
+      'community-spotlight':'#16A34A',
+      'local-area':         '#16A34A',
       'news':               '#9C27B0',
       'market-insight':     '#2563eb',
     }
@@ -469,14 +471,16 @@
       'market-update':    'Market Update',
       'investor-tips':    'Investor Tips',
       'seller-tips':      'Seller Tips',
-      'local-happenings': 'Local Happenings',
+      'community':        'Community',
       'trending-topics':  'Trending Topics',
       // legacy
       'buying-tips':        'Market Update',
       'selling-tips':       'Seller Tips',
       'investment':         'Investor Tips',
-      'community-spotlight':'Local Happenings',
-      'local-area':         'Local Happenings',
+      'local-happenings':   'Community',
+      'lifestyle':          'Community',
+      'community-spotlight':'Community',
+      'local-area':         'Community',
       'news':               'Trending Topics',
       'market-insight':     'Market Update',
     }
@@ -488,8 +492,10 @@
         'buying-tips':        'market-update',
         'selling-tips':       'seller-tips',
         'investment':         'investor-tips',
-        'community-spotlight':'local-happenings',
-        'local-area':         'local-happenings',
+        'local-happenings':   'community',
+        'lifestyle':          'community',
+        'community-spotlight':'community',
+        'local-area':         'community',
         'news':               'trending-topics',
       }
       return map[cat] || cat
@@ -520,7 +526,7 @@
     }
 
     function updateTabCounts(arts) {
-      const tabs = ['market-update', 'investor-tips', 'seller-tips', 'local-happenings', 'trending-topics']
+      const tabs = ['market-update', 'investor-tips', 'seller-tips', 'community', 'trending-topics']
       const counts = {}
       tabs.forEach(t => counts[t] = 0)
       arts.forEach(a => {

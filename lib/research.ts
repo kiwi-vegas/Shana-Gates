@@ -4,7 +4,7 @@ import type { ScoredArticle } from './blog-store'
 
 // ── Coachella Valley topic queries (rotate 8 of 35 per day) ───────────────
 // Covers all 5 categories: market-update, investor-tips, seller-tips,
-// local-happenings, trending-topics
+// community, trending-topics
 
 const TOPIC_QUERIES = [
   // Market Updates
@@ -33,7 +33,7 @@ const TOPIC_QUERIES = [
   'best time to sell home Palm Springs market',
   'Coachella Valley luxury home sales seller tips',
   'how to price home desert real estate market',
-  // Local Happenings
+  // Community
   'Coachella Valley events things to do 2026',
   'Palm Springs community events farmers market 2026',
   'Palm Desert La Quinta local events activities',
@@ -93,7 +93,7 @@ CATEGORIES (pick the single best fit):
 - market-update: prices, inventory, market conditions, forecasts, mortgage rates, CA law changes affecting buyers/sellers, market analysis
 - investor-tips: rental properties, ROI, STR/Airbnb, vacation homes, investment strategy, cap rates, short-term rental rules
 - seller-tips: seller strategy, staging, pricing, timing, listing advice, preparing a home to sell
-- local-happenings: Coachella Valley events, things to do, farmers markets, festivals, community news, city spotlight, local lifestyle, dining, outdoor recreation
+- community: Coachella Valley events, things to do, farmers markets, festivals, community news, city spotlights, local lifestyle, dining, outdoor recreation
 - trending-topics: celebrity real estate news, viral or pop-culture real estate stories, notable property sales, interesting housing trends making national news, major development announcements
 
 COMPLIANCE — never select or recommend articles that mention:

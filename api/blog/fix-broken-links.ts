@@ -13,6 +13,20 @@ const URL_REPLACEMENTS: Record<string, string> = {
   'https://www.rivcoclerk.org': 'https://rivcocob.org',
 }
 
+// Legacy categories to collapse into the canonical 5-category taxonomy.
+// market-update, investor-tips, seller-tips, community, trending-topics
+const CATEGORY_REPLACEMENTS: Record<string, string> = {
+  'local-happenings': 'community',
+  'lifestyle': 'community',
+  'community-spotlight': 'community',
+  'local-area': 'community',
+  'buying-tips': 'market-update',
+  'selling-tips': 'seller-tips',
+  'investment': 'investor-tips',
+  'news': 'trending-topics',
+  'market-insight': 'market-update',
+}
+
 function parseCookies(cookieHeader: string | undefined): Record<string, string> {
   if (!cookieHeader) return {}
   return Object.fromEntries(
@@ -57,7 +71,7 @@ export default async function handler(req: any, res: any) {
       queue.forEach((p) => slugs.add(p.slug))
     }
 
-    const results: Array<{ slug: string; changes: number }> = []
+    const results: Array<{ slug: string; urlChanges: number; categoryChanged: boolean }> = []
 
     for (const slug of slugs) {
       const raw = await redis.get<string>(`blog_post:${slug}`)
@@ -65,24 +79,49 @@ export default async function handler(req: any, res: any) {
 
       const post: BlogPostFull = typeof raw === 'string' ? JSON.parse(raw) : raw
       let body = post.body || ''
-      let changes = 0
+      let urlChanges = 0
+      let categoryChanged = false
 
       for (const [broken, correct] of Object.entries(URL_REPLACEMENTS)) {
         if (body.includes(broken)) {
           const before = body.split(broken).length - 1
           body = body.split(broken).join(correct)
-          changes += before
+          urlChanges += before
         }
       }
 
-      if (changes > 0) {
+      const newCategory = CATEGORY_REPLACEMENTS[post.category]
+      if (newCategory && newCategory !== post.category) {
+        post.category = newCategory
+        categoryChanged = true
+      }
+
+      if (urlChanges > 0 || categoryChanged) {
         post.body = body
         await redis.set(`blog_post:${slug}`, JSON.stringify(post))
-        results.push({ slug, changes })
+        results.push({ slug, urlChanges, categoryChanged })
       }
     }
 
-    return res.status(200).json({ ok: true, postsUpdated: results.length, results })
+    // Also migrate categories in summary indexes (queue + public index)
+    let summaryUpdates = 0
+    for (const key of ['blog_posts_index', 'blog_posts_queue']) {
+      const raw = await redis.get<string>(key)
+      if (!raw) continue
+      const list: BlogPostSummary[] = typeof raw === 'string' ? JSON.parse(raw) : raw
+      let touched = false
+      for (const item of list) {
+        const newCat = CATEGORY_REPLACEMENTS[item.category]
+        if (newCat && newCat !== item.category) {
+          item.category = newCat
+          touched = true
+          summaryUpdates++
+        }
+      }
+      if (touched) await redis.set(key, JSON.stringify(list))
+    }
+
+    return res.status(200).json({ ok: true, postsUpdated: results.length, summaryUpdates, results })
   } catch (err) {
     return res.status(500).json({ error: err instanceof Error ? err.message : 'Unknown error' })
   }
