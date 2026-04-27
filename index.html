@@ -450,166 +450,184 @@
     .view-all-link:hover { border-color: var(--bronze); }
 
     /* ============================================================
-       FEATURED PROPERTIES
+       FEATURED PROPERTIES — carousel
     ============================================================ */
     #featured-properties {
-      background: var(--dark-2);
-      padding: 100px 52px;
-    }
-
-    .properties-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 3px;
-    }
-
-    .property-card {
       position: relative;
+      background: var(--dark-2);
+      padding: 80px 0 100px;
       overflow: hidden;
-      cursor: pointer;
-      aspect-ratio: 3/2;
-      background: #0f0f0f;
-      text-decoration: none;
-      display: block;
     }
-
-    .property-card video {
+    #featured-properties .section-header {
+      max-width: 1400px;
+      margin: 0 auto 36px;
+      padding: 0 48px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+    }
+    .fp-carousel {
+      position: relative;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 48px;
+    }
+    .fp-stage {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      background: #000;
+      overflow: hidden;
+    }
+    .fp-slide {
       position: absolute;
       inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.7s ease;
-    }
-
-    .card-bg {
-      position: absolute;
-      inset: 0;
-      transition: transform 0.7s ease;
-    }
-
-    .card-photo {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center;
-      transition: transform 0.7s ease;
-      display: block;
-    }
-
-    .property-card:hover .card-photo { transform: scale(1.05); }
-
-    .bg-1 { background: linear-gradient(150deg, #291f10 0%, #17110a 45%, #0d0d0b 100%); }
-    .bg-2 { background: linear-gradient(155deg, #121820 0%, #0c1116 45%, #0d0d0d 100%); }
-    .bg-3 { background: linear-gradient(145deg, #1e1708 0%, #130f06 45%, #0d0d0d 100%); }
-    .bg-4 { background: linear-gradient(150deg, #0f1a18 0%, #0b1210 45%, #0d0d0d 100%); }
-    .bg-5 { background: linear-gradient(145deg, #1d1a0d 0%, #120f09 45%, #0d0d0d 100%); }
-    .bg-6 { background: linear-gradient(150deg, #1a0f0f 0%, #110b0b 45%, #0d0d0d 100%); }
-
-    .card-texture {
-      position: absolute;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-      z-index: 1;
+      opacity: 0;
+      transition: opacity 0.45s ease;
       pointer-events: none;
     }
-
-    .card-gradient-overlay {
+    .fp-slide.active { opacity: 1; pointer-events: auto; }
+    .fp-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .fp-card {
       position: absolute;
-      inset: 0;
-      background: linear-gradient(
-        to top,
-        rgba(10,10,10,0.97) 0%,
-        rgba(10,10,10,0.5)  45%,
-        rgba(10,10,10,0.08) 100%
-      );
-      z-index: 2;
-      transition: opacity 0.4s;
-    }
-
-    .card-bronze-hover {
-      position: absolute;
-      inset: 0;
-      background: rgba(184,151,90,0.08);
-      opacity: 0;
-      z-index: 2;
-      transition: opacity 0.4s;
-    }
-
-    .property-card:hover .card-bronze-hover { opacity: 1; }
-    .property-card:hover .card-bg { transform: scale(1.05); }
-    .property-card:hover video { transform: scale(1.05); }
-
-    .card-content {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      padding: 0 30px 28px;
-      z-index: 3;
-    }
-
-    .card-badge {
-      display: inline-block;
-      font-family: var(--sans);
-      font-size: 8.5px;
-      font-weight: 600;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--dark);
-      background: var(--bronze);
-      padding: 5px 11px;
-      margin-bottom: 14px;
-    }
-
-    .card-badge.has-video {
-      background: transparent;
-      color: var(--bronze);
-      border: 1px solid var(--bronze);
-    }
-
-    .card-address {
+      left: 48px;
+      bottom: 48px;
+      display: grid;
+      grid-template-columns: minmax(280px, 360px) minmax(220px, 280px);
+      max-width: 640px;
       font-family: var(--serif);
-      font-size: 23px;
-      font-weight: 400;
-      color: var(--text-light);
-      line-height: 1.2;
-      margin-bottom: 6px;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.4);
     }
+    .fp-card-tagline {
+      background: var(--cream);
+      color: var(--text-dark, #1a1814);
+      padding: 28px 30px;
+      font-style: italic;
+      font-size: 17px;
+      line-height: 1.55;
+    }
+    .fp-card-stats {
+      background: var(--dark);
+      color: #fff;
+      padding: 20px 26px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 6px;
+      font-family: var(--serif);
+    }
+    .fp-card-stat {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      border-bottom: 1px solid rgba(184,151,90,0.35);
+      padding: 8px 0;
+    }
+    .fp-card-stat:last-child { border-bottom: 0; }
+    .fp-card-stat strong { font-weight: 600; font-size: 17px; letter-spacing: 0.01em; }
+    .fp-card-stat .label { font-style: italic; font-size: 14px; color: rgba(255,255,255,0.65); }
+    .fp-price strong { font-size: 22px; }
 
-    .card-city {
+    .fp-cta {
+      position: absolute;
+      right: 48px;
+      bottom: 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       font-family: var(--sans);
       font-size: 11px;
-      font-weight: 300;
-      letter-spacing: 0.14em;
-      color: rgba(242,237,228,0.55);
-      margin-bottom: 16px;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #fff;
+      background: rgba(0,0,0,0.35);
+      border: 1.5px solid rgba(255,255,255,0.85);
+      padding: 14px 32px;
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+    .fp-cta:hover {
+      background: var(--bronze);
+      border-color: var(--bronze);
+      color: #000;
     }
 
-    .card-footer {
+    .fp-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 56px;
+      height: 56px;
+      border-radius: 0;
+      border: 1.5px solid rgba(255,255,255,0.85);
+      background: rgba(0,0,0,0.35);
+      color: #fff;
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 5;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
     }
+    .fp-arrow:hover { background: var(--bronze); border-color: var(--bronze); color: #000; }
+    .fp-arrow:disabled { opacity: 0.35; cursor: default; }
+    .fp-arrow:disabled:hover { background: rgba(0,0,0,0.35); border-color: rgba(255,255,255,0.85); color: #fff; }
+    .fp-arrow svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.5; }
+    .fp-prev { left: 96px; }
+    .fp-next { right: 96px; }
 
-    .card-mls {
-      font-family: var(--sans);
-      font-size: 9.5px;
-      letter-spacing: 0.12em;
-      color: rgba(242,237,228,0.35);
+    .fp-dots {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 28px;
     }
-
-    .card-arrow {
-      font-size: 13px;
-      color: rgba(184,151,90,0.6);
-      transition: transform 0.3s, color 0.3s;
+    .fp-dot {
+      width: 36px;
+      height: 2px;
+      background: rgba(255,255,255,0.25);
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      transition: background 0.2s;
     }
+    .fp-dot.active { background: var(--bronze); }
+    .fp-dot:hover { background: var(--bronze-light, #CEB07A); }
 
-    .property-card:hover .card-arrow {
-      transform: translateX(5px);
-      color: var(--bronze);
+    @media (max-width: 900px) {
+      #featured-properties .section-header { padding: 0 20px; flex-direction: column; align-items: flex-start; }
+      .fp-carousel { padding: 0 16px; }
+      .fp-stage { aspect-ratio: 4 / 5; }
+      .fp-card {
+        position: static;
+        grid-template-columns: 1fr;
+        margin: -100px 0 0;
+        max-width: 100%;
+        box-shadow: none;
+      }
+      .fp-card-tagline { font-size: 15px; padding: 22px 24px; }
+      .fp-card-stats { padding: 18px 24px; }
+      .fp-cta {
+        position: static;
+        display: block;
+        margin: 16px auto 0;
+        text-align: center;
+        width: 100%;
+        max-width: 360px;
+      }
+      .fp-prev { left: 8px; }
+      .fp-next { right: 8px; }
+      .fp-arrow { width: 44px; height: 44px; }
     }
 
     /* ============================================================
@@ -1323,8 +1341,7 @@
       nav { padding: 20px 32px; }
       nav.scrolled { padding: 16px 32px; }
 
-      #featured-properties { padding: 80px 32px; }
-      .properties-grid { grid-template-columns: repeat(2, 1fr); }
+      #featured-properties { padding: 80px 0 100px; }
 
       #about { grid-template-columns: 1fr; min-height: auto; }
       .about-text-col { padding: 72px 48px; }
@@ -1355,10 +1372,8 @@
       .btn-primary, .btn-outline { width: 100%; max-width: 280px; text-align: center; }
       .hero-scroll-indicator { display: none; }
 
-      #featured-properties { padding: 64px 20px; }
+      #featured-properties { padding: 56px 0 80px; }
       .section-header { flex-direction: column; align-items: flex-start; gap: 16px; margin-bottom: 36px; }
-      .properties-grid { grid-template-columns: 1fr; gap: 3px; }
-      .property-card { aspect-ratio: 4/3; }
 
       #about { grid-template-columns: 1fr; }
       .about-text-col { padding: 56px 24px; }
