@@ -493,7 +493,55 @@
       object-fit: cover;
       display: block;
     }
-    .fp-card {
+    .fp-overlay-gradient {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.15) 35%, rgba(0,0,0,0) 60%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Default state: simple text overlay in bottom-left */
+    .fp-info {
+      position: absolute;
+      left: 48px;
+      bottom: 48px;
+      max-width: 640px;
+      color: #fff;
+      text-shadow: 0 2px 14px rgba(0,0,0,0.45);
+      z-index: 3;
+      transition: opacity 0.35s ease, transform 0.35s ease;
+    }
+    .fp-eyebrow {
+      font-family: var(--sans);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.92);
+      margin: 0 0 14px;
+    }
+    .fp-address {
+      font-family: var(--serif);
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      line-height: 1.1;
+      margin: 0 0 14px;
+      color: #fff;
+    }
+    .fp-stats-inline {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: clamp(15px, 1.5vw, 19px);
+      font-weight: 300;
+      color: rgba(255,255,255,0.92);
+      margin: 0;
+    }
+
+    /* Hover state: card with description + stat list */
+    .fp-hover-card {
       position: absolute;
       left: 48px;
       bottom: 48px;
@@ -502,6 +550,23 @@
       max-width: 640px;
       font-family: var(--serif);
       box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+      z-index: 4;
+      opacity: 0;
+      transform: translateY(20px);
+      pointer-events: none;
+      transition: opacity 0.35s ease, transform 0.35s ease;
+    }
+    .fp-slide.has-hover:hover .fp-hover-card,
+    .fp-slide.has-hover:focus-within .fp-hover-card {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    .fp-slide.has-hover:hover .fp-info,
+    .fp-slide.has-hover:focus-within .fp-info {
+      opacity: 0;
+      transform: translateY(-12px);
+      pointer-events: none;
     }
     .fp-card-tagline {
       background: var(--cream);
@@ -608,22 +673,17 @@
       #featured-properties .section-header { padding: 0 20px; flex-direction: column; align-items: flex-start; }
       .fp-carousel { padding: 0 16px; }
       .fp-stage { aspect-ratio: 4 / 5; }
-      .fp-card {
-        position: static;
-        grid-template-columns: 1fr;
-        margin: -100px 0 0;
-        max-width: 100%;
-        box-shadow: none;
-      }
-      .fp-card-tagline { font-size: 15px; padding: 22px 24px; }
-      .fp-card-stats { padding: 18px 24px; }
+      .fp-info { left: 24px; right: 24px; bottom: 88px; max-width: none; }
+      .fp-eyebrow { font-size: 10px; margin-bottom: 10px; }
+      .fp-address { letter-spacing: 0.03em; }
+      .fp-stats-inline { font-size: 14px; }
+      /* Hide the elaborate hover card on touch devices — default info stays visible */
+      .fp-hover-card { display: none; }
       .fp-cta {
-        position: static;
-        display: block;
-        margin: 16px auto 0;
-        text-align: center;
-        width: 100%;
-        max-width: 360px;
+        right: 24px;
+        bottom: 24px;
+        padding: 11px 22px;
+        font-size: 10px;
       }
       .fp-prev { left: 8px; }
       .fp-next { right: 8px; }
@@ -1676,28 +1736,52 @@
           var nextBtn = document.getElementById('fp-next')
 
           stage.innerHTML = active.map(function (p, i) {
-            var stats = ''
+            // Inline stats line for default view (Price | Beds | Baths | Sq.Ft.)
+            var inline = []
+            if (p.priceDisplay) inline.push(p.priceDisplay)
+            if (p.beds)  inline.push(p.beds + (p.beds === 1 ? ' Bed' : ' Beds'))
+            if (p.baths) inline.push(p.baths + (p.baths === 1 ? ' Bath' : ' Baths'))
+            if (p.sqft)  inline.push(formatStat(p.sqft) + ' Sq.Ft.')
+            var inlineStats = inline.length ? inline.join(' &nbsp;|&nbsp; ') : (p.city + ', ' + p.state)
+
+            // Stats list for hover card (right column)
+            var hoverStats = ''
             if (p.priceDisplay) {
-              stats += '<div class="fp-card-stat fp-price"><strong>' + p.priceDisplay + '</strong><span class="label">Price</span></div>'
+              hoverStats += '<div class="fp-card-stat fp-price"><strong>' + p.priceDisplay + '</strong><span class="label">Price</span></div>'
             }
-            if (p.beds)  stats += '<div class="fp-card-stat"><strong>' + p.beds + '</strong><span class="label">Beds</span></div>'
-            if (p.baths) stats += '<div class="fp-card-stat"><strong>' + p.baths + '</strong><span class="label">Baths</span></div>'
-            if (p.sqft)  stats += '<div class="fp-card-stat"><strong>' + formatStat(p.sqft) + '</strong><span class="label">Sq.Ft.</span></div>'
-            if (!stats) {
-              stats = '<div class="fp-card-stat"><strong>Active Listing</strong><span class="label">' + (p.city || '') + '</span></div>'
+            if (p.beds)  hoverStats += '<div class="fp-card-stat"><strong>' + p.beds + '</strong><span class="label">Beds</span></div>'
+            if (p.baths) hoverStats += '<div class="fp-card-stat"><strong>' + p.baths + '</strong><span class="label">Baths</span></div>'
+            if (p.sqft)  hoverStats += '<div class="fp-card-stat"><strong>' + formatStat(p.sqft) + '</strong><span class="label">Sq.Ft.</span></div>'
+
+            // Description for hover card — short excerpt of full description, fallback to tagline
+            var hoverDesc = ''
+            if (p.description) {
+              var d = p.description.replace(/\s+/g, ' ').trim()
+              hoverDesc = d.length > 240 ? d.slice(0, 240).replace(/\s\S*$/, '') + '…' : d
+            } else if (p.tagline) {
+              hoverDesc = p.tagline
             }
+            // Only show hover card if we have something meaningful to add beyond the default info
+            var showHoverCard = hoverDesc && hoverStats
 
             var ctaHref = p.hasDetailPage ? '/properties/' + p.slug + '.html' : (p.ylopoDetailUrl || '#')
             var ctaTarget = p.hasDetailPage ? '' : ' target="_blank" rel="noopener"'
             var ctaLabel = p.hasDetailPage ? 'Learn More' : 'View on MLS'
-            var tagline = p.tagline || (p.address + ' — ' + p.city + ', ' + p.state)
 
-            return '<div class="fp-slide' + (i === 0 ? ' active' : '') + '" data-index="' + i + '">' +
+            return '<div class="fp-slide' + (i === 0 ? ' active' : '') + (showHoverCard ? ' has-hover' : '') + '" data-index="' + i + '">' +
               '<img src="' + p.heroImage + '" alt="' + p.address + ', ' + p.city + '"' + (i === 0 ? '' : ' loading="lazy"') + ' />' +
-              '<div class="fp-card">' +
-                '<div class="fp-card-tagline">' + tagline + '</div>' +
-                '<div class="fp-card-stats">' + stats + '</div>' +
+              '<div class="fp-overlay-gradient"></div>' +
+              '<div class="fp-info">' +
+                '<p class="fp-eyebrow">Featured Listing</p>' +
+                '<h3 class="fp-address">' + p.address + '</h3>' +
+                '<p class="fp-stats-inline">' + inlineStats + '</p>' +
               '</div>' +
+              (showHoverCard
+                ? '<div class="fp-hover-card" aria-hidden="true">' +
+                    '<div class="fp-card-tagline">' + hoverDesc + '</div>' +
+                    '<div class="fp-card-stats">' + hoverStats + '</div>' +
+                  '</div>'
+                : '') +
               '<a class="fp-cta" href="' + ctaHref + '"' + ctaTarget + '>' + ctaLabel + '</a>' +
             '</div>'
           }).join('')
