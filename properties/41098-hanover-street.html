@@ -123,6 +123,12 @@
   <!-- OTHER FEATURED LISTINGS -->
   <section class="pp-others" id="pp-others-section" style="display:none;">
     <h2>Other Featured Listings</h2>
+    <button class="pp-others-arrow pp-others-prev" id="pp-others-prev" aria-label="Scroll left" style="display:none;">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    </button>
+    <button class="pp-others-arrow pp-others-next" id="pp-others-next" aria-label="Scroll right" style="display:none;">
+      <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </button>
     <div class="pp-others-grid" id="pp-others-grid"></div>
   </section>
 
@@ -274,10 +280,11 @@
           $('pp-tour-mailto').href = 'mailto:shana@craftbauer.com?subject=' +
             encodeURIComponent('Showing request: ' + p.address + ', ' + p.city)
 
-          // Other featured listings
-          var others = all.filter(function (x) { return x.slug !== p.slug && x.status === 'active' }).slice(0, 3)
+          // Other featured listings — horizontally scrollable, all of them
+          var others = all.filter(function (x) { return x.slug !== p.slug && x.status === 'active' })
           if (others.length) {
-            $('pp-others-grid').innerHTML = others.map(function (o) {
+            var grid = $('pp-others-grid')
+            grid.innerHTML = others.map(function (o) {
               var href = o.hasDetailPage ? '/properties/' + o.slug + '.html' : (o.ylopoDetailUrl || '#')
               var ext = o.hasDetailPage ? '' : ' target="_blank" rel="noopener"'
               return '<a class="pp-other-card" href="' + href + '"' + ext + '>' +
@@ -289,6 +296,33 @@
                 '</a>'
             }).join('')
             $('pp-others-section').style.display = 'block'
+
+            // Wire up scroll arrows once the grid is laid out
+            requestAnimationFrame(function () {
+              var prev = $('pp-others-prev')
+              var next = $('pp-others-next')
+              var hasOverflow = grid.scrollWidth > grid.clientWidth + 2
+              if (!hasOverflow) return
+              prev.style.display = 'flex'
+              next.style.display = 'flex'
+
+              function step () {
+                var card = grid.querySelector('.pp-other-card')
+                if (!card) return grid.clientWidth * 0.8
+                var gap = 18
+                return card.offsetWidth + gap
+              }
+              function updateArrows () {
+                var max = grid.scrollWidth - grid.clientWidth
+                prev.disabled = grid.scrollLeft <= 2
+                next.disabled = grid.scrollLeft >= max - 2
+              }
+              prev.addEventListener('click', function () { grid.scrollBy({ left: -step(), behavior: 'smooth' }) })
+              next.addEventListener('click', function () { grid.scrollBy({ left: step(), behavior: 'smooth' }) })
+              grid.addEventListener('scroll', updateArrows, { passive: true })
+              window.addEventListener('resize', updateArrows)
+              updateArrows()
+            })
           }
         })
         .catch(function (err) {
