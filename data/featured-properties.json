@@ -11,6 +11,17 @@
     "communitySlug": "palm-springs",
     "price": 1695000,
     "priceDisplay": "$1,695,000",
+    "priceCut": {
+      "amount": 50000,
+      "amountDisplay": "$50,000",
+      "previousPriceDisplay": "$1,745,000",
+      "dateDisplay": "February 2026"
+    },
+    "openHouse": {
+      "displayDate": "Saturday, May 2",
+      "displayTime": "12:00 – 3:00 PM",
+      "displayShort": "Sat May 2 · 12–3 PM"
+    },
     "beds": 3,
     "baths": 3,
     "sqft": 2593,
@@ -55,6 +66,14 @@
     "lng": -116.5005879,
     "neighborhood": "Seven Lakes Country Club",
     "communitySlug": "palm-springs",
+    "price": 419900,
+    "priceDisplay": "$419,900",
+    "priceCut": {
+      "amount": 40000,
+      "amountDisplay": "$40,000",
+      "previousPriceDisplay": "$459,900",
+      "dateDisplay": "March 26, 2026"
+    },
     "beds": 3,
     "baths": 3,
     "sqft": 2452,

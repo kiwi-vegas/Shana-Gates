@@ -57,6 +57,12 @@
     <div class="pp-counter" id="pp-counter">1 / 1</div>
   </section>
 
+  <!-- OPEN HOUSE BANNER (shown only when openHouse data present) -->
+  <div class="pp-openhouse-banner" id="pp-openhouse-banner" style="display:none;">
+    <span class="pp-openhouse-label">Open House</span>
+    <span class="pp-openhouse-when" id="pp-openhouse-when"></span>
+  </div>
+
   <!-- ATTRIBUTION -->
   <p class="pp-attribution">Featured by Shana Gates · Craft &amp; Bauer | Real Broker</p>
 
@@ -66,7 +72,10 @@
       <h1 class="pp-address" id="pp-address">—</h1>
       <p class="pp-locality" id="pp-locality">—</p>
     </div>
-    <div class="pp-price" id="pp-price">—</div>
+    <div class="pp-price-wrap">
+      <div class="pp-price" id="pp-price">—</div>
+      <div class="pp-pricecut" id="pp-pricecut" style="display:none;"></div>
+    </div>
   </header>
 
   <!-- STATS -->
@@ -173,6 +182,21 @@
             $('pp-price').textContent = p.priceDisplay
           } else {
             $('pp-price').textContent = 'Inquire'
+          }
+
+          // Price cut
+          if (p.priceCut) {
+            var pc = $('pp-pricecut')
+            pc.innerHTML = '↓ ' + p.priceCut.amountDisplay + ' price reduction · ' + p.priceCut.dateDisplay +
+              (p.priceCut.previousPriceDisplay ? ' <span class="prev">(was ' + p.priceCut.previousPriceDisplay + ')</span>' : '')
+            pc.style.display = 'block'
+          }
+
+          // Open House banner
+          if (p.openHouse) {
+            var oh = $('pp-openhouse-banner')
+            $('pp-openhouse-when').textContent = p.openHouse.displayDate + ' · ' + p.openHouse.displayTime
+            oh.style.display = 'flex'
           }
 
           // Stats

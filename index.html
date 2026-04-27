@@ -597,6 +597,29 @@
     .fp-card-stat strong { font-weight: 600; font-size: 17px; letter-spacing: 0.01em; }
     .fp-card-stat .label { font-style: italic; font-size: 14px; color: rgba(255,255,255,0.65); }
     .fp-price strong { font-size: 22px; }
+    .fp-pricecut {
+      font-family: var(--sans);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      color: #e8b04a;
+      padding: 6px 0 10px;
+      border-bottom: 1px solid rgba(184,151,90,0.35);
+      margin-top: -4px;
+    }
+    .fp-openhouse {
+      display: inline-block;
+      font-family: var(--sans);
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #fff;
+      background: #25434B;
+      padding: 7px 14px;
+      margin-bottom: 16px;
+      font-style: normal;
+    }
 
     .fp-cta {
       position: absolute;
@@ -1881,6 +1904,9 @@
             if (p.priceDisplay) {
               hoverStats += '<div class="fp-card-stat fp-price"><strong>' + p.priceDisplay + '</strong><span class="label">Price</span></div>'
             }
+            if (p.priceCut) {
+              hoverStats += '<div class="fp-pricecut">&#x2193; ' + p.priceCut.amountDisplay + ' price reduction · ' + p.priceCut.dateDisplay + '</div>'
+            }
             if (p.beds)  hoverStats += '<div class="fp-card-stat"><strong>' + p.beds + '</strong><span class="label">Beds</span></div>'
             if (p.baths) hoverStats += '<div class="fp-card-stat"><strong>' + p.baths + '</strong><span class="label">Baths</span></div>'
             if (p.sqft)  hoverStats += '<div class="fp-card-stat"><strong>' + formatStat(p.sqft) + '</strong><span class="label">Sq.Ft.</span></div>'
@@ -1888,6 +1914,12 @@
               // Graceful fallback when full numeric data isn't available yet
               hoverStats = '<div class="fp-card-stat"><strong>Active Listing</strong><span class="label">' + (p.city || 'Coachella Valley') + '</span></div>' +
                            (p.mls ? '<div class="fp-card-stat"><strong>MLS ' + p.mls + '</strong><span class="label">Listing</span></div>' : '')
+            }
+
+            // Open House badge for the cream tagline column
+            var openHouseBadge = ''
+            if (p.openHouse) {
+              openHouseBadge = '<div class="fp-openhouse">Open House · ' + p.openHouse.displayShort + '</div>'
             }
 
             // Description for hover card — short excerpt of full description, fallback to tagline
@@ -1915,7 +1947,7 @@
               '</div>' +
               (showHoverCard
                 ? '<div class="fp-hover-card" aria-hidden="true">' +
-                    '<div class="fp-card-tagline">' + hoverDesc + '</div>' +
+                    '<div class="fp-card-tagline">' + openHouseBadge + hoverDesc + '</div>' +
                     '<div class="fp-card-stats">' + hoverStats + '</div>' +
                   '</div>'
                 : '') +

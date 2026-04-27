@@ -2580,3 +2580,58 @@ body.property-page { background: var(--dark); color: var(--text-light); }
   .pp-others-grid { grid-template-columns: 1fr 1fr; }
   #pp-map { height: 320px; }
 }
+
+/* Open House banner + price cut indicator on property detail pages */
+.pp-openhouse-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: #25434B;
+  color: #fff;
+  font-family: var(--sans);
+  padding: 14px 20px;
+  text-align: center;
+  flex-wrap: wrap;
+}
+.pp-openhouse-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  border-right: 1px solid rgba(255,255,255,0.35);
+  padding-right: 16px;
+}
+.pp-openhouse-when {
+  font-family: var(--serif);
+  font-size: 17px;
+  font-style: italic;
+  font-weight: 400;
+}
+@media (max-width: 600px) {
+  .pp-openhouse-label { border-right: 0; padding-right: 0; }
+}
+
+.pp-price-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+.pp-pricecut {
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: #e8b04a;
+  text-align: right;
+}
+.pp-pricecut .prev {
+  font-style: italic;
+  color: rgba(255,255,255,0.5);
+  font-weight: 400;
+}
+@media (max-width: 768px) {
+  .pp-price-wrap { align-items: flex-start; }
+  .pp-pricecut { text-align: left; }
+}
