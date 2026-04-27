@@ -53,15 +53,33 @@
     "zip": "92264",
     "lat": 33.7978012,
     "lng": -116.5005879,
+    "neighborhood": "Seven Lakes Country Club",
     "communitySlug": "palm-springs",
+    "beds": 3,
+    "baths": 3,
+    "sqft": 2452,
     "mls": "26650637PS",
-    "ylopoDetailUrl": "https://search.searchcoachellavalleyhomes.com/search/detail/259876193?s[orderBy]=sourceCreationDate%2Cdesc&s[page]=1&s[mainInputSearch]=false&s[circle][lat]=33.79780119999999&s[circle][lng]=-116.5005879&s[circle][radius]=3&s[address]=459%20Desert%20Lakes%20Dr%2C%20Palm%20Springs%2C%20CA%2092264&s[addressComponents][street]=459%20Desert%20Lakes%20Drive&s[addressComponents][city]=Palm%20Springs&s[addressComponents][state]=CA&s[addressComponents][zip]=92264",
-    "tagline": "Palm Springs charm, ready to call home.",
-    "description": "Tucked into one of Palm Springs's established south-end pockets, this home blends classic desert living with the lifestyle that draws buyers from across the country to the Coachella Valley. Minutes to downtown Palm Canyon Drive and the airport.",
-    "heroImage": "/images/459-desert-lakes-drive.jpeg",
-    "gallery": [],
+    "ylopoDetailUrl": "https://search.searchcoachellavalleyhomes.com/search/detail/259876193",
+    "tagline": "A second-floor residence in Palm Springs's iconic Seven Lakes Country Club.",
+    "description": "A second-floor residence in Palm Springs's iconic Seven Lakes Country Club, with a massive private balcony overlooking a lush central greenway and one of the community's sparkling pools. Seven Lakes is one of the most established golf communities in south Palm Springs, with mid-century architectural pedigree, a William F. Cody-designed clubhouse, and a setting that has long drawn buyers who appreciate classic desert design and the lifestyle that goes with it. Easy minutes to downtown Palm Canyon Drive, Smoke Tree Stables, and the Palm Springs International Airport.",
+    "features": [
+      "Second-floor residence with massive private balcony",
+      "Greenway and pool views",
+      "Seven Lakes Country Club community",
+      "Mid-century architectural setting",
+      "Established south Palm Springs location",
+      "Minutes to downtown and the airport"
+    ],
+    "heroImage": "/images/properties/459-desert-lakes-drive/hero.jpg",
+    "gallery": [
+      "/images/properties/459-desert-lakes-drive/hero.jpg"
+    ],
     "status": "active",
-    "hasDetailPage": false
+    "hasDetailPage": true,
+    "listedBy": {
+      "agent": "Shana Gates",
+      "brokerage": "Craft & Bauer | Real Broker"
+    }
   },
   {
     "slug": "77553-carinda-court",
@@ -71,15 +89,39 @@
     "zip": "92211",
     "lat": 33.7550352,
     "lng": -116.3099975,
+    "neighborhood": "Whitehawk",
     "communitySlug": "palm-desert",
+    "price": 669000,
+    "priceDisplay": "$669,000",
+    "beds": 3,
+    "baths": 2,
+    "sqft": 1941,
+    "lotSize": "0.18 acres",
+    "yearBuilt": 1990,
     "mls": "26650855PS",
-    "ylopoDetailUrl": "https://search.searchcoachellavalleyhomes.com/search/detail/259917628?s[orderBy]=sourceCreationDate%2Cdesc&s[page]=1&s[mainInputSearch]=false&s[circle][lat]=33.7550352&s[circle][lng]=-116.3099975&s[circle][radius]=3&s[address]=77553%20Carinda%20Ct%2C%20Palm%20Desert%2C%20CA%2092211&s[addressComponents][street]=77553%20Carinda%20Court&s[addressComponents][city]=Palm%20Desert&s[addressComponents][state]=CA&s[addressComponents][zip]=92211",
-    "tagline": "A quiet Palm Desert cul-de-sac retreat.",
-    "description": "A quiet Palm Desert cul-de-sac retreat in one of the city's most established golf-and-shopping enclaves. Easy access to El Paseo, world-class dining, and the championship courses that define the desert's lifestyle.",
-    "heroImage": "/images/77553-carinda-court.jpeg",
-    "gallery": [],
+    "ylopoDetailUrl": "https://search.searchcoachellavalleyhomes.com/search/detail/259917628",
+    "tagline": "A single-level Whitehawk home with a resort-style pool, spa, and firepit courtyard.",
+    "description": "Single-level home ideally situated on a desirable corner lot in the Whitehawk community of Palm Desert, offering the best of indoor-outdoor desert living. A large enclosed front courtyard with a firepit creates a welcoming space for relaxing or entertaining. The resort-style backyard features a swimming pool and spa surrounded by mature, low-maintenance landscaping. Whitehawk's quiet streets sit minutes from El Paseo's shopping and dining, championship golf, and the Westfield Palm Desert.",
+    "features": [
+      "Single-level floor plan",
+      "Desirable corner lot",
+      "Whitehawk community",
+      "Enclosed front courtyard with firepit",
+      "Resort-style backyard with swimming pool",
+      "Private spa",
+      "Built 1990",
+      "Minutes to El Paseo shopping and dining"
+    ],
+    "heroImage": "/images/properties/77553-carinda-court/hero.jpg",
+    "gallery": [
+      "/images/properties/77553-carinda-court/hero.jpg"
+    ],
     "status": "active",
-    "hasDetailPage": false
+    "hasDetailPage": true,
+    "listedBy": {
+      "agent": "Shana Gates",
+      "brokerage": "Craft & Bauer | Real Broker"
+    }
   },
   {
     "slug": "41098-hanover-street",
@@ -89,15 +131,34 @@
     "zip": "92203",
     "lat": 33.7505301,
     "lng": -116.225812,
+    "neighborhood": "North Indio",
     "communitySlug": "indio",
-    "mls": "",
-    "ylopoDetailUrl": "https://search.searchcoachellavalleyhomes.com/search/detail/261541877?s[orderBy]=sourceCreationDate%2Cdesc&s[page]=1&s[mainInputSearch]=false&s[circle][lat]=33.7505301&s[circle][lng]=-116.225812&s[circle][radius]=3&s[address]=41098%20Hanover%20St%2C%20Indio%2C%20CA%2092203&s[addressComponents][street]=41098%20Hanover%20Street&s[addressComponents][city]=Indio&s[addressComponents][state]=CA&s[addressComponents][zip]=92203",
-    "tagline": "Modern Indio living minutes from the festival grounds.",
-    "description": "Modern Indio living in a fast-growing pocket of the valley, minutes from the Empire Polo Club festival grounds and an easy drive to Old Town La Quinta. Indio's central location and value pricing make it one of the Coachella Valley's most-watched submarkets.",
-    "heroImage": "/images/41098-hanover-st.jpeg",
-    "gallery": [],
+    "price": 575000,
+    "priceDisplay": "$575,000",
+    "beds": 4,
+    "baths": 2,
+    "sqft": 2080,
+    "ylopoDetailUrl": "https://search.searchcoachellavalleyhomes.com/search/detail/261541877",
+    "tagline": "An extensively renovated 4-bedroom home in a fast-growing pocket of north Indio.",
+    "description": "An extensively renovated 4-bedroom, 2-bath home in a desirable north Indio location. The interior has been thoughtfully updated for modern desert living, ready for a buyer who wants move-in convenience without the new-build price tag. North Indio is one of the Coachella Valley's fastest-growing submarkets, just minutes from the Empire Polo Club festival grounds and an easy drive to Old Town La Quinta — a combination of central location and value pricing that's been pulling more and more buyers east of the highway each year.",
+    "features": [
+      "Extensively renovated interior",
+      "4 bedrooms, 2 bathrooms",
+      "North Indio location",
+      "Minutes to the Empire Polo Club festival grounds",
+      "Easy drive to Old Town La Quinta",
+      "Move-in ready"
+    ],
+    "heroImage": "/images/properties/41098-hanover-street/hero.jpg",
+    "gallery": [
+      "/images/properties/41098-hanover-street/hero.jpg"
+    ],
     "status": "active",
-    "hasDetailPage": false
+    "hasDetailPage": true,
+    "listedBy": {
+      "agent": "Shana Gates",
+      "brokerage": "Craft & Bauer | Real Broker"
+    }
   },
   {
     "slug": "78924-la-rosa-way",
@@ -107,15 +168,36 @@
     "zip": "92211",
     "lat": 33.760245,
     "lng": -116.287728,
+    "neighborhood": "Renata at Domani",
     "communitySlug": "palm-desert",
-    "mls": "",
-    "ylopoDetailUrl": "https://search.searchcoachellavalleyhomes.com/search/detail/261197517?s[orderBy]=sourceCreationDate%2Cdesc&s[page]=1&s[mainInputSearch]=false&s[circle][lat]=33.760245&s[circle][lng]=-116.287728&s[circle][radius]=3&s[address]=78924%20La%20Rosa%20Wy%2C%20Palm%20Desert%2C%20CA%2092211&s[addressComponents][street]=78924%20La%20Rosa%20Way&s[addressComponents][city]=Palm%20Desert&s[addressComponents][state]=CA&s[addressComponents][zip]=92211",
-    "tagline": "Palm Desert living with mountain backdrops and golf nearby.",
-    "description": "Palm Desert living with mountain backdrops and golf course access nearby. Quiet streets, professionally maintained surroundings, and quick connectivity to El Paseo, the Westfield Palm Desert, and the I-10 corridor.",
-    "heroImage": "/images/78924-la-rosa-way.jpeg",
-    "gallery": [],
+    "price": 510490,
+    "priceDisplay": "$510,490",
+    "beds": 2,
+    "baths": 2,
+    "sqft": 1579,
+    "yearBuilt": 2021,
+    "mls": "219117337",
+    "ylopoDetailUrl": "https://search.searchcoachellavalleyhomes.com/search/detail/261197517",
+    "tagline": "One of the last new-construction homes at Renata at Domani — Brownstone floor plan, corner location.",
+    "description": "One of the last new-construction homes available at Renata at Domani — Pulte's gated community in north Palm Desert. This is the popular Brownstone floor plan in a coveted corner-lot location, finished with the modern, low-maintenance details that make recent-build desert homes so easy to live in. Renata sits in a quiet pocket of Palm Desert with quick connectivity to El Paseo, the Westfield Palm Desert, and the I-10 corridor — the kind of address that works equally well for full-time residents and seasonal buyers.",
+    "features": [
+      "New construction (built 2021)",
+      "Brownstone floor plan",
+      "Corner-lot location",
+      "Renata at Domani community",
+      "Quick connectivity to El Paseo and the I-10",
+      "Modern, low-maintenance finishes"
+    ],
+    "heroImage": "/images/properties/78924-la-rosa-way/hero.jpg",
+    "gallery": [
+      "/images/properties/78924-la-rosa-way/hero.jpg"
+    ],
     "status": "active",
-    "hasDetailPage": false
+    "hasDetailPage": true,
+    "listedBy": {
+      "agent": "Shana Gates",
+      "brokerage": "Craft & Bauer | Real Broker"
+    }
   },
   {
     "slug": "16264-avenida-rambla",
@@ -126,13 +208,32 @@
     "lat": 33.930134,
     "lng": -116.485205,
     "communitySlug": "desert-hot-springs",
-    "mls": "",
-    "ylopoDetailUrl": "https://search.searchcoachellavalleyhomes.com/search?s[orderBy]=sourceCreationDate%2Cdesc&s[page]=1&s[mainInputSearch]=true&s[circle][lat]=33.930134&s[circle][lng]=-116.485205&s[circle][radius]=3&s[address]=16264%20Ave%20Rambla%2C%20Desert%20Hot%20Springs%2C%20CA%2092240&s[addressComponents][street]=16264%20Avenue%20Rambla&s[addressComponents][city]=Desert%20Hot%20Springs&s[addressComponents][state]=CA&s[addressComponents][zip]=92240",
-    "tagline": "Wide skies and mountain views in Desert Hot Springs.",
-    "description": "Wide skies, mountain views, and the value-driven appeal that makes Desert Hot Springs one of the Coachella Valley's smartest entry points. Famous for its mineral hot springs and rapidly evolving neighborhoods, the city offers a different rhythm of desert life.",
-    "heroImage": "/images/16264-avenida-rambla.jpeg",
-    "gallery": [],
+    "price": 569900,
+    "priceDisplay": "$569,900",
+    "beds": 4,
+    "baths": 3,
+    "sqft": 1720,
+    "mls": "219126680",
+    "ylopoDetailUrl": "https://search.searchcoachellavalleyhomes.com/search?s[orderBy]=sourceCreationDate%2Cdesc&s[page]=1&s[mainInputSearch]=true&s[circle][lat]=33.930134&s[circle][lng]=-116.485205&s[circle][radius]=3&s[address]=16264%20Ave%20Rambla%2C%20Desert%20Hot%20Springs%2C%20CA%2092240",
+    "tagline": "New-construction 4-bedroom home with wide skies and mountain views in Desert Hot Springs.",
+    "description": "A new-construction 4-bedroom, 3-bath home with the wide skies and mountain views that have made Desert Hot Springs one of the Coachella Valley's smartest entry points. The city is best known for its mineral hot springs and rapidly evolving neighborhoods — newer builds like this one are anchoring a wave of fresh investment along the valley's northern edge. Easy I-10 access connects you to all of Greater Palm Springs while the elevation here keeps summer evenings notably cooler than the valley floor.",
+    "features": [
+      "New construction",
+      "4 bedrooms, 3 bathrooms",
+      "1,720 square feet",
+      "Mountain views",
+      "Higher-elevation Desert Hot Springs setting",
+      "Easy I-10 access to Greater Palm Springs"
+    ],
+    "heroImage": "/images/properties/16264-avenida-rambla/hero.jpg",
+    "gallery": [
+      "/images/properties/16264-avenida-rambla/hero.jpg"
+    ],
     "status": "active",
-    "hasDetailPage": false
+    "hasDetailPage": true,
+    "listedBy": {
+      "agent": "Shana Gates",
+      "brokerage": "Craft & Bauer | Real Broker"
+    }
   }
 ]
