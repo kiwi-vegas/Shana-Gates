@@ -1693,135 +1693,6 @@
     </div>
   </section>
 
-  <!-- ============================================================
-       FEATURED PROPERTIES — carousel driven by /data/featured-properties.json
-  ============================================================ -->
-  <section id="featured-properties">
-    <div class="section-header reveal">
-      <div>
-        <p class="section-eyebrow">Curated Selection</p>
-        <h2 class="section-title">Featured Properties</h2>
-      </div>
-      <a href="https://search.searchcoachellavalleyhomes.com/search" class="view-all-link" target="_blank" rel="noopener">View All Listings &rarr;</a>
-    </div>
-
-    <div class="fp-carousel">
-      <div class="fp-stage" id="fp-stage" aria-roledescription="carousel">
-        <!-- slides injected by JS -->
-      </div>
-      <button class="fp-arrow fp-prev" id="fp-prev" aria-label="Previous property">
-        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
-      </button>
-      <button class="fp-arrow fp-next" id="fp-next" aria-label="Next property">
-        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
-      </button>
-      <div class="fp-dots" id="fp-dots"></div>
-    </div>
-  </section>
-
-  <script>
-    (function () {
-      'use strict'
-      function formatStat (n) { return typeof n === 'number' ? n.toLocaleString('en-US') : n }
-
-      fetch('/data/featured-properties.json')
-        .then(function (r) { return r.json() })
-        .then(function (props) {
-          var active = props.filter(function (p) { return p.status === 'active' })
-          if (!active.length) return
-
-          var stage = document.getElementById('fp-stage')
-          var dotsContainer = document.getElementById('fp-dots')
-          var prevBtn = document.getElementById('fp-prev')
-          var nextBtn = document.getElementById('fp-next')
-
-          stage.innerHTML = active.map(function (p, i) {
-            // Inline stats line for default view (Price | Beds | Baths | Sq.Ft.)
-            var inline = []
-            if (p.priceDisplay) inline.push(p.priceDisplay)
-            if (p.beds)  inline.push(p.beds + (p.beds === 1 ? ' Bed' : ' Beds'))
-            if (p.baths) inline.push(p.baths + (p.baths === 1 ? ' Bath' : ' Baths'))
-            if (p.sqft)  inline.push(formatStat(p.sqft) + ' Sq.Ft.')
-            var inlineStats = inline.length ? inline.join(' &nbsp;|&nbsp; ') : (p.city + ', ' + p.state)
-
-            // Stats list for hover card (right column)
-            var hoverStats = ''
-            if (p.priceDisplay) {
-              hoverStats += '<div class="fp-card-stat fp-price"><strong>' + p.priceDisplay + '</strong><span class="label">Price</span></div>'
-            }
-            if (p.beds)  hoverStats += '<div class="fp-card-stat"><strong>' + p.beds + '</strong><span class="label">Beds</span></div>'
-            if (p.baths) hoverStats += '<div class="fp-card-stat"><strong>' + p.baths + '</strong><span class="label">Baths</span></div>'
-            if (p.sqft)  hoverStats += '<div class="fp-card-stat"><strong>' + formatStat(p.sqft) + '</strong><span class="label">Sq.Ft.</span></div>'
-
-            // Description for hover card — short excerpt of full description, fallback to tagline
-            var hoverDesc = ''
-            if (p.description) {
-              var d = p.description.replace(/\s+/g, ' ').trim()
-              hoverDesc = d.length > 240 ? d.slice(0, 240).replace(/\s\S*$/, '') + '…' : d
-            } else if (p.tagline) {
-              hoverDesc = p.tagline
-            }
-            // Only show hover card if we have something meaningful to add beyond the default info
-            var showHoverCard = hoverDesc && hoverStats
-
-            var ctaHref = p.hasDetailPage ? '/properties/' + p.slug + '.html' : (p.ylopoDetailUrl || '#')
-            var ctaTarget = p.hasDetailPage ? '' : ' target="_blank" rel="noopener"'
-            var ctaLabel = p.hasDetailPage ? 'Learn More' : 'View on MLS'
-
-            return '<div class="fp-slide' + (i === 0 ? ' active' : '') + (showHoverCard ? ' has-hover' : '') + '" data-index="' + i + '">' +
-              '<img src="' + p.heroImage + '" alt="' + p.address + ', ' + p.city + '"' + (i === 0 ? '' : ' loading="lazy"') + ' />' +
-              '<div class="fp-overlay-gradient"></div>' +
-              '<div class="fp-info">' +
-                '<p class="fp-eyebrow">Featured Listing</p>' +
-                '<h3 class="fp-address">' + p.address + '</h3>' +
-                '<p class="fp-stats-inline">' + inlineStats + '</p>' +
-              '</div>' +
-              (showHoverCard
-                ? '<div class="fp-hover-card" aria-hidden="true">' +
-                    '<div class="fp-card-tagline">' + hoverDesc + '</div>' +
-                    '<div class="fp-card-stats">' + hoverStats + '</div>' +
-                  '</div>'
-                : '') +
-              '<a class="fp-cta" href="' + ctaHref + '"' + ctaTarget + '>' + ctaLabel + '</a>' +
-            '</div>'
-          }).join('')
-
-          dotsContainer.innerHTML = active.map(function (_, i) {
-            return '<button class="fp-dot' + (i === 0 ? ' active' : '') + '" data-index="' + i + '" aria-label="Go to slide ' + (i + 1) + '"></button>'
-          }).join('')
-
-          var slides = stage.querySelectorAll('.fp-slide')
-          var dots = dotsContainer.querySelectorAll('.fp-dot')
-          var current = 0
-
-          function go (i) {
-            var n = slides.length
-            current = ((i % n) + n) % n
-            slides.forEach(function (s, idx) { s.classList.toggle('active', idx === current) })
-            dots.forEach(function (d, idx) { d.classList.toggle('active', idx === current) })
-            prevBtn.disabled = nextBtn.disabled = (slides.length <= 1)
-          }
-
-          prevBtn.addEventListener('click', function () { go(current - 1) })
-          nextBtn.addEventListener('click', function () { go(current + 1) })
-          dots.forEach(function (d, i) { d.addEventListener('click', function () { go(i) }) })
-          if (slides.length <= 1) {
-            prevBtn.disabled = true
-            nextBtn.disabled = true
-          }
-
-          // keyboard nav when section is in view
-          document.addEventListener('keydown', function (e) {
-            var rect = stage.getBoundingClientRect()
-            var inView = rect.top < window.innerHeight && rect.bottom > 0
-            if (!inView) return
-            if (e.key === 'ArrowLeft')  go(current - 1)
-            if (e.key === 'ArrowRight') go(current + 1)
-          })
-        })
-        .catch(function (err) { console.error('[featured properties carousel]', err) })
-    })()
-  </script>
 
 
   <!-- ============================================================
@@ -1952,6 +1823,142 @@
     </div>
 
   </section>
+
+
+  <!-- ============================================================
+       FEATURED PROPERTIES — carousel driven by /data/featured-properties.json
+  ============================================================ -->
+  <section id="featured-properties">
+    <div class="section-header reveal">
+      <div>
+        <p class="section-eyebrow">Curated Selection</p>
+        <h2 class="section-title">Featured Properties</h2>
+      </div>
+      <a href="https://search.searchcoachellavalleyhomes.com/search" class="view-all-link" target="_blank" rel="noopener">View All Listings &rarr;</a>
+    </div>
+
+    <div class="fp-carousel">
+      <div class="fp-stage" id="fp-stage" aria-roledescription="carousel">
+        <!-- slides injected by JS -->
+      </div>
+      <button class="fp-arrow fp-prev" id="fp-prev" aria-label="Previous property">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      </button>
+      <button class="fp-arrow fp-next" id="fp-next" aria-label="Next property">
+        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </button>
+      <div class="fp-dots" id="fp-dots"></div>
+    </div>
+  </section>
+
+  <script>
+    (function () {
+      'use strict'
+      function formatStat (n) { return typeof n === 'number' ? n.toLocaleString('en-US') : n }
+
+      fetch('/data/featured-properties.json')
+        .then(function (r) { return r.json() })
+        .then(function (props) {
+          var active = props.filter(function (p) { return p.status === 'active' })
+          if (!active.length) return
+
+          var stage = document.getElementById('fp-stage')
+          var dotsContainer = document.getElementById('fp-dots')
+          var prevBtn = document.getElementById('fp-prev')
+          var nextBtn = document.getElementById('fp-next')
+
+          stage.innerHTML = active.map(function (p, i) {
+            // Inline stats line for default view (Price | Beds | Baths | Sq.Ft.)
+            var inline = []
+            if (p.priceDisplay) inline.push(p.priceDisplay)
+            if (p.beds)  inline.push(p.beds + (p.beds === 1 ? ' Bed' : ' Beds'))
+            if (p.baths) inline.push(p.baths + (p.baths === 1 ? ' Bath' : ' Baths'))
+            if (p.sqft)  inline.push(formatStat(p.sqft) + ' Sq.Ft.')
+            var inlineStats = inline.length ? inline.join(' &nbsp;|&nbsp; ') : (p.city + ', ' + p.state)
+
+            // Stats list for hover card (right column)
+            var hoverStats = ''
+            if (p.priceDisplay) {
+              hoverStats += '<div class="fp-card-stat fp-price"><strong>' + p.priceDisplay + '</strong><span class="label">Price</span></div>'
+            }
+            if (p.beds)  hoverStats += '<div class="fp-card-stat"><strong>' + p.beds + '</strong><span class="label">Beds</span></div>'
+            if (p.baths) hoverStats += '<div class="fp-card-stat"><strong>' + p.baths + '</strong><span class="label">Baths</span></div>'
+            if (p.sqft)  hoverStats += '<div class="fp-card-stat"><strong>' + formatStat(p.sqft) + '</strong><span class="label">Sq.Ft.</span></div>'
+            if (!hoverStats) {
+              // Graceful fallback when full numeric data isn't available yet
+              hoverStats = '<div class="fp-card-stat"><strong>Active Listing</strong><span class="label">' + (p.city || 'Coachella Valley') + '</span></div>' +
+                           (p.mls ? '<div class="fp-card-stat"><strong>MLS ' + p.mls + '</strong><span class="label">Listing</span></div>' : '')
+            }
+
+            // Description for hover card — short excerpt of full description, fallback to tagline
+            var hoverDesc = ''
+            if (p.description) {
+              var d = p.description.replace(/\s+/g, ' ').trim()
+              hoverDesc = d.length > 240 ? d.slice(0, 240).replace(/\s\S*$/, '') + '…' : d
+            } else if (p.tagline) {
+              hoverDesc = p.tagline
+            }
+            // Show hover card whenever we have a description to share
+            var showHoverCard = !!hoverDesc
+
+            var ctaHref = p.hasDetailPage ? '/properties/' + p.slug + '.html' : (p.ylopoDetailUrl || '#')
+            var ctaTarget = p.hasDetailPage ? '' : ' target="_blank" rel="noopener"'
+            var ctaLabel = p.hasDetailPage ? 'Learn More' : 'View on MLS'
+
+            return '<div class="fp-slide' + (i === 0 ? ' active' : '') + (showHoverCard ? ' has-hover' : '') + '" data-index="' + i + '">' +
+              '<img src="' + p.heroImage + '" alt="' + p.address + ', ' + p.city + '"' + (i === 0 ? '' : ' loading="lazy"') + ' />' +
+              '<div class="fp-overlay-gradient"></div>' +
+              '<div class="fp-info">' +
+                '<p class="fp-eyebrow">Featured Listing</p>' +
+                '<h3 class="fp-address">' + p.address + '</h3>' +
+                '<p class="fp-stats-inline">' + inlineStats + '</p>' +
+              '</div>' +
+              (showHoverCard
+                ? '<div class="fp-hover-card" aria-hidden="true">' +
+                    '<div class="fp-card-tagline">' + hoverDesc + '</div>' +
+                    '<div class="fp-card-stats">' + hoverStats + '</div>' +
+                  '</div>'
+                : '') +
+              '<a class="fp-cta" href="' + ctaHref + '"' + ctaTarget + '>' + ctaLabel + '</a>' +
+            '</div>'
+          }).join('')
+
+          dotsContainer.innerHTML = active.map(function (_, i) {
+            return '<button class="fp-dot' + (i === 0 ? ' active' : '') + '" data-index="' + i + '" aria-label="Go to slide ' + (i + 1) + '"></button>'
+          }).join('')
+
+          var slides = stage.querySelectorAll('.fp-slide')
+          var dots = dotsContainer.querySelectorAll('.fp-dot')
+          var current = 0
+
+          function go (i) {
+            var n = slides.length
+            current = ((i % n) + n) % n
+            slides.forEach(function (s, idx) { s.classList.toggle('active', idx === current) })
+            dots.forEach(function (d, idx) { d.classList.toggle('active', idx === current) })
+            prevBtn.disabled = nextBtn.disabled = (slides.length <= 1)
+          }
+
+          prevBtn.addEventListener('click', function () { go(current - 1) })
+          nextBtn.addEventListener('click', function () { go(current + 1) })
+          dots.forEach(function (d, i) { d.addEventListener('click', function () { go(i) }) })
+          if (slides.length <= 1) {
+            prevBtn.disabled = true
+            nextBtn.disabled = true
+          }
+
+          // keyboard nav when section is in view
+          document.addEventListener('keydown', function (e) {
+            var rect = stage.getBoundingClientRect()
+            var inView = rect.top < window.innerHeight && rect.bottom > 0
+            if (!inView) return
+            if (e.key === 'ArrowLeft')  go(current - 1)
+            if (e.key === 'ArrowRight') go(current + 1)
+          })
+        })
+        .catch(function (err) { console.error('[featured properties carousel]', err) })
+    })()
+  </script>
 
   <!-- ============================================================
        TESTIMONIALS
