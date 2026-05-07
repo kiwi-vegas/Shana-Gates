@@ -11,7 +11,7 @@
 </script>
   <!-- EDIT THESE TWO LINES ONLY: -->
   <script>window.GATED_SLUG = 'sun-city-shadow-hills';</script>
-  <title>Sun City Shadow Hills | Behind the Gates with Shana Gates</title>
+  <title>sun-city-shadow-hills | Behind the Gates with Shana Gates</title>
   <!-- END EDITS -->
 
   <meta charset="UTF-8" />
@@ -532,10 +532,17 @@
         'cathedral-city': 'Cathedral City', 'desert-hot-springs': 'Desert Hot Springs',
         'coachella': 'Coachella', 'bermuda-dunes': 'Bermuda Dunes'
       };
+      const tok = window.mapboxgl && mapboxgl.accessToken ? mapboxgl.accessToken : '';
       scroll.innerHTML = others.map(c => {
         const href = c.hasDetailPage ? `/gated/${c.slug}.html` : '/behind-the-gates.html';
+        const fallbackMap = (c.lat && c.lng && tok)
+          ? `https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/static/${c.lng},${c.lat},15/520x280@2x?access_token=${tok}`
+          : '';
+        const onerror = fallbackMap
+          ? `if(this._tried){this.style.background='#1a2a2c'}else{this._tried=true;this.src='${fallbackMap}'}`
+          : `this.style.background='#1a2a2c'`;
         return `<a href="${href}" class="gc-other-card">
-          <img class="gc-other-img" src="${c.heroImage}" alt="${c.name}" loading="lazy" onerror="this.style.background='#1a2a2c'" />
+          <img class="gc-other-img" src="${c.heroImage}" alt="${c.name}" loading="lazy" onerror="${onerror}" />
           <div class="gc-other-body">
             <div class="gc-other-name">${c.name}</div>
             <div class="gc-other-city">${cityNames[c.communitySlug] || c.city}</div>

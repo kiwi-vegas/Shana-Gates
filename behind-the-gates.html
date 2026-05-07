@@ -272,6 +272,20 @@
       'bermuda-dunes': 'Bermuda Dunes'
     };
 
+    const MBTOK = 'pk.eyJ1IjoidmVnYXMta2l3aSIsImEiOiJjbW8waXJoaWEwOHN2MnJxYTl2bWNlaGp0In0.C57V2IUuHiNKHn5LLlbXog';
+    function satImg(c) {
+      return (c.lat && c.lng)
+        ? `https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/static/${c.lng},${c.lat},15/520x280@2x?access_token=${MBTOK}`
+        : '';
+    }
+    function imgWithFallback(c, cls) {
+      const fb = satImg(c);
+      const onerr = fb
+        ? `if(this._t){this.style.background='#1a2a2c'}else{this._t=true;this.src='${fb}'}`
+        : `this.style.background='#1a2a2c'`;
+      return `<img class="${cls}" src="${c.heroImage}" alt="${c.name}" loading="lazy" onerror="${onerr}" />`;
+    }
+
     let allCommunities = [];
     let activeFilter = 'all';
 
@@ -298,8 +312,7 @@
 
     function cardHTML(c) {
       const city = CITY_SLUGS[c.communitySlug] || c.city;
-      const imgSrc = c.heroImage;
-      const imgEl = `<img class="btg-card-image" src="${imgSrc}" alt="${c.name}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'btg-card-image-placeholder\\'>${c.name[0]}</div>'" />`;
+      const imgEl = imgWithFallback(c, 'btg-card-image');
       const btnHTML = c.hasDetailPage
         ? `<a href="/gated/${c.slug}.html" class="btg-card-btn">Explore Community →</a>`
         : `<span class="btg-card-btn btg-card-btn-disabled">Profile Coming Soon</span>`;
@@ -354,7 +367,7 @@
         const city = CITY_SLUGS[c.communitySlug] || c.city;
         const href = c.hasDetailPage ? `/gated/${c.slug}.html` : '#';
         return `<a href="${href}" class="btg-pick-card" ${!c.hasDetailPage ? 'style="pointer-events:none"' : ''}>
-          <img class="btg-pick-img" src="${c.heroImage}" alt="${c.name}" onerror="this.style.background='#1a2a2c'" />
+          ${imgWithFallback(c, 'btg-pick-img')}
           <div class="btg-pick-body">
             <div class="btg-pick-name">${c.name}</div>
             <div class="btg-pick-city">${city}</div>
