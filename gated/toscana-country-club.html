@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-B0SJ1F6PDN"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-B0SJ1F6PDN');
+</script>
+  <!-- EDIT THESE TWO LINES ONLY: -->
+  <script>window.GATED_SLUG = 'toscana-country-club';</script>
+  <title>Toscana Country Club | Behind the Gates with Shana Gates</title>
+  <!-- END EDITS -->
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="/images/favcon.png" />
+  <meta name="description" id="meta-description" content="Insider guide to living in this Coachella Valley gated community — HOA fees, amenities, pros &amp; cons, schools, and Shana Gates' personal take." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.css" rel="stylesheet" />
+  <link rel="stylesheet" href="/community.css" />
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="/" class="nav-logo">
+      <img src="/images/C&B-logo+R.png" alt="Shana Gates" />
+    </a>
+    <ul class="nav-links">
+      <li class="nav-communities">
+        <span class="nav-communities-trigger">Communities</span>
+        <div class="communities-dropdown">
+          <a href="/palm-springs.html">Palm Springs</a>
+          <a href="/palm-desert.html">Palm Desert</a>
+          <a href="/rancho-mirage.html">Rancho Mirage</a>
+          <a href="/indian-wells.html">Indian Wells</a>
+          <a href="/la-quinta.html">La Quinta</a>
+          <a href="/indio.html">Indio</a>
+          <a href="/cathedral-city.html">Cathedral City</a>
+          <a href="/desert-hot-springs.html">Desert Hot Springs</a>
+          <a href="/coachella.html">Coachella</a>
+        </div>
+      </li>
+      <li class="nav-properties">
+        <a href="https://search.searchcoachellavalleyhomes.com/search" class="nav-properties-trigger" target="_blank" rel="noopener">Properties</a>
+        <div class="properties-dropdown">
+          <a href="/#featured-properties">Featured Properties</a>
+        </div>
+      </li>
+      <li><a href="/behind-the-gates.html">Behind the Gates</a></li>
+      <li><a href="/blog/">Blog</a></li>
+      <li><a href="/#about">About Shana</a></li>
+      <li><a href="/#search-listings">Search</a></li>
+    </ul>
+    <a href="tel:7602324054" class="nav-cta">760.232.4054</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="gc-hero">
+    <div id="gc-hero-map"></div>
+    <div class="gc-hero-overlay"></div>
+    <div class="gc-hero-content">
+      <div class="gc-breadcrumb">
+        <a href="/">Home</a>
+        <span class="sep">·</span>
+        <a href="/behind-the-gates.html">Behind the Gates</a>
+        <span class="sep">·</span>
+        <a href="#" id="gc-breadcrumb-city-link"></a>
+        <span class="sep">·</span>
+        <span id="gc-breadcrumb-name"></span>
+      </div>
+      <div class="gc-hero-badges" id="gc-hero-badges"></div>
+      <h1 class="gc-hero-name" id="gc-hero-name"></h1>
+      <p class="gc-hero-tagline" id="gc-hero-tagline"></p>
+    </div>
+  </section>
+
+  <!-- NEW DEVELOPMENT BANNER (conditional) -->
+  <div class="gc-new-dev" id="gc-new-dev-banner" style="display:none">
+    <div class="gc-new-dev-icon">🏗️</div>
+    <div>
+      <div class="gc-new-dev-label">Under Construction / New Development</div>
+      <div class="gc-new-dev-text" id="gc-new-dev-text"></div>
+    </div>
+  </div>
+
+  <!-- KEY STATS BAR -->
+  <div class="gc-stats-bar">
+    <div class="gc-stat-item">
+      <div class="gc-stat-label">Price Range</div>
+      <div class="gc-stat-value" id="gc-stat-price"></div>
+    </div>
+    <div class="gc-stat-item">
+      <div class="gc-stat-label">HOA Fee</div>
+      <div class="gc-stat-value" id="gc-stat-hoa"></div>
+    </div>
+    <div class="gc-stat-item">
+      <div class="gc-stat-label">Total Homes</div>
+      <div class="gc-stat-value" id="gc-stat-homes"></div>
+    </div>
+    <div class="gc-stat-item">
+      <div class="gc-stat-label">Security</div>
+      <div class="gc-stat-value" id="gc-stat-security"></div>
+    </div>
+    <div class="gc-stat-item">
+      <div class="gc-stat-label">Age Restriction</div>
+      <div class="gc-stat-value" id="gc-stat-age"></div>
+    </div>
+    <div class="gc-stat-item">
+      <div class="gc-stat-label">Established</div>
+      <div class="gc-stat-value" id="gc-stat-year"></div>
+    </div>
+  </div>
+
+  <!-- SHANA'S TAKE (conditional) -->
+  <section class="gc-shana-take" id="gc-shana-take" style="display:none">
+    <img class="gc-shana-photo" src="/images/shana-headshot.jpg" alt="Shana Gates" onerror="this.style.display='none'" />
+    <div>
+      <div class="gc-shana-label">Shana's Insider Take</div>
+      <blockquote class="gc-shana-quote" id="gc-shana-quote"></blockquote>
+    </div>
+  </section>
+
+  <!-- MAIN CONTENT + SIDEBAR -->
+  <section class="gc-main">
+    <div>
+      <p class="gc-section-label">About the Community</p>
+      <div id="gc-description"></div>
+    </div>
+    <div>
+      <!-- Quick Facts sidebar -->
+      <div class="gc-sidebar-box">
+        <div class="gc-sidebar-title">Quick Facts</div>
+        <div class="gc-sidebar-row">
+          <span class="gc-sidebar-key">City</span>
+          <span class="gc-sidebar-val" id="gc-sb-city"></span>
+        </div>
+        <div class="gc-sidebar-row">
+          <span class="gc-sidebar-key">Type</span>
+          <span class="gc-sidebar-val" id="gc-sb-type"></span>
+        </div>
+        <div class="gc-sidebar-row">
+          <span class="gc-sidebar-key">Price Range</span>
+          <span class="gc-sidebar-val" id="gc-sb-price"></span>
+        </div>
+        <div class="gc-sidebar-row">
+          <span class="gc-sidebar-key">HOA / Month</span>
+          <span class="gc-sidebar-val" id="gc-sb-hoa"></span>
+        </div>
+        <div class="gc-sidebar-row">
+          <span class="gc-sidebar-key">Total Homes</span>
+          <span class="gc-sidebar-val" id="gc-sb-homes"></span>
+        </div>
+        <div class="gc-sidebar-row" id="gc-sb-acreage-row">
+          <span class="gc-sidebar-key">Acreage</span>
+          <span class="gc-sidebar-val" id="gc-sb-acreage"></span>
+        </div>
+        <div class="gc-sidebar-row">
+          <span class="gc-sidebar-key">Established</span>
+          <span class="gc-sidebar-val" id="gc-sb-year"></span>
+        </div>
+        <div class="gc-sidebar-row">
+          <span class="gc-sidebar-key">55+ Community</span>
+          <span class="gc-sidebar-val" id="gc-sb-age"></span>
+        </div>
+        <div class="gc-sidebar-row">
+          <span class="gc-sidebar-key">Golf On-Site</span>
+          <span class="gc-sidebar-val" id="gc-sb-golf"></span>
+        </div>
+      </div>
+      <!-- City link card -->
+      <a href="#" class="gc-city-link" id="gc-city-link">
+        <div class="gc-city-link-icon">🏙️</div>
+        <div class="gc-city-link-text">
+          <div class="gc-city-link-label">Explore the City</div>
+          <div class="gc-city-link-name" id="gc-city-link-name"></div>
+        </div>
+        <div class="gc-city-link-arrow">→</div>
+      </a>
+    </div>
+  </section>
+
+  <!-- AMENITIES -->
+  <section class="gc-amenities">
+    <p class="gc-section-label">Amenities &amp; Features</p>
+    <div class="gc-amenities-grid" id="gc-amenities-grid"></div>
+  </section>
+
+  <!-- PROS & CONS -->
+  <section class="gc-pros-cons">
+    <div>
+      <div class="gc-pros-title">✓ Pros</div>
+      <ul class="gc-pros-list" id="gc-pros-list"></ul>
+    </div>
+    <div>
+      <div class="gc-cons-title">— Considerations</div>
+      <ul class="gc-cons-list" id="gc-cons-list"></ul>
+    </div>
+  </section>
+
+  <!-- HOA DETAIL -->
+  <section class="gc-hoa">
+    <div class="gc-hoa-box">
+      <div class="gc-section-label">Monthly HOA</div>
+      <div class="gc-hoa-amount" id="gc-hoa-amount"></div>
+      <div class="gc-hoa-period">per month (estimated range)</div>
+      <div class="gc-hoa-includes-title">What's Included</div>
+      <ul class="gc-hoa-includes" id="gc-hoa-includes"></ul>
+    </div>
+    <div>
+      <p class="gc-section-label">Understanding HOA Fees</p>
+      <p class="gc-description">HOA fees in gated Coachella Valley communities vary significantly based on what's included. Some cover golf membership, cable TV, and internet; others cover only security and common area maintenance with golf fees billed separately. Always ask for the full HOA fee disclosure, including sub-association fees, when evaluating a purchase.</p>
+      <p class="gc-description" style="margin-top:16px;">Fees listed represent general market ranges and are subject to change. Contact Shana for current HOA fee verification before making an offer.</p>
+    </div>
+  </section>
+
+  <!-- MAP -->
+  <section class="gc-map-section">
+    <p class="gc-section-label">Location</p>
+    <div class="gc-map-box">
+      <div id="gc-map"></div>
+    </div>
+  </section>
+
+  <!-- NEARBY: SCHOOLS, PARKS, ATTRACTIONS -->
+  <section class="gc-nearby">
+    <p class="gc-section-label">Nearby</p>
+    <div class="gc-nearby-grid">
+      <div>
+        <div class="gc-nearby-heading">Schools</div>
+        <ul class="gc-nearby-list" id="gc-schools-list"></ul>
+      </div>
+      <div>
+        <div class="gc-nearby-heading">Parks &amp; Recreation</div>
+        <ul class="gc-nearby-list" id="gc-parks-list"></ul>
+      </div>
+      <div>
+        <div class="gc-nearby-heading">Attractions</div>
+        <ul class="gc-nearby-list" id="gc-attractions-list"></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- INTERVIEW / RESIDENT STORY (conditional) -->
+  <section id="gc-interview-section" style="display:none; background:var(--dark-3); padding:64px 80px;">
+    <p class="gc-section-label">Resident Perspective</p>
+    <div id="gc-interview-content" style="font-family:var(--sans);font-size:15px;font-weight:300;color:var(--text-muted);line-height:1.8;max-width:720px;margin-top:24px;"></div>
+  </section>
+
+  <!-- OTHER COMMUNITIES -->
+  <section class="gc-others">
+    <p class="section-eyebrow">Also in the Valley</p>
+    <h2 class="section-title" style="font-size:clamp(28px,2.5vw,38px);">Similar <em>Communities</em></h2>
+    <div class="gc-others-scroll" id="gc-others-scroll"></div>
+  </section>
+
+  <!-- CTA -->
+  <section class="gc-cta">
+    <img src="/images/shana-headshot.jpg" alt="Shana Gates" class="gc-cta-photo" onerror="this.style.display='none'" />
+    <div>
+      <h2 class="gc-cta-title" id="gc-cta-title">Interested in this community?</h2>
+      <p class="gc-cta-sub">I know every gate in the valley. Let's talk about whether this is the right community for your lifestyle, budget, and goals — and what homes are currently available inside.</p>
+      <div class="gc-cta-actions">
+        <a href="#" class="gc-cta-btn" id="gc-cta-mailto">Schedule a Consultation</a>
+        <a href="https://search.searchcoachellavalleyhomes.com/search" target="_blank" rel="noopener" class="gc-cta-btn-outline">Search All Listings →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <img src="/images/C&B+logo.png" alt="Craft &amp; Bauer" class="footer-logo" />
+        <p class="footer-business-name">Shana Gates &mdash; Craft &amp; Bauer Real Broker</p>
+        <p class="footer-tagline">"Your trusted guide to desert living in the Coachella Valley."</p>
+        <div class="footer-contact-info">
+          74-710 CA-111 #102, Palm Desert, CA 92260<br />
+          <a href="tel:7602324054">760.232.4054</a><br />
+          <a href="mailto:shana@craftbauer.com">shana@craftbauer.com</a>
+        </div>
+      </div>
+      <div>
+        <p class="footer-col-heading">Communities</p>
+        <ul class="footer-links">
+          <li><a href="/palm-springs.html">Palm Springs</a></li>
+          <li><a href="/palm-desert.html">Palm Desert</a></li>
+          <li><a href="/rancho-mirage.html">Rancho Mirage</a></li>
+          <li><a href="/indian-wells.html">Indian Wells</a></li>
+          <li><a href="/la-quinta.html">La Quinta</a></li>
+          <li><a href="/indio.html">Indio</a></li>
+          <li><a href="/cathedral-city.html">Cathedral City</a></li>
+          <li><a href="/desert-hot-springs.html">Desert Hot Springs</a></li>
+          <li><a href="/coachella.html">Coachella</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="footer-col-heading">Behind the Gates</p>
+        <ul class="footer-links">
+          <li><a href="/gated/pga-west.html">PGA West</a></li>
+          <li><a href="/gated/the-madison-club.html">The Madison Club</a></li>
+          <li><a href="/gated/the-vintage-club.html">The Vintage Club</a></li>
+          <li><a href="/gated/bighorn-golf-club.html">Bighorn Golf Club</a></li>
+          <li><a href="/gated/mission-hills-country-club.html">Mission Hills CC</a></li>
+          <li><a href="/behind-the-gates.html">View All →</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="footer-col-heading">Connect</p>
+        <div class="footer-social-row">
+          <a href="https://facebook.com/shanagates" target="_blank" rel="noopener">Facebook</a>
+          <a href="https://instagram.com/shana_gates" target="_blank" rel="noopener">Instagram</a>
+          <a href="https://linkedin.com/company/craftbauer" target="_blank" rel="noopener">LinkedIn</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-disclaimer">The multiple listing data appearing on this website is owned and copyrighted by California Regional Multiple Listing Service, Inc. ("CRMLS"). Information provided is for viewer's personal, non-commercial use only. Community information including HOA fees and pricing reflects general market ranges and is subject to change. Always verify current HOA fees and community rules directly with the association. &copy; 2026 Craft &amp; Bauer | Real Broker. CalDRE #02224632. Equal Housing Opportunity.</p>
+      <p class="footer-copy">&copy; 2026 Shana Gates</p>
+    </div>
+  </footer>
+
+  <!-- Mapbox + shared token (community-map.js sets token before early-return) -->
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.js"></script>
+  <script src="/community-map.js"></script>
+
+  <script>
+  (function() {
+    const CITY_NAMES = {
+      'palm-springs': 'Palm Springs', 'palm-desert': 'Palm Desert',
+      'rancho-mirage': 'Rancho Mirage', 'indian-wells': 'Indian Wells',
+      'la-quinta': 'La Quinta', 'indio': 'Indio',
+      'cathedral-city': 'Cathedral City', 'desert-hot-springs': 'Desert Hot Springs',
+      'coachella': 'Coachella', 'bermuda-dunes': 'Bermuda Dunes'
+    };
+    const CITY_PAGES = {
+      'palm-springs': '/palm-springs.html', 'palm-desert': '/palm-desert.html',
+      'rancho-mirage': '/rancho-mirage.html', 'indian-wells': '/indian-wells.html',
+      'la-quinta': '/la-quinta.html', 'indio': '/indio.html',
+      'cathedral-city': '/cathedral-city.html', 'desert-hot-springs': '/desert-hot-springs.html',
+      'coachella': '/coachella.html'
+    };
+
+    function set(id, val) { const el = document.getElementById(id); if (el) el.textContent = val; }
+    function setHTML(id, val) { const el = document.getElementById(id); if (el) el.innerHTML = val; }
+    function show(id) { const el = document.getElementById(id); if (el) el.style.display = ''; }
+    function hide(id) { const el = document.getElementById(id); if (el) el.style.display = 'none'; }
+
+    function tierLabel(t) {
+      if (t === 'luxury') return 'Luxury';
+      if (t === 'mid-market') return 'Mid-Market';
+      return 'Affordable';
+    }
+
+    function initHeroMap(lat, lng) {
+      if (!window.mapboxgl || !mapboxgl.accessToken) return;
+      const map = new mapboxgl.Map({
+        container: 'gc-hero-map',
+        style: 'mapbox://styles/mapbox/standard',
+        center: [lng, lat],
+        zoom: 14,
+        pitch: 45,
+        bearing: -10,
+        interactive: false,
+        attributionControl: false
+      });
+      map.on('style.load', () => {
+        map.setConfigProperty('basemap', 'lightPreset', 'night');
+      });
+    }
+
+    function initMap(lat, lng, name) {
+      if (!window.mapboxgl || !mapboxgl.accessToken) return;
+      const map = new mapboxgl.Map({
+        container: 'gc-map',
+        style: 'mapbox://styles/mapbox/standard',
+        center: [lng, lat],
+        zoom: 14,
+        pitch: 40,
+        bearing: -12,
+        attributionControl: false
+      });
+      map.on('style.load', () => {
+        map.setConfigProperty('basemap', 'lightPreset', 'night');
+      });
+      map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
+      new mapboxgl.Marker({ color: '#25434B' })
+        .setLngLat([lng, lat])
+        .setPopup(new mapboxgl.Popup({ offset: 25 }).setText(name))
+        .addTo(map);
+    }
+
+    function populate(c) {
+      const cityName = CITY_NAMES[c.communitySlug] || c.city;
+      const cityPage = CITY_PAGES[c.communitySlug] || '/';
+
+      // Meta
+      document.title = `${c.name} | Behind the Gates with Shana Gates`;
+      const metaDesc = document.getElementById('meta-description');
+      if (metaDesc) metaDesc.content = `Insider guide to ${c.name} in ${cityName} — ${c.priceRange.display}, HOA ${c.hoaRange.display}. ${c.tagline}`;
+
+      // Hero
+      const heroImg = document.getElementById('gc-hero-img');
+      if (heroImg) { heroImg.src = c.heroImage; heroImg.alt = c.name; }
+
+      const breadcrumbCity = document.getElementById('gc-breadcrumb-city-link');
+      if (breadcrumbCity) { breadcrumbCity.textContent = cityName; breadcrumbCity.href = cityPage; }
+      set('gc-breadcrumb-name', c.name);
+
+      // Badges
+      let badges = `<span class="btg-badge btg-badge-tier-${c.tier}">${tierLabel(c.tier)}</span>`;
+      if (c.type === 'guard-gated') badges += `<span class="btg-badge btg-badge-guard">Guard-Gated</span>`;
+      if (c.ageRestricted) badges += `<span class="btg-badge btg-badge-55plus">55+ Community</span>`;
+      if (c.hasGolf) badges += `<span class="btg-badge btg-badge-golf">Golf On-Site</span>`;
+      if (c.isNew || c.isUnderConstruction) badges += `<span class="btg-badge btg-badge-new">New Development</span>`;
+      setHTML('gc-hero-badges', badges);
+      set('gc-hero-name', c.name);
+      set('gc-hero-tagline', c.tagline);
+
+      // New development banner
+      if (c.isUnderConstruction && c.newDevelopment) {
+        const nd = c.newDevelopment;
+        set('gc-new-dev-text', `${nd.builder || ''} · ${nd.status || ''} · Est. completion: ${nd.estimatedCompletion || 'TBD'}`);
+        show('gc-new-dev-banner');
+      }
+
+      // Stats bar
+      set('gc-stat-price', c.priceRange.display);
+      set('gc-stat-hoa', c.hoaRange.display);
+      set('gc-stat-homes', c.totalHomes ? c.totalHomes.toLocaleString() + ' homes' : 'N/A');
+      set('gc-stat-security', c.security);
+      set('gc-stat-age', c.ageRestricted ? `55+ (min. age ${c.ageMin})` : 'None');
+      set('gc-stat-year', c.yearEstablished ? c.yearEstablished.toString() : 'N/A');
+
+      // Shana's take
+      if (c.shanasInsiderTake) {
+        set('gc-shana-quote', c.shanasInsiderTake);
+        show('gc-shana-take');
+      }
+
+      // Description
+      const descEl = document.getElementById('gc-description');
+      if (descEl && c.description) {
+        descEl.innerHTML = c.description.split('\n\n').map(p =>
+          `<p class="gc-description">${p.trim()}</p>`
+        ).join('');
+      }
+
+      // Sidebar
+      set('gc-sb-city', cityName);
+      set('gc-sb-type', c.type === 'guard-gated' ? 'Guard-Gated' : c.type === 'gate-code' ? 'Gate-Code' : 'Gated');
+      set('gc-sb-price', c.priceRange.display);
+      set('gc-sb-hoa', c.hoaRange.display);
+      set('gc-sb-homes', c.totalHomes ? c.totalHomes.toLocaleString() : 'N/A');
+      set('gc-sb-year', c.yearEstablished || 'N/A');
+      set('gc-sb-age', c.ageRestricted ? `Yes — ${c.ageMin}+` : 'No');
+      set('gc-sb-golf', c.hasGolf ? 'Yes' : 'No');
+      if (c.acreage) {
+        set('gc-sb-acreage', c.acreage + ' acres');
+      } else {
+        hide('gc-sb-acreage-row');
+      }
+
+      // City link
+      const cityLink = document.getElementById('gc-city-link');
+      if (cityLink) cityLink.href = cityPage;
+      set('gc-city-link-name', `Explore ${cityName} →`);
+
+      // Amenities
+      if (c.amenities && c.amenities.length) {
+        setHTML('gc-amenities-grid', c.amenities.map(a =>
+          `<div class="gc-amenity-item">${a}</div>`
+        ).join(''));
+      }
+
+      // Pros & Cons
+      if (c.pros) setHTML('gc-pros-list', c.pros.map(p => `<li>${p}</li>`).join(''));
+      if (c.cons) setHTML('gc-cons-list', c.cons.map(p => `<li>${p}</li>`).join(''));
+
+      // HOA
+      set('gc-hoa-amount', c.hoaRange.display);
+      if (c.hoaIncludes && c.hoaIncludes.length) {
+        setHTML('gc-hoa-includes', c.hoaIncludes.map(i => `<li>${i}</li>`).join(''));
+      }
+
+      // Nearby
+      if (c.nearbySchools) setHTML('gc-schools-list', c.nearbySchools.map(s => `<li>${s}</li>`).join(''));
+      if (c.nearbyParks) setHTML('gc-parks-list', c.nearbyParks.map(p => `<li>${p}</li>`).join(''));
+      if (c.nearbyAttractions) setHTML('gc-attractions-list', c.nearbyAttractions.map(a => `<li>${a}</li>`).join(''));
+
+      // Interview
+      if (c.interviewContent) {
+        setHTML('gc-interview-content', c.interviewContent);
+        show('gc-interview-section');
+      }
+
+      // CTA
+      set('gc-cta-title', `Interested in ${c.name}?`);
+      const ctaMailto = document.getElementById('gc-cta-mailto');
+      if (ctaMailto) {
+        ctaMailto.href = `mailto:shana@craftbauer.com?subject=Consultation%3A%20${encodeURIComponent(c.name)}`;
+      }
+
+      // Map
+      if (c.lat && c.lng) {
+        initHeroMap(c.lat, c.lng);
+        initMap(c.lat, c.lng, c.name);
+      }
+    }
+
+    function buildOthers(all, current) {
+      const scroll = document.getElementById('gc-others-scroll');
+      if (!scroll) return;
+      const others = all.filter(c =>
+        c.slug !== current.slug &&
+        (c.communitySlug === current.communitySlug || c.tier === current.tier) &&
+        c.slug !== current.slug
+      ).slice(0, 6);
+
+      if (!others.length) { scroll.parentElement.style.display = 'none'; return; }
+
+      const cityNames = {
+        'palm-springs': 'Palm Springs', 'palm-desert': 'Palm Desert',
+        'rancho-mirage': 'Rancho Mirage', 'indian-wells': 'Indian Wells',
+        'la-quinta': 'La Quinta', 'indio': 'Indio',
+        'cathedral-city': 'Cathedral City', 'desert-hot-springs': 'Desert Hot Springs',
+        'coachella': 'Coachella', 'bermuda-dunes': 'Bermuda Dunes'
+      };
+      const tok = window.mapboxgl && mapboxgl.accessToken ? mapboxgl.accessToken : '';
+      scroll.innerHTML = others.map(c => {
+        const href = c.hasDetailPage ? `/gated/${c.slug}.html` : '/behind-the-gates.html';
+        const fallbackMap = (c.lat && c.lng && tok)
+          ? `https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/static/${c.lng},${c.lat},15/520x280@2x?access_token=${tok}`
+          : '';
+        const onerror = fallbackMap
+          ? `if(this._tried){this.style.background='#1a2a2c'}else{this._tried=true;this.src='${fallbackMap}'}`
+          : `this.style.background='#1a2a2c'`;
+        return `<a href="${href}" class="gc-other-card">
+          <img class="gc-other-img" src="${c.heroImage}" alt="${c.name}" loading="lazy" onerror="${onerror}" />
+          <div class="gc-other-body">
+            <div class="gc-other-name">${c.name}</div>
+            <div class="gc-other-city">${cityNames[c.communitySlug] || c.city}</div>
+            <div class="gc-other-price">${c.priceRange.display}</div>
+          </div>
+        </a>`;
+      }).join('');
+    }
+
+    fetch('/data/gated-communities.json')
+      .then(r => r.json())
+      .then(all => {
+        const slug = window.GATED_SLUG;
+        const community = all.find(c => c.slug === slug);
+        if (!community) {
+          document.body.innerHTML = '<div style="padding:120px 80px;text-align:center;color:#F2EDE4;font-family:sans-serif;">Community not found. <a href="/behind-the-gates.html" style="color:#25434B">← Back to Behind the Gates</a></div>';
+          return;
+        }
+        populate(community);
+        buildOthers(all, community);
+      })
+      .catch(err => console.error('Failed to load gated-communities.json', err));
+  })();
+  </script>
+
+</body>
+</html>
