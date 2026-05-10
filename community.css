@@ -3043,6 +3043,16 @@ body.property-page { background: var(--dark); color: var(--text-light); }
   font-style: italic;
   color: #4a8a96;
 }
+.btg-hero-tagline {
+  font-family: var(--serif);
+  font-size: clamp(18px, 2vw, 26px);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--bronze);
+  letter-spacing: 0.04em;
+  margin-bottom: 20px;
+  margin-top: -8px;
+}
 .btg-hero-sub {
   font-family: var(--sans);
   font-size: clamp(15px, 1.5vw, 18px);
