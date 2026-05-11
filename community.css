@@ -4166,6 +4166,137 @@ a.btg-card { text-decoration: none; color: inherit; }
 }
 .gc-official-link:hover .gc-official-domain { color: rgba(184,151,90,0.7); }
 
+/* ============================================================
+   VALLEY LOCATION MAP SECTION
+============================================================ */
+#valley-location {
+  background: var(--dark-2);
+  padding: 80px 80px;
+  border-top: 1px solid rgba(184,151,90,0.1);
+  border-bottom: 1px solid rgba(184,151,90,0.1);
+}
+.valley-loc-inner {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 64px;
+  align-items: center;
+  max-width: 1300px;
+  margin: 0 auto;
+}
+.valley-loc-title {
+  font-family: var(--serif);
+  font-size: clamp(32px, 3.5vw, 52px);
+  font-weight: 300;
+  line-height: 1.15;
+  color: var(--cream);
+  margin-bottom: 20px;
+}
+.valley-loc-title em {
+  font-style: italic;
+  color: var(--bronze);
+}
+.valley-loc-body {
+  font-family: var(--sans);
+  font-size: 15px;
+  font-weight: 300;
+  color: var(--text-muted);
+  line-height: 1.75;
+  margin-bottom: 14px;
+}
+.valley-loc-body strong { color: var(--cream); font-weight: 500; }
+.valley-loc-stats {
+  display: flex;
+  gap: 28px;
+  margin-top: 32px;
+  padding-top: 28px;
+  border-top: 1px solid rgba(184,151,90,0.15);
+}
+.valley-loc-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.valley-loc-num {
+  font-family: var(--serif);
+  font-size: 28px;
+  font-weight: 300;
+  color: var(--bronze);
+  letter-spacing: -0.02em;
+}
+.valley-loc-label {
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.valley-loc-map-box {
+  position: relative;
+  border: 1px solid rgba(184,151,90,0.2);
+  overflow: hidden;
+  border-radius: 4px;
+}
+#valley-context-map {
+  width: 100%;
+  aspect-ratio: 4/3;
+}
+.valley-loc-legend {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  background: rgba(13,13,13,0.82);
+  backdrop-filter: blur(8px);
+  padding: 7px 12px;
+  border-radius: 4px;
+  border: 1px solid rgba(184,151,90,0.15);
+}
+.valley-loc-legend-active,
+.valley-loc-legend-other,
+.valley-loc-legend-road {
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+}
+.valley-loc-legend-active { color: var(--bronze); }
+.valley-loc-legend-other  { color: rgba(242,237,228,0.45); }
+.valley-loc-legend-i10    { color: #7dbfff; }
+.valley-loc-legend-hwy    { color: var(--bronze); opacity: 0.7; }
+/* City label markers on the context map */
+.vc-city-label {
+  font-family: var(--sans);
+  font-size: 9.5px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(242,237,228,0.45);
+  background: rgba(13,13,13,0.65);
+  padding: 3px 6px;
+  border-radius: 3px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.vc-city-label-active {
+  color: var(--bronze);
+  font-weight: 600;
+  font-size: 11px;
+  background: rgba(13,13,13,0.82);
+  border: 1px solid rgba(184,151,90,0.35);
+}
+@media (max-width: 1000px) {
+  #valley-location { padding: 64px 40px; }
+  .valley-loc-inner { grid-template-columns: 1fr; gap: 40px; }
+  .valley-loc-stats { flex-wrap: wrap; gap: 20px; }
+}
+@media (max-width: 600px) {
+  #valley-location { padding: 48px 24px; }
+  #valley-context-map { aspect-ratio: 3/2; }
+}
+
 /* Detail page responsive */
 @media (max-width: 1100px) {
   .gc-main { grid-template-columns: 1fr; gap: 48px; }

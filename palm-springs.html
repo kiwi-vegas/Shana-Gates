@@ -639,6 +639,41 @@
     </div>
   </section>
 
+  <!-- VALLEY LOCATION MAP -->
+  <section id="valley-location">
+    <div class="valley-loc-inner">
+      <div class="valley-loc-text reveal">
+        <p class="section-eyebrow">Coachella Valley</p>
+        <h2 class="valley-loc-title">Where is<br><em>Palm Springs?</em></h2>
+        <p class="valley-loc-body">Palm Springs anchors the <strong>western gateway</strong> of the Coachella Valley — 100 miles east of downtown Los Angeles, pressed against the dramatic San Jacinto Mountains, and home to Palm Springs International Airport, the region's main air hub.</p>
+        <p class="valley-loc-body">The valley stretches roughly 45 miles southeast to Coachella, with nine incorporated cities strung along Highway 111. Each has its own character — Palm Springs leads in culture and nightlife, while communities like Indian Wells and La Quinta anchor the luxury golf market further east.</p>
+        <div class="valley-loc-stats">
+          <div class="valley-loc-stat">
+            <span class="valley-loc-num">~100 mi</span>
+            <span class="valley-loc-label">from Downtown LA</span>
+          </div>
+          <div class="valley-loc-stat">
+            <span class="valley-loc-num">45 min</span>
+            <span class="valley-loc-label">drive to La Quinta</span>
+          </div>
+          <div class="valley-loc-stat">
+            <span class="valley-loc-num">2 hrs</span>
+            <span class="valley-loc-label">from San Diego</span>
+          </div>
+        </div>
+      </div>
+      <div class="valley-loc-map-box reveal reveal-delay-2">
+        <div id="valley-context-map"></div>
+        <div class="valley-loc-legend">
+          <span class="valley-loc-legend-active">&#9632; Palm Springs</span>
+          <span class="valley-loc-legend-other">&#9633; Other CV Cities</span>
+          <span class="valley-loc-legend-road valley-loc-legend-i10">&#9644; I-10</span>
+          <span class="valley-loc-legend-road valley-loc-legend-hwy">&#9644; Hwy 111</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- LIFESTYLE -->
   <section id="lifestyle">
     <div class="lifestyle-text reveal">
@@ -811,7 +846,70 @@
 };
   </script>
   <script src="/community-map.js"></script>
+  <script>
+  // Valley context map — shows all 9 CV cities, highlights current
+  (function() {
+    var el = document.getElementById('valley-context-map');
+    if (!el || typeof mapboxgl === 'undefined') return;
+    var BRONZE = '#B8975A';
+    var CREAM  = '#F2EDE4';
+    var CURRENT_SLUG = 'palm-springs';
+    var CITIES = [
+      { slug:'palm-springs',     name:'Palm Springs',    center:[-116.545, 33.830], boundary:[[-116.635,33.885],[-116.510,33.885],[-116.488,33.862],[-116.484,33.800],[-116.505,33.773],[-116.560,33.772],[-116.630,33.796],[-116.645,33.840],[-116.635,33.885]] },
+      { slug:'cathedral-city',   name:'Cathedral City',  center:[-116.468, 33.780], boundary:[[-116.512,33.815],[-116.454,33.818],[-116.420,33.803],[-116.402,33.773],[-116.410,33.750],[-116.450,33.742],[-116.502,33.752],[-116.522,33.780],[-116.512,33.815]] },
+      { slug:'rancho-mirage',    name:'Rancho Mirage',   center:[-116.415, 33.740], boundary:[[-116.462,33.774],[-116.400,33.776],[-116.358,33.764],[-116.342,33.732],[-116.350,33.710],[-116.400,33.703],[-116.462,33.712],[-116.480,33.742],[-116.462,33.774]] },
+      { slug:'palm-desert',      name:'Palm Desert',     center:[-116.315, 33.660], boundary:[[-116.385,33.720],[-116.290,33.720],[-116.247,33.700],[-116.238,33.635],[-116.260,33.595],[-116.313,33.585],[-116.375,33.608],[-116.395,33.658],[-116.385,33.720]] },
+      { slug:'indian-wells',     name:'Indian Wells',    center:[-116.335, 33.718], boundary:[[-116.372,33.740],[-116.330,33.741],[-116.300,33.732],[-116.290,33.713],[-116.298,33.700],[-116.330,33.694],[-116.370,33.700],[-116.383,33.718],[-116.372,33.740]] },
+      { slug:'la-quinta',        name:'La Quinta',       center:[-116.375, 33.665], boundary:[[-116.452,33.782],[-116.362,33.782],[-116.295,33.754],[-116.285,33.700],[-116.305,33.660],[-116.382,33.648],[-116.458,33.668],[-116.470,33.726],[-116.452,33.782]] },
+      { slug:'indio',            name:'Indio',           center:[-116.210, 33.718], boundary:[[-116.305,33.773],[-116.180,33.773],[-116.130,33.750],[-116.120,33.700],[-116.140,33.660],[-116.192,33.648],[-116.285,33.655],[-116.315,33.700],[-116.305,33.773]] },
+      { slug:'coachella',        name:'Coachella',       center:[-116.175, 33.672], boundary:[[-116.228,33.712],[-116.147,33.712],[-116.118,33.698],[-116.112,33.665],[-116.130,33.638],[-116.178,33.628],[-116.228,33.638],[-116.248,33.670],[-116.228,33.712]] },
+      { slug:'desert-hot-springs', name:'Desert Hot Springs', center:[-116.500, 33.960], boundary:[[-116.558,33.998],[-116.475,33.998],[-116.445,33.975],[-116.438,33.940],[-116.458,33.918],[-116.500,33.915],[-116.548,33.935],[-116.568,33.968],[-116.558,33.998]] }
+    ];
+    var I10 = [[-116.784,33.923],[-116.680,33.913],[-116.590,33.903],[-116.520,33.892],[-116.457,33.878],[-116.418,33.869],[-116.380,33.854],[-116.308,33.820],[-116.240,33.785],[-116.170,33.755]];
+    var HWY111 = [[-116.550,33.822],[-116.520,33.812],[-116.468,33.803],[-116.415,33.742],[-116.385,33.723],[-116.328,33.716],[-116.301,33.708],[-116.243,33.720],[-116.175,33.705]];
 
+    var init = false;
+    new IntersectionObserver(function(entries) {
+      if (entries[0].isIntersecting && !init) {
+        init = true;
+        mapboxgl.accessToken = 'pk.eyJ1IjoidmVnYXMta2l3aSIsImEiOiJjbW8waXJoaWEwOHN2MnJxYTl2bWNlaGp0In0.C57V2IUuHiNKHn5LLlbXog';
+        var map = new mapboxgl.Map({
+          container: el,
+          style: 'mapbox://styles/mapbox/standard',
+          center: [-116.37, 33.795],
+          zoom: 9.6,
+          pitch: 0,
+          bearing: 0,
+          interactive: true,
+          attributionControl: false
+        });
+        map.addControl(new mapboxgl.NavigationControl({ visualizePitch: false }), 'top-right');
+        map.on('load', function() {
+          try { map.setConfigProperty('basemap', 'lightPreset', 'night'); } catch(e) {}
+          // Roads
+          map.addSource('vc-i10', { type:'geojson', data:{type:'Feature',geometry:{type:'LineString',coordinates:I10},properties:{}} });
+          map.addLayer({ id:'vc-i10-glow', type:'line', source:'vc-i10', paint:{'line-color':'#5ba4ff','line-width':6,'line-opacity':0.22,'line-blur':4} });
+          map.addLayer({ id:'vc-i10-line', type:'line', source:'vc-i10', paint:{'line-color':'#7dbfff','line-width':2,'line-opacity':0.70} });
+          map.addSource('vc-hwy111', { type:'geojson', data:{type:'Feature',geometry:{type:'LineString',coordinates:HWY111},properties:{}} });
+          map.addLayer({ id:'vc-hwy111-glow', type:'line', source:'vc-hwy111', paint:{'line-color':BRONZE,'line-width':6,'line-opacity':0.18,'line-blur':4} });
+          map.addLayer({ id:'vc-hwy111-line', type:'line', source:'vc-hwy111', paint:{'line-color':BRONZE,'line-width':2,'line-opacity':0.55} });
+          // City polygons
+          CITIES.forEach(function(c, i) {
+            var isCurrent = c.slug === CURRENT_SLUG;
+            map.addSource('vc-city-'+i, { type:'geojson', data:{type:'Feature',geometry:{type:'Polygon',coordinates:[c.boundary]},properties:{}} });
+            map.addLayer({ id:'vc-fill-'+i, type:'fill', source:'vc-city-'+i, paint:{'fill-color': isCurrent ? BRONZE : CREAM, 'fill-opacity': isCurrent ? 0.18 : 0.05} });
+            map.addLayer({ id:'vc-line-'+i, type:'line', source:'vc-city-'+i, paint:{'line-color': isCurrent ? BRONZE : CREAM, 'line-width': isCurrent ? 2.5 : 1, 'line-opacity': isCurrent ? 0.95 : 0.30} });
+            // Label marker
+            var lbl = document.createElement('div');
+            lbl.className = 'vc-city-label' + (isCurrent ? ' vc-city-label-active' : '');
+            lbl.textContent = c.name;
+            new mapboxgl.Marker({ element: lbl, anchor: 'center' }).setLngLat(c.center).addTo(map);
+          });
+        });
+      }
+    }, { threshold: 0.1 }).observe(el);
+  })();
+  </script>
 
   <!-- FAQ + Schools tab JS -->
   <script>
