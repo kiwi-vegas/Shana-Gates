@@ -4171,80 +4171,61 @@ a.btg-card { text-decoration: none; color: inherit; }
 ============================================================ */
 #valley-location {
   background: var(--dark-2);
-  padding: 80px 80px;
+  padding: 72px 0 0;
   border-top: 1px solid rgba(184,151,90,0.1);
   border-bottom: 1px solid rgba(184,151,90,0.1);
 }
-.valley-loc-inner {
-  display: grid;
-  grid-template-columns: 1fr 1.3fr;
-  gap: 64px;
-  align-items: center;
-  max-width: 1300px;
-  margin: 0 auto;
+/* Centered text header */
+.valley-loc-head {
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto 40px;
+  padding: 0 24px;
+}
+.valley-loc-eyebrow {
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--bronze);
+  margin-bottom: 14px;
 }
 .valley-loc-title {
   font-family: var(--serif);
-  font-size: clamp(32px, 3.5vw, 52px);
+  font-size: clamp(34px, 4vw, 58px);
   font-weight: 300;
-  line-height: 1.15;
+  line-height: 1.1;
   color: var(--cream);
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 .valley-loc-title em {
   font-style: italic;
   color: var(--bronze);
 }
-.valley-loc-body {
+.valley-loc-desc {
   font-family: var(--sans);
   font-size: 15px;
   font-weight: 300;
   color: var(--text-muted);
-  line-height: 1.75;
-  margin-bottom: 14px;
+  line-height: 1.7;
 }
-.valley-loc-body strong { color: var(--cream); font-weight: 500; }
-.valley-loc-stats {
-  display: flex;
-  gap: 28px;
-  margin-top: 32px;
-  padding-top: 28px;
-  border-top: 1px solid rgba(184,151,90,0.15);
-}
-.valley-loc-stat {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.valley-loc-num {
-  font-family: var(--serif);
-  font-size: 28px;
-  font-weight: 300;
-  color: var(--bronze);
-  letter-spacing: -0.02em;
-}
-.valley-loc-label {
-  font-family: var(--sans);
-  font-size: 11px;
-  font-weight: 400;
-  color: var(--text-muted);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-.valley-loc-map-box {
+/* Full-width map */
+.valley-loc-map-wrap {
   position: relative;
-  border: 1px solid rgba(184,151,90,0.2);
-  overflow: hidden;
-  border-radius: 4px;
+  width: 100%;
+  border-top: 1px solid rgba(184,151,90,0.15);
+  border-bottom: 1px solid rgba(184,151,90,0.15);
 }
 #valley-context-map {
   width: 100%;
-  aspect-ratio: 4/3;
+  aspect-ratio: 21/8;
+  display: block;
 }
 .valley-loc-legend {
   position: absolute;
-  bottom: 12px;
-  left: 12px;
+  bottom: 14px;
+  left: 16px;
   display: flex;
   gap: 14px;
   flex-wrap: wrap;
@@ -4266,7 +4247,7 @@ a.btg-card { text-decoration: none; color: inherit; }
 .valley-loc-legend-other  { color: rgba(242,237,228,0.45); }
 .valley-loc-legend-i10    { color: #7dbfff; }
 .valley-loc-legend-hwy    { color: var(--bronze); opacity: 0.7; }
-/* City label markers on the context map */
+/* City label markers */
 .vc-city-label {
   font-family: var(--sans);
   font-size: 9.5px;
@@ -4287,14 +4268,57 @@ a.btg-card { text-decoration: none; color: inherit; }
   background: rgba(13,13,13,0.82);
   border: 1px solid rgba(184,151,90,0.35);
 }
-@media (max-width: 1000px) {
-  #valley-location { padding: 64px 40px; }
-  .valley-loc-inner { grid-template-columns: 1fr; gap: 40px; }
-  .valley-loc-stats { flex-wrap: wrap; gap: 20px; }
+/* Travel-time cards row */
+.valley-loc-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
 }
-@media (max-width: 600px) {
-  #valley-location { padding: 48px 24px; }
-  #valley-context-map { aspect-ratio: 3/2; }
+.valley-loc-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 28px 20px;
+  border-right: 1px solid rgba(184,151,90,0.12);
+  text-align: center;
+}
+.valley-loc-card:last-child { border-right: none; }
+.valley-loc-card-time {
+  font-family: var(--serif);
+  font-size: clamp(28px, 3vw, 42px);
+  font-weight: 300;
+  color: var(--bronze);
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+.valley-loc-card-dest {
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--cream);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+.valley-loc-card-via {
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 300;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+@media (max-width: 900px) {
+  #valley-context-map { aspect-ratio: 16/7; }
+  .valley-loc-cards { grid-template-columns: repeat(2, 1fr); }
+  .valley-loc-card:nth-child(2) { border-right: none; }
+  .valley-loc-card:nth-child(3),
+  .valley-loc-card:nth-child(4) { border-top: 1px solid rgba(184,151,90,0.12); }
+}
+@media (max-width: 540px) {
+  #valley-location { padding-top: 52px; }
+  #valley-context-map { aspect-ratio: 4/3; }
+  .valley-loc-cards { grid-template-columns: repeat(2, 1fr); }
+  .valley-loc-card { padding: 20px 12px; }
 }
 
 /* Detail page responsive */
