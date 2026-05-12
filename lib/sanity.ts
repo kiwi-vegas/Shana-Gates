@@ -11,6 +11,7 @@
  */
 
 import { createClient } from '@sanity/client'
+import type { BlogPostDraft } from './types'
 
 const PROJECT_ID = process.env.SANITY_PROJECT_ID ?? 'll3zy5cp'
 const DATASET    = process.env.SANITY_DATASET    ?? 'production'
@@ -100,5 +101,43 @@ export async function setCommunityOverride(slug: string, data: CommunityOverride
   if (data.metaTitle       !== undefined) doc.metaTitle       = data.metaTitle
   if (data.metaDescription !== undefined) doc.metaDescription = data.metaDescription
 
-  await writeClient.createOrReplace(doc)
+  await writeClient.createOrReplace(doc as any)
+}
+
+// ── Blog post CRUD ─────────────────────────────────────────────────────────
+
+export async function publishBlogPost(draft: BlogPostDraft): Promise<string> {
+  // Ensure slug is unique
+  const existing = await readClient.fetch<string | null>(
+    `*[_type == "blogPost" && slug.current == $slug][0]._id`,
+    { slug: draft.slug }
+  )
+  const finalSlug = existing ? `${draft.slug}-${Date.now()}` : draft.slug
+
+  const result = await writeClient.create({
+    _type: 'blogPost',
+    title: draft.title,
+    slug: { _type: 'slug', current: finalSlug },
+    publishedAt: new Date().toISOString(),
+    category: draft.category,
+    excerpt: draft.excerpt,
+    body: draft.body,
+    metaTitle: draft.metaTitle,
+    metaDescription: draft.metaDescription,
+    authorName: 'Shana Gates',
+    aiGenerated: true,
+    workflowStatus: 'published',
+  })
+
+  return result._id
+}
+
+export async function getBlogPost(slug: string): Promise<BlogPostDraft | null> {
+  return readClient.fetch<BlogPostDraft | null>(
+    `*[_type == "blogPost" && slug.current == $slug][0]{
+      title, "slug": slug.current, excerpt, category,
+      metaTitle, metaDescription, body, sourceUrl, sourceTitle
+    }`,
+    { slug }
+  )
 }
