@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-B0SJ1F6PDN"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-B0SJ1F6PDN');</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="/images/favcon.png" />
+  <title>Admin — Shana Gates</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bronze: #B8975A;
+      --bronze-dim: rgba(184,151,90,0.12);
+      --bronze-border: rgba(184,151,90,0.25);
+      --bg: #0a0a0a;
+      --surface: #141414;
+      --surface2: #1c1c1c;
+      --border: rgba(255,255,255,0.08);
+      --text: #fff;
+      --muted: rgba(255,255,255,0.42);
+      --font: system-ui, -apple-system, sans-serif;
+    }
+    body { background: var(--bg); color: var(--text); font-family: var(--font); -webkit-font-smoothing: antialiased; min-height: 100vh; }
+
+    /* ── Header ── */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 18px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header-brand { color: var(--bronze); font-size: 11px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 3px; }
+    .header-title { color: var(--text); font-size: 18px; font-weight: 700; }
+    .header-actions { display: flex; gap: 10px; align-items: center; }
+    .btn-signout {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+      padding: 7px 16px;
+      border-radius: 7px;
+      cursor: pointer;
+      font-family: var(--font);
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .btn-signout:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+
+    /* ── Main ── */
+    main { max-width: 1040px; margin: 0 auto; padding: 48px 24px 80px; }
+
+    /* ── Welcome ── */
+    .welcome { margin-bottom: 48px; }
+    .welcome-eyebrow { color: var(--bronze); font-size: 12px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 10px; }
+    .welcome-heading { font-size: clamp(26px, 4vw, 34px); font-weight: 800; line-height: 1.15; margin-bottom: 10px; }
+    .welcome-sub { color: var(--muted); font-size: 15px; line-height: 1.6; max-width: 560px; }
+    .welcome-date { color: var(--muted); font-size: 13px; margin-top: 8px; }
+
+    /* ── Section ── */
+    .section { margin-bottom: 44px; }
+    .section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+    .section-icon { font-size: 16px; }
+    .section-title { font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
+    .section-divider { flex: 1; height: 1px; background: var(--border); }
+
+    /* ── Card grid ── */
+    .card-grid { display: grid; gap: 14px; }
+    .card-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
+    .card-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .card-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+
+    /* ── Tool card ── */
+    .tool-card {
+      display: block;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 22px 22px 20px;
+      text-decoration: none;
+      transition: border-color 0.15s, background 0.15s, transform 0.1s;
+      position: relative;
+      overflow: hidden;
+    }
+    .tool-card:hover {
+      border-color: var(--bronze-border);
+      background: var(--surface2);
+      transform: translateY(-1px);
+    }
+    .tool-card.featured {
+      border-color: var(--bronze-border);
+      background: linear-gradient(135deg, var(--surface2) 0%, rgba(184,151,90,0.05) 100%);
+    }
+    .tool-card.featured::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--bronze), transparent);
+    }
+
+    .card-icon { font-size: 26px; margin-bottom: 12px; display: block; }
+    .card-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 5px; line-height: 1.25; }
+    .card-desc { font-size: 12px; color: var(--muted); line-height: 1.55; }
+    .card-badge {
+      display: inline-block;
+      margin-top: 10px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 20px;
+    }
+    .badge-new { background: rgba(34,197,94,0.15); color: #4ade80; }
+    .badge-pipeline { background: var(--bronze-dim); color: var(--bronze); }
+    .badge-queue { background: rgba(59,130,246,0.15); color: #60a5fa; }
+
+    /* Pipeline flow arrows */
+    .pipeline-row {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+    }
+    .pipeline-row .tool-card {
+      flex: 1;
+      border-radius: 0;
+    }
+    .pipeline-row .tool-card:first-child { border-radius: 14px 0 0 14px; }
+    .pipeline-row .tool-card:last-child  { border-radius: 0 14px 14px 0; }
+    .pipeline-arrow {
+      display: flex;
+      align-items: center;
+      padding: 0 4px;
+      color: var(--bronze);
+      font-size: 16px;
+      flex-shrink: 0;
+      background: var(--surface);
+      border-top: 1.5px solid var(--border);
+      border-bottom: 1.5px solid var(--border);
+    }
+
+    /* Status badge (loaded dynamically) */
+    .card-status {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 20px;
+      background: rgba(34,197,94,0.15);
+      color: #4ade80;
+    }
+    .card-status.amber { background: rgba(245,158,11,0.15); color: #fcd34d; }
+    .card-status.muted { background: rgba(255,255,255,0.06); color: var(--muted); }
+
+    @media (max-width: 860px) {
+      .card-grid.cols-4 { grid-template-columns: repeat(2, 1fr); }
+      .card-grid.cols-3 { grid-template-columns: repeat(2, 1fr); }
+      .pipeline-row { flex-direction: column; gap: 2px; }
+      .pipeline-row .tool-card { border-radius: 12px !important; }
+      .pipeline-arrow { display: none; }
+    }
+    @media (max-width: 540px) {
+      header { padding: 16px; }
+      main { padding: 28px 16px 60px; }
+      .card-grid.cols-4,
+      .card-grid.cols-3,
+      .card-grid.cols-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="header-brand">Shana Gates &nbsp;·&nbsp; Craft &amp; Bauer</div>
+    <div class="header-title">Admin Dashboard</div>
+  </div>
+  <div class="header-actions">
+    <button class="btn-signout" onclick="signOut()">Sign Out</button>
+  </div>
+</header>
+
+<main>
+
+  <div class="welcome">
+    <div class="welcome-eyebrow">Good to see you</div>
+    <h1 class="welcome-heading">What would you like to work on?</h1>
+    <p class="welcome-sub">All your content creation, publishing, and site management tools — in one place.</p>
+    <div class="welcome-date" id="welcome-date"></div>
+  </div>
+
+  <!-- ── Content Pipeline ── -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">⚡</span>
+      <span class="section-title">Daily Content Pipeline</span>
+      <div class="section-divider"></div>
+    </div>
+    <div class="pipeline-row">
+      <a class="tool-card" href="/admin/blog-picker/">
+        <span class="card-icon">📰</span>
+        <div class="card-title">Daily Blog Picker</div>
+        <div class="card-desc">Review today's researched articles and pick the ones to publish.</div>
+        <span class="card-badge badge-pipeline" id="articles-badge"></span>
+      </a>
+      <div class="pipeline-arrow">→</div>
+      <a class="tool-card featured" href="/admin/idea-review/">
+        <span class="card-icon">💡</span>
+        <div class="card-title">Idea Review</div>
+        <div class="card-desc">Approve AI-scored blog ideas, then click Write &amp; Publish to go live instantly.</div>
+        <span class="card-badge badge-new">New</span>
+        <span class="card-status" id="ideas-badge" style="display:none"></span>
+      </a>
+      <div class="pipeline-arrow">→</div>
+      <a class="tool-card" href="/admin/va-queue/">
+        <span class="card-icon">📋</span>
+        <div class="card-title">Publish Queue</div>
+        <div class="card-desc">Review written posts before they go live. Final editorial check.</div>
+        <span class="card-status muted" id="queue-badge" style="display:none"></span>
+      </a>
+    </div>
+  </div>
+
+  <!-- ── Original Content ── -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">✍️</span>
+      <span class="section-title">Original Content</span>
+      <div class="section-divider"></div>
+    </div>
+    <div class="card-grid cols-3">
+      <a class="tool-card" href="/admin/weekly-picker/">
+        <span class="card-icon">📅</span>
+        <div class="card-title">Weekly Topics</div>
+        <div class="card-desc">Pick from AI-generated original topic ideas, organized by category. Published Saturday nights.</div>
+      </a>
+      <a class="tool-card" href="/admin/strategic-picker/">
+        <span class="card-icon">🎯</span>
+        <div class="card-title">Strategic Posts</div>
+        <div class="card-desc">SEO-targeted posts designed to rank for specific Coachella Valley search terms.</div>
+      </a>
+      <a class="tool-card" href="/admin/event-publisher/">
+        <span class="card-icon">🎪</span>
+        <div class="card-title">Event Articles</div>
+        <div class="card-desc">Publish monthly event roundups — Coachella, Stagecoach, BNP Paribas Open, and more.</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- ── Create & Edit ── -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🖊</span>
+      <span class="section-title">Create &amp; Edit</span>
+      <div class="section-divider"></div>
+    </div>
+    <div class="card-grid cols-2">
+      <a class="tool-card" href="/admin/blog-create/">
+        <span class="card-icon">📝</span>
+        <div class="card-title">Create Post</div>
+        <div class="card-desc">Write a custom blog post from scratch. Full editor with category, headline, and body.</div>
+      </a>
+      <a class="tool-card featured" href="/admin/assistant/">
+        <span class="card-icon">✦</span>
+        <div class="card-title">Content Assistant</div>
+        <div class="card-desc">Chat to update community stats, headlines, hero images, and other site content in plain English.</div>
+        <span class="card-badge badge-pipeline">AI Chat</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- ── Analytics ── -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">📊</span>
+      <span class="section-title">Analytics</span>
+      <div class="section-divider"></div>
+    </div>
+    <div class="card-grid cols-2">
+      <a class="tool-card" href="/admin/blog-dashboard/">
+        <span class="card-icon">📈</span>
+        <div class="card-title">Blog Effectiveness Dashboard</div>
+        <div class="card-desc">Track post performance, category breakdowns, and publishing cadence over time.</div>
+      </a>
+      <a class="tool-card" href="/blog/" target="_blank">
+        <span class="card-icon">🌐</span>
+        <div class="card-title">View Live Blog</div>
+        <div class="card-desc">Open the public blog to see published posts as visitors see them.</div>
+      </a>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  // Auth guard
+  if (!localStorage.getItem('sg_auth')) {
+    window.location.href = '/admin/assistant/login.html'
+  }
+
+  // Date
+  document.getElementById('welcome-date').textContent = new Date().toLocaleDateString('en-US', {
+    weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'
+  })
+
+  // Sign out
+  async function signOut() {
+    await fetch('/api/assistant/auth', { method: 'DELETE' }).catch(() => {})
+    localStorage.removeItem('sg_auth')
+    window.location.href = '/admin/assistant/login.html'
+  }
+
+  // Load live counts
+  async function loadCounts() {
+    try {
+      // Pending ideas
+      const ideasRes = await fetch('/api/content/ideas')
+      if (ideasRes.ok) {
+        const { ideas } = await ideasRes.json()
+        const pending = (ideas || []).filter(i => i.status === 'pending').length
+        const badge = document.getElementById('ideas-badge')
+        if (pending > 0) {
+          badge.textContent = `${pending} pending`
+          badge.style.display = 'block'
+        }
+      }
+    } catch {}
+  }
+
+  loadCounts()
+</script>
+</body>
+</html>
