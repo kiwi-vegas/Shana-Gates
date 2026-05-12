@@ -59,15 +59,17 @@ export default async function handler(req: any, res: any) {
 
   if (type === 'daily') {
     const { runDailyResearch } = await import('../../lib/research')
-    const { storeDailyArticles } = await import('../../lib/blog-store')
+    const { storeDailyArticles, incrementShownCount } = await import('../../lib/blog-store')
 
     try {
-      const { date, articles } = await runDailyResearch()
+      const today = new Date().toISOString().split('T')[0]
+      const articles = await runDailyResearch(today)
       if (articles.length === 0) {
         return res.status(200).json({ ok: true, count: 0, articles: [] })
       }
-      await storeDailyArticles(date, articles)
-      return res.status(200).json({ ok: true, count: articles.length, date })
+      await Promise.all(articles.map((a: any) => incrementShownCount(a.id)))
+      await storeDailyArticles(today, articles)
+      return res.status(200).json({ ok: true, count: articles.length, date: today })
     } catch (err) {
       console.error('[run-research] daily error:', err)
       return res.status(500).json({ error: err instanceof Error ? err.message : 'Research failed' })

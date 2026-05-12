@@ -546,6 +546,11 @@
     async function loadArticles() {
       const url = `/api/blog/articles${dateParam ? `?date=${dateParam}` : ''}`
       const res = await fetch(url)
+      if (res.status === 401) {
+        localStorage.removeItem('sg_auth')
+        window.location.href = '/admin/assistant/login.html'
+        return {}
+      }
       if (!res.ok) throw new Error('Failed to load')
       const data = await res.json()
       return data
@@ -968,6 +973,11 @@
           data = await res.json()
         } catch {
           throw new Error(`Server error (${res.status}) — check Vercel logs for details.`)
+        }
+        if (res.status === 401) {
+          localStorage.removeItem('sg_auth')
+          window.location.href = '/admin/assistant/login.html'
+          return
         }
         if (!res.ok) throw new Error(data.error || 'Research failed')
         overlay.classList.remove('visible')
