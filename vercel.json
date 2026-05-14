@@ -38,6 +38,18 @@
     },
     "api/property-report.ts": {
       "maxDuration": 300
+    },
+    "api/content/generate-heygen-video.ts": {
+      "maxDuration": 30
+    },
+    "api/content/heygen-status.ts": {
+      "maxDuration": 60
+    },
+    "api/content/publish-video.ts": {
+      "maxDuration": 60
+    },
+    "api/content/upload-token.ts": {
+      "maxDuration": 10
     }
   },
   "crons": [

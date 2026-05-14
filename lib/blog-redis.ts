@@ -26,6 +26,9 @@ export interface BlogPostSummary {
   city?: string
   workflowStatus?: BlogWorkflowStatus
   socialCopy?: string
+  videoScript?: string
+  videoUrl?: string
+  videoThumbnailUrl?: string
 }
 
 export interface BlogPostFull extends BlogPostSummary {
@@ -122,7 +125,10 @@ export async function markPostReady(
   slug: string,
   socialCopy: string,
   heroImageUrl?: string,
-  title?: string
+  title?: string,
+  videoScript?: string,
+  videoUrl?: string,
+  videoThumbnailUrl?: string,
 ): Promise<void> {
   const key = `blog_post:${slug}`
   const raw = await redis.get<string>(key)
@@ -132,6 +138,9 @@ export async function markPostReady(
   post.socialCopy = socialCopy
   if (heroImageUrl !== undefined) post.heroImageUrl = heroImageUrl
   if (title?.trim()) post.title = title.trim()
+  if (videoScript !== undefined) post.videoScript = videoScript
+  if (videoUrl !== undefined) post.videoUrl = videoUrl
+  if (videoThumbnailUrl !== undefined) post.videoThumbnailUrl = videoThumbnailUrl
   await redis.set(key, JSON.stringify(post))
 
   // Mirror status into queue summary
@@ -145,6 +154,9 @@ export async function markPostReady(
     queue[idx].socialCopy = socialCopy
     if (heroImageUrl !== undefined) queue[idx].heroImageUrl = heroImageUrl
     if (title?.trim()) queue[idx].title = title.trim()
+    if (videoScript !== undefined) queue[idx].videoScript = videoScript
+    if (videoUrl !== undefined) queue[idx].videoUrl = videoUrl
+    if (videoThumbnailUrl !== undefined) queue[idx].videoThumbnailUrl = videoThumbnailUrl
     await redis.set('blog_posts_queue', JSON.stringify(queue))
   }
 }

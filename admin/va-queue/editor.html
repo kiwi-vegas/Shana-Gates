@@ -211,6 +211,53 @@
 
     /* ── Loading state ── */
     .loading-state { text-align: center; padding: 80px 24px; color: var(--muted); font-size: 14px; }
+
+    /* ── Video script textarea ── */
+    textarea.script-area {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 13px; line-height: 1.7; min-height: 180px;
+      background: rgba(255,255,255,0.03);
+      color: rgba(255,255,255,0.85);
+    }
+
+    /* ── Progress bar ── */
+    .progress-wrap { margin-top: 12px; }
+    .progress-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+    .progress-bar-bg { height: 5px; background: var(--surf2); border-radius: 99px; overflow: hidden; }
+    .progress-bar-fill { height: 100%; background: var(--bronze); border-radius: 99px; transition: width 0.3s; }
+
+    /* ── Video panel states ── */
+    .panel-info {
+      padding: 14px 16px; border-radius: 8px; display: flex; align-items: flex-start; gap: 12px;
+    }
+    .panel-info.blue  { background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.2); }
+    .panel-info.green { background: rgba(34,197,94,0.08);  border: 1px solid rgba(34,197,94,0.2); }
+    .panel-info.amber { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2); }
+    .panel-info-icon  { font-size: 20px; flex-shrink: 0; }
+    .panel-info-body  { flex: 1; min-width: 0; }
+    .panel-info-title { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+    .panel-info.blue  .panel-info-title { color: var(--blue); }
+    .panel-info.green .panel-info-title { color: var(--green); }
+    .panel-info.amber .panel-info-title { color: var(--amber); }
+    .panel-info-sub   { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+    /* ── Platform status grid ── */
+    .platform-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+    .platform-row  { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+    .platform-icon { font-size: 15px; flex-shrink: 0; width: 22px; text-align: center; }
+    .platform-name { flex: 1; color: rgba(255,255,255,0.7); }
+    .platform-status { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 100px; }
+    .pstatus-polling { background: rgba(59,130,246,0.12); color: var(--blue); }
+    .pstatus-done    { background: rgba(34,197,94,0.12);  color: var(--green); }
+    .pstatus-error   { background: rgba(239,68,68,0.12);  color: var(--red); }
+    .pstatus-idle    { background: rgba(255,255,255,0.05); color: var(--muted); }
+
+    /* ── Step labels ── */
+    .step-label {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 10px; padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
   </style>
 </head>
 <body>
@@ -250,6 +297,135 @@
 
     let currentPost = null
     let pendingImageBase64 = null
+    let pendingVideoUrl = null        // Vercel Blob URL after upload
+    let heygenPollInterval = null     // polling timer for HeyGen status
+    let publishPollTimers = {}        // per-platform Blotato poll timers
+
+    // ── Global helpers (survive innerHTML reinsertion) ──────────────────────
+
+    function updatePublishBullet() {
+      const videoEl = document.getElementById('bulletVideo')
+      if (videoEl) videoEl.style.display = pendingVideoUrl ? 'list-item' : 'none'
+    }
+
+    function clearSavedVideo() {
+      pendingVideoUrl = null
+      updatePublishBullet()
+      const panel = document.getElementById('videoPanel')
+      if (!panel) return
+      panel.innerHTML = `<label class="upload-label" id="videoUploadLabel">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Upload Video
+          <input class="upload-input" type="file" id="videoInput" accept="video/mp4,video/quicktime,video/webm,video/x-m4v" onchange="handleVideoUpload(event)">
+        </label>
+        <div class="url-hint" style="margin-top:8px;">MP4, MOV, or WebM — up to 500 MB. Without a video, social posts will use the thumbnail image.</div>`
+    }
+
+    function resetHeygenPanel() {
+      if (heygenPollInterval) { clearInterval(heygenPollInterval); heygenPollInterval = null }
+      const panel = document.getElementById('heygenPanel')
+      if (!panel) return
+      panel.innerHTML = `<button class="gen-btn" style="margin-bottom:8px;" onclick="triggerHeyGen()">
+          🤖 Generate with HeyGen
+        </button>
+        <div class="url-hint">Renders a talking-head avatar video from the script above. Download it, edit backgrounds and graphics, then upload your final version in Step 2.</div>`
+    }
+
+    async function triggerHeyGen() {
+      const script = document.getElementById('scriptArea').value.trim()
+      if (!script) {
+        document.getElementById('scriptError').innerHTML = `<div class="inline-error">Generate or write a video script first.</div>`
+        document.getElementById('scriptArea').scrollIntoView({ behavior: 'smooth', block: 'center' })
+        return
+      }
+      if (heygenPollInterval) clearInterval(heygenPollInterval)
+      const panel = document.getElementById('heygenPanel')
+      panel.innerHTML = `<div class="panel-info blue"><div class="panel-info-icon">🎬</div><div class="panel-info-body"><div class="panel-info-title">HeyGen is rendering the base video</div><div class="panel-info-sub" id="heygenMsg">Starting render…</div><div class="progress-wrap" style="margin-top:10px;"><div class="progress-bar-bg"><div class="progress-bar-fill" id="heygenBar" style="width:5%;"></div></div></div></div></div>`
+      try {
+        const r = await fetch('/api/content/generate-heygen-video', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ script }),
+        })
+        if (r.status === 401) { window.location.href = '/admin/assistant/login.html'; return }
+        const d = await r.json()
+        if (!r.ok) throw new Error(d.error || 'Failed to start video generation')
+        const videoId = d.videoId
+        let elapsed = 0
+        heygenPollInterval = setInterval(async () => {
+          elapsed += 15
+          const pct = Math.min(90, Math.round((elapsed / 360) * 100))
+          const bar = document.getElementById('heygenBar')
+          if (bar) bar.style.width = `${pct}%`
+          const msg = document.getElementById('heygenMsg')
+          const mins = Math.floor(elapsed / 60), secs = elapsed % 60
+          if (msg) msg.textContent = `Rendering… ${mins > 0 ? mins + 'm ' : ''}${secs}s`
+          try {
+            const sr = await fetch(`/api/content/heygen-status?videoId=${encodeURIComponent(videoId)}`)
+            const sd = await sr.json()
+            if (sd.status === 'completed') {
+              clearInterval(heygenPollInterval)
+              panel.innerHTML = `<div class="panel-info green"><div class="panel-info-icon">✅</div><div class="panel-info-body"><div class="panel-info-title">Base video rendered</div><div class="panel-info-sub"><a href="${sd.videoUrl}" target="_blank" rel="noopener" style="color:var(--bronze);text-decoration:none;">Download video ↗</a> — edit in HeyGen or a video editor, then upload your final cut in Step 2.</div></div></div><button class="gen-btn" style="margin-top:10px;" onclick="resetHeygenPanel()">Generate new base video</button>`
+            } else if (sd.status === 'failed') {
+              clearInterval(heygenPollInterval)
+              panel.innerHTML = `<div class="inline-error">HeyGen render failed: ${sd.error || 'Unknown error'}</div><button class="gen-btn" style="margin-top:10px;" onclick="resetHeygenPanel()">Try again</button>`
+            } else if (elapsed >= 600) {
+              clearInterval(heygenPollInterval)
+              panel.innerHTML = `<div class="inline-error">HeyGen render timed out after 10 minutes.</div><button class="gen-btn" style="margin-top:10px;" onclick="resetHeygenPanel()">Try again</button>`
+            }
+          } catch { /* keep polling */ }
+        }, 15000)
+      } catch (err) {
+        panel.innerHTML = `<div class="inline-error">${err.message}</div><button class="gen-btn" style="margin-top:10px;" onclick="resetHeygenPanel()">Try again</button>`
+      }
+    }
+
+    async function handleVideoUpload(e) {
+      const file = e.target.files[0]
+      if (!file) return
+      const panel = document.getElementById('videoPanel')
+      panel.innerHTML = `<div class="progress-wrap"><div class="progress-label"><span>Uploading ${file.name}…</span><span id="videoUploadPct">0%</span></div><div class="progress-bar-bg"><div class="progress-bar-fill" id="videoUploadBar" style="width:0%;"></div></div></div>`
+      try {
+        const tokenRes = await fetch(`/api/content/upload-token?filename=${encodeURIComponent(file.name)}`)
+        if (!tokenRes.ok) {
+          if (tokenRes.status === 401) { window.location.href = '/admin/assistant/login.html'; return }
+          throw new Error('Failed to get upload token')
+        }
+        const { token, uploadUrl } = await tokenRes.json()
+        const blobUrl = await new Promise((resolve, reject) => {
+          const xhr = new XMLHttpRequest()
+          xhr.open('PUT', uploadUrl)
+          xhr.setRequestHeader('Authorization', `Bearer ${token}`)
+          xhr.setRequestHeader('x-content-type', file.type || 'video/mp4')
+          xhr.upload.onprogress = (ev) => {
+            if (ev.lengthComputable) {
+              const pct = Math.round((ev.loaded / ev.total) * 100)
+              const bar = document.getElementById('videoUploadBar')
+              const pctEl = document.getElementById('videoUploadPct')
+              if (bar) bar.style.width = pct + '%'
+              if (pctEl) pctEl.textContent = pct + '%'
+            }
+          }
+          xhr.onload = () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+              try { resolve(JSON.parse(xhr.responseText).url) }
+              catch { reject(new Error('Invalid response from Vercel Blob')) }
+            } else {
+              reject(new Error(`Upload failed (${xhr.status})`))
+            }
+          }
+          xhr.onerror = () => reject(new Error('Network error during upload'))
+          xhr.send(file)
+        })
+        pendingVideoUrl = blobUrl
+        updatePublishBullet()
+        panel.innerHTML = `<div class="panel-info green"><div class="panel-info-icon">🎥</div><div class="panel-info-body"><div class="panel-info-title">Video uploaded</div><div class="panel-info-sub" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${file.name}</div></div><button onclick="clearSavedVideo()" style="font-size:11px;color:rgba(255,255,255,0.4);background:none;border:none;cursor:pointer;flex-shrink:0;margin-left:8px;">Remove</button></div>`
+      } catch (err) {
+        pendingVideoUrl = null
+        panel.innerHTML = `<div class="inline-error">${err.message}</div><label class="upload-label" style="margin-top:10px;"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Upload Video<input class="upload-input" type="file" id="videoInput" accept="video/mp4,video/quicktime,video/webm,video/x-m4v" onchange="handleVideoUpload(event)"></label>`
+      }
+      e.target.value = ''
+    }
 
     function formatDate(iso) {
       return new Date(iso).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
@@ -314,6 +490,10 @@ Style: bold text overlay, professional real estate feel, bright and eye-catching
             <span>No thumbnail yet</span>
           </div>`
 
+      const savedScript = post.videoScript || ''
+      const savedVideoUrl = post.videoUrl || ''
+      if (savedVideoUrl) pendingVideoUrl = savedVideoUrl
+
       document.getElementById('editorGrid').innerHTML = `
         <!-- ═══ LEFT COLUMN ═══ -->
         <div class="editor-left">
@@ -351,17 +531,49 @@ Style: bold text overlay, professional real estate feel, bright and eye-catching
             <div id="genError"></div>
           </div>
 
-          <!-- Thumbnail builder -->
+          <!-- Video Script -->
           <div class="card">
-            <div class="card-label">Thumbnail Builder</div>
-            <div class="builder-sublabel">Image Prompt</div>
-            <textarea class="prompt-area" id="promptArea" readonly>${prompt}</textarea>
-            <div class="copy-row">
-              <button class="copy-btn" id="copyBtn" onclick="copyPrompt()">
-                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                Copy Prompt
-              </button>
-              <span class="copy-hint">Paste into ChatGPT, Gemini, or Midjourney</span>
+            <div class="card-label">Video Script</div>
+            <div class="caption-hint" style="margin-bottom:12px;">
+              A short script for Shana to record a talking-head video — key takeaways, what it means for the CV market, and a call to action.
+            </div>
+            <button class="gen-btn" id="scriptBtn">
+              🎬 Generate Script
+            </button>
+            <textarea class="script-area" id="scriptArea" placeholder="Video script will appear here after generating…">${savedScript}</textarea>
+            <div class="url-hint">Tip: Edit before recording. Read naturally — aim for 45–90 seconds.</div>
+            <div id="scriptError"></div>
+          </div>
+
+          <!-- Video Generation + Upload -->
+          <div class="card">
+            <div class="card-label">Video</div>
+
+            <!-- Step 1: HeyGen -->
+            <div style="margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border);">
+              <div class="step-label">Step 1 — Generate Base Video with HeyGen (optional)</div>
+              <div id="heygenPanel">
+                <button class="gen-btn" id="heygenBtn" style="margin-bottom:8px;" onclick="triggerHeyGen()">
+                  🤖 Generate with HeyGen
+                </button>
+                <div class="url-hint">Renders a talking-head avatar video from the script above. Download it, edit backgrounds and graphics, then upload your final version in Step 2.</div>
+              </div>
+            </div>
+
+            <!-- Step 2: Upload final video -->
+            <div>
+              <div class="step-label">Step 2 — Upload Final Video</div>
+              <div id="videoPanel">
+                ${savedVideoUrl
+                  ? `<div class="panel-info green"><div class="panel-info-icon">🎥</div><div class="panel-info-body"><div class="panel-info-title">Video saved</div><div class="panel-info-sub" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${savedVideoUrl.split('/').pop()}</div></div><button onclick="clearSavedVideo()" style="font-size:11px;color:rgba(255,255,255,0.4);background:none;border:none;cursor:pointer;flex-shrink:0;margin-left:8px;">Replace</button></div>`
+                  : `<label class="upload-label" id="videoUploadLabel">
+                      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                      Upload Video
+                      <input class="upload-input" type="file" id="videoInput" accept="video/mp4,video/quicktime,video/webm,video/x-m4v" onchange="handleVideoUpload(event)">
+                    </label>
+                    <div class="url-hint" style="margin-top:8px;">MP4, MOV, or WebM — up to 500 MB. Without a video, social posts will use the thumbnail image.</div>`
+                }
+              </div>
             </div>
           </div>
 
@@ -385,12 +597,15 @@ Style: bold text overlay, professional real estate feel, bright and eye-catching
           <!-- Publish -->
           <div class="card publish-card">
             <div class="card-label">Publish</div>
-            <div class="publish-bullets">
+            <div class="publish-bullets" id="publishBullets">
               <p>Pressing Publish will:</p>
               <ul>
                 <li>Make the post live on the website</li>
+                <li id="bulletFB">Post to Shana's Facebook page</li>
+                <li id="bulletVideo" style="display:none;">Publish video to YouTube, TikTok, Facebook Reel, LinkedIn, X, Threads &amp; Instagram</li>
               </ul>
             </div>
+            <div id="platformStatus" style="display:none;" class="platform-list"></div>
             <button class="btn-publish" id="publishBtn" ${!isReady ? 'disabled' : ''}>
               Publish
             </button>
@@ -423,6 +638,8 @@ Style: bold text overlay, professional real estate feel, bright and eye-catching
           document.getElementById('uploadHint').textContent = 'Could not process image. Try a different file.'
         }
       })
+
+      updatePublishBullet()
 
       // Generate caption
       document.getElementById('genBtn').addEventListener('click', async () => {
@@ -478,6 +695,30 @@ Style: bold text overlay, professional real estate feel, bright and eye-catching
         }
       })
 
+      // Generate video script
+      document.getElementById('scriptBtn').addEventListener('click', async () => {
+        const btn = document.getElementById('scriptBtn')
+        btn.disabled = true
+        btn.innerHTML = `<span class="spinner spinner-muted"></span> Writing script…`
+        document.getElementById('scriptError').innerHTML = ''
+        try {
+          const r = await fetch('/api/content/generate-script', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title: post.title, excerpt: post.excerpt, category: post.category }),
+          })
+          if (r.status === 401) { window.location.href = '/admin/assistant/login.html'; return }
+          const d = await r.json()
+          if (!r.ok) throw new Error(d.error || 'Failed')
+          document.getElementById('scriptArea').value = d.script
+        } catch (err) {
+          document.getElementById('scriptError').innerHTML = `<div class="inline-error">${err.message}</div>`
+        } finally {
+          btn.disabled = false
+          btn.innerHTML = '🎬 Generate Script'
+        }
+      })
+
       // Mark as Ready
       document.getElementById('markReadyBtn').addEventListener('click', async () => {
         const btn = document.getElementById('markReadyBtn')
@@ -488,6 +729,8 @@ Style: bold text overlay, professional real estate feel, bright and eye-catching
           slug: post.slug,
           socialCopy: document.getElementById('captionArea').value,
           title: document.getElementById('titleInput').value.trim() || post.title,
+          videoScript: document.getElementById('scriptArea').value.trim() || undefined,
+          videoUrl: pendingVideoUrl || undefined,
         }
         if (pendingImageBase64) body.heroImageBase64 = pendingImageBase64
         try {
@@ -513,7 +756,29 @@ Style: bold text overlay, professional real estate feel, bright and eye-catching
         btn.disabled = true
         btn.innerHTML = `<span class="spinner spinner-green"></span> Publishing…`
         document.getElementById('actionError').innerHTML = ''
+
         try {
+          // 1. Save video fields + mark published in Redis
+          const saveBody = {
+            slug: post.slug,
+            socialCopy: document.getElementById('captionArea').value,
+            title: document.getElementById('titleInput').value.trim() || post.title,
+            videoScript: document.getElementById('scriptArea').value.trim() || undefined,
+            videoUrl: pendingVideoUrl || undefined,
+          }
+          if (pendingImageBase64) saveBody.heroImageBase64 = pendingImageBase64
+
+          const saveRes = await fetch('/api/blog/queue-mark-ready', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(saveBody),
+          })
+          if (!saveRes.ok && saveRes.status !== 200) {
+            const sd = await saveRes.json().catch(() => ({}))
+            throw new Error(sd.error || 'Failed to save before publishing')
+          }
+
+          // 2. Publish the blog post live
           const r = await fetch('/api/blog/queue-publish', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -522,7 +787,70 @@ Style: bold text overlay, professional real estate feel, bright and eye-catching
           if (r.status === 401) { window.location.href = '/admin/assistant/login.html'; return }
           const d = await r.json()
           if (!r.ok) throw new Error(d.error || 'Publish failed')
-          window.location.href = '/admin/va-queue/?published=1'
+
+          // 3. If a video is ready, push to all social platforms
+          if (pendingVideoUrl) {
+            btn.innerHTML = `<span class="spinner spinner-green"></span> Publishing to social…`
+            document.getElementById('publishBullets').style.display = 'none'
+            const pStatus = document.getElementById('platformStatus')
+            pStatus.style.display = 'flex'
+            pStatus.innerHTML = `
+              <div class="platform-row"><span class="platform-icon">🌐</span><span class="platform-name">Website</span><span class="platform-status pstatus-done">Live</span></div>
+              <div class="platform-row"><span class="platform-icon">🎬</span><span class="platform-name">Facebook Reel</span><span class="platform-status pstatus-polling" id="ps-facebookReel">Submitting…</span></div>
+              <div class="platform-row"><span class="platform-icon">▶️</span><span class="platform-name">YouTube</span><span class="platform-status pstatus-polling" id="ps-youtube">Submitting…</span></div>
+              <div class="platform-row"><span class="platform-icon">🎵</span><span class="platform-name">TikTok</span><span class="platform-status pstatus-polling" id="ps-tiktok">Submitting…</span></div>
+              <div class="platform-row"><span class="platform-icon">💼</span><span class="platform-name">LinkedIn</span><span class="platform-status pstatus-polling" id="ps-linkedin">Submitting…</span></div>
+              <div class="platform-row"><span class="platform-icon">𝕏</span><span class="platform-name">X / Twitter</span><span class="platform-status pstatus-polling" id="ps-twitter">Submitting…</span></div>
+              <div class="platform-row"><span class="platform-icon">🧵</span><span class="platform-name">Threads</span><span class="platform-status pstatus-polling" id="ps-threads">Submitting…</span></div>
+              <div class="platform-row"><span class="platform-icon">📸</span><span class="platform-name">Instagram Reel</span><span class="platform-status pstatus-polling" id="ps-instagramReel">Submitting…</span></div>
+            `
+
+            const vr = await fetch('/api/content/publish-video', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ slug: post.slug, videoUrl: pendingVideoUrl }),
+            })
+            const vd = await vr.json()
+
+            const platforms = ['facebookReel', 'youtube', 'tiktok', 'linkedin', 'twitter', 'threads', 'instagramReel']
+            platforms.forEach(platform => {
+              const el = document.getElementById(`ps-${platform}`)
+              if (!el) return
+              const result = vd[platform]
+              if (!result) { el.textContent = 'Skipped'; el.className = 'platform-status pstatus-idle'; return }
+              if (result.error) { el.textContent = 'Error'; el.className = 'platform-status pstatus-error'; el.title = result.error; return }
+              if (result.postSubmissionId) {
+                el.textContent = 'Queued'
+                el.className = 'platform-status pstatus-polling'
+                // Poll for final status
+                let attempts = 0
+                const timer = setInterval(async () => {
+                  attempts++
+                  try {
+                    const sr = await fetch(`/api/content/blotato-status?postSubmissionId=${encodeURIComponent(result.postSubmissionId)}`)
+                    const sd = await sr.json()
+                    if (sd.status === 'published') {
+                      clearInterval(timer); delete publishPollTimers[platform]
+                      el.textContent = 'Published'; el.className = 'platform-status pstatus-done'
+                    } else if (sd.status === 'failed') {
+                      clearInterval(timer); delete publishPollTimers[platform]
+                      el.textContent = 'Failed'; el.className = 'platform-status pstatus-error'
+                    } else if (attempts >= 30) {
+                      clearInterval(timer); delete publishPollTimers[platform]
+                      el.textContent = 'Queued'; el.className = 'platform-status pstatus-idle'
+                    }
+                  } catch { /* keep polling */ }
+                }, 10000)
+                publishPollTimers[platform] = timer
+              }
+            })
+
+            btn.disabled = false
+            btn.innerHTML = '✓ Published'
+            btn.style.opacity = '0.5'
+          } else {
+            window.location.href = '/admin/va-queue/?published=1'
+          }
         } catch (err) {
           document.getElementById('actionError').innerHTML = `<div class="inline-error">${err.message}</div>`
           btn.disabled = false
