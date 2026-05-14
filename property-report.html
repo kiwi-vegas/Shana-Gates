@@ -37,11 +37,11 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 120px 24px 80px;
+      padding: 110px 32px 80px;
       background: radial-gradient(ellipse 80% 55% at 50% 0%, rgba(26,68,76,0.12) 0%, transparent 68%), var(--dark);
     }
 
-    /* ── Eyebrow / Headline ─────────────────────────────────── */
+    /* ── Top eyebrow (full width, centered) ─────────────────── */
     .pr-eyebrow {
       font-family: var(--sans);
       font-size: 11px;
@@ -49,63 +49,108 @@
       letter-spacing: 3px;
       text-transform: uppercase;
       color: var(--sg-hover);
-      margin-bottom: 20px;
+      margin-bottom: 0;
       text-align: center;
     }
 
+    /* ── Two-column idle grid ───────────────────────────────── */
+    .pr-idle-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 56px;
+      width: 100%;
+      max-width: 1000px;
+      margin-top: 48px;
+      align-items: start;
+    }
+
+    /* Left column */
+    .pr-idle-left {}
+
     .pr-headline {
       font-family: var(--serif);
-      font-size: clamp(34px, 5.5vw, 60px);
+      font-size: clamp(32px, 4vw, 52px);
       font-weight: 400;
       color: var(--cream);
       line-height: 1.1;
-      margin-bottom: 18px;
-      max-width: 740px;
-      text-align: center;
+      margin-bottom: 16px;
     }
 
     .pr-headline em { font-style: italic; color: #8ab8bf; }
 
     .pr-sub {
       font-family: var(--sans);
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 300;
       color: var(--text-muted);
-      max-width: 500px;
       line-height: 1.75;
-      margin-bottom: 44px;
-      text-align: center;
+      margin-bottom: 32px;
     }
 
-    /* ── Value pills ────────────────────────────────────────── */
-    .pr-values {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: center;
-      margin-bottom: 48px;
-      max-width: 680px;
-    }
-
-    .pr-pill {
+    .pr-checklist-label {
       font-family: var(--sans);
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 500;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--sg-hover);
+      margin-bottom: 16px;
+    }
+
+    .pr-checklist {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .pr-checklist li {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 11px 0;
+      border-bottom: 1px solid rgba(26,68,76,0.15);
+      font-family: var(--sans);
+      font-size: 14px;
+      font-weight: 400;
       color: var(--cream);
-      background: var(--sg-dim);
-      border: 1px solid var(--sg-border);
-      border-radius: 100px;
-      padding: 7px 16px;
+    }
+
+    .pr-checklist li:last-child { border-bottom: none; }
+
+    .pr-checklist-check {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--sg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    /* Right column */
+    .pr-idle-right {}
+
+    .pr-right-label {
+      font-family: var(--sans);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--sg-hover);
+      margin-bottom: 16px;
     }
 
     /* ── Form card ──────────────────────────────────────────── */
     .pr-card {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(26,68,76,0.25);
+      background: rgba(26,68,76,0.07);
+      border: 1px solid rgba(26,68,76,0.28);
       border-radius: 14px;
-      padding: 36px 40px 28px;
+      padding: 32px 28px 24px;
       width: 100%;
-      max-width: 540px;
     }
 
     .pr-card-label {
@@ -537,7 +582,16 @@
     .pr-cta-btn.secondary:hover { background: var(--sg-dim); }
 
     /* ── Responsive ─────────────────────────────────────────── */
+    @media (max-width: 800px) {
+      .pr-idle-grid {
+        grid-template-columns: 1fr;
+        gap: 36px;
+        margin-top: 32px;
+      }
+    }
+
     @media (max-width: 580px) {
+      .pr-page { padding: 100px 20px 60px; }
       .pr-card { padding: 24px 18px 20px; }
       .pr-email-row { flex-direction: column; }
       .pr-email-btn { width: 100%; }
@@ -599,40 +653,78 @@
   <main class="pr-page">
 
     <!-- ── STATE: IDLE ──────────────────────────────────────── -->
-    <div id="state-idle">
+    <div id="state-idle" style="width:100%;max-width:1000px;">
       <p class="pr-eyebrow">Coachella Valley &nbsp;·&nbsp; AI Property Intelligence</p>
-      <h1 class="pr-headline">Residential Property<br><em>Analysis Report</em></h1>
-      <p class="pr-sub">Enter any Coachella Valley property address and receive a comprehensive investment-grade report — completely free.</p>
 
-      <div class="pr-values">
-        <span class="pr-pill">Comparable Sales</span>
-        <span class="pr-pill">Cash Flow Projections</span>
-        <span class="pr-pill">Neighborhood Scorecard</span>
-        <span class="pr-pill">Investment Scenarios</span>
-        <span class="pr-pill">Market Conditions</span>
-        <span class="pr-pill">Buy / Watch / Avoid Signal</span>
-      </div>
+      <div class="pr-idle-grid">
 
-      <div class="pr-card">
-        <p class="pr-card-label">Get Your Free Report</p>
-        <input
-          id="input-address"
-          class="pr-input"
-          type="text"
-          placeholder="123 Desert Rose Dr, Palm Springs, CA"
-          autocomplete="street-address"
-        />
-        <button id="btn-analyze" class="pr-btn">Analyze This Property</button>
-        <p class="pr-disclaimer">Free. No account needed. For educational purposes only — not financial advice.</p>
-      </div>
+        <!-- Left: what's included -->
+        <div class="pr-idle-left">
+          <h1 class="pr-headline">Residential Property<br><em>Analysis Report</em></h1>
+          <p class="pr-sub">Enter any Coachella Valley property address and receive a comprehensive, investment-grade analysis — completely free.</p>
 
-      <div class="pr-shana-band">
-        <h2>Ready to make a move?</h2>
-        <p>These reports are a starting point. Shana Gates brings deep Coachella Valley expertise to every transaction.</p>
-        <div class="pr-cta-row">
-          <a href="tel:7602324054" class="pr-cta-btn primary">Call 760.232.4054</a>
-          <a href="mailto:shana@craftbauer.com" class="pr-cta-btn secondary">Email Shana</a>
+          <p class="pr-checklist-label">What's in your report</p>
+          <ul class="pr-checklist">
+            <li>
+              <span class="pr-checklist-check">✓</span>
+              Comparable Sales &amp; Value Assessment
+            </li>
+            <li>
+              <span class="pr-checklist-check">✓</span>
+              Rental Income &amp; Cash Flow Projections
+            </li>
+            <li>
+              <span class="pr-checklist-check">✓</span>
+              Neighborhood Scorecard
+            </li>
+            <li>
+              <span class="pr-checklist-check">✓</span>
+              Investment Strategy Scenarios
+            </li>
+            <li>
+              <span class="pr-checklist-check">✓</span>
+              Current Market Conditions
+            </li>
+            <li>
+              <span class="pr-checklist-check">✓</span>
+              Buy / Watch / Avoid Signal &amp; Score
+            </li>
+            <li>
+              <span class="pr-checklist-check">✓</span>
+              Expert Recommendation &amp; Next Steps
+            </li>
+            <li>
+              <span class="pr-checklist-check">✓</span>
+              Full Branded PDF Delivered to Your Inbox
+            </li>
+          </ul>
         </div>
+
+        <!-- Right: form -->
+        <div class="pr-idle-right">
+          <p class="pr-right-label">Get Your Free Report</p>
+          <div class="pr-card">
+            <input
+              id="input-address"
+              class="pr-input"
+              type="text"
+              placeholder="123 Desert Rose Dr, Palm Springs, CA"
+              autocomplete="street-address"
+            />
+            <button id="btn-analyze" class="pr-btn">Analyze This Property</button>
+            <p class="pr-disclaimer">Free. No account needed. For educational purposes only — not financial advice.</p>
+          </div>
+
+          <div class="pr-shana-band" style="margin-top:36px;padding-top:32px;">
+            <h2 style="font-size:20px;">Ready to make a move?</h2>
+            <p style="font-size:13px;">Shana Gates brings deep Coachella Valley expertise to every transaction.</p>
+            <div class="pr-cta-row">
+              <a href="tel:7602324054" class="pr-cta-btn primary">Call 760.232.4054</a>
+              <a href="mailto:shana@craftbauer.com" class="pr-cta-btn secondary">Email Shana</a>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -801,7 +893,7 @@
     // ─── State display ────────────────────────────────────────
     function show(id) {
       ;['state-idle','state-analyzing','state-done','state-error'].forEach(s => {
-        document.getElementById(s).style.display = s === id ? '' : 'none'
+        document.getElementById(s).style.display = s === id ? 'block' : 'none'
       })
     }
 
