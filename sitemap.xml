@@ -101,6 +101,12 @@
     <priority>0.8</priority>
   </url>
 
+  <url>
+    <loc>https://www.shanasells.com/property-report.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
   <!-- Gated community detail pages -->
   <url>
     <loc>https://www.shanasells.com/gated/pga-west.html</loc>

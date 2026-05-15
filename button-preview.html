@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex,nofollow">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Button Color Options — Shana Gates</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+  :root {
+    --sans: 'Inter', sans-serif;
+    --teal: #1A444C;
+    --teal-light: #255a65;   /* lighter teal for hover */
+    --teal-dark: #122f35;    /* darker teal for hover */
+    --cream: #F2EDE4;
+    --bronze: #B8975A;
+    --dark: #0d0d0d;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--sans);
+    background: #f0ece4;
+    padding: 48px 32px;
+    min-height: 100vh;
+  }
+
+  h1 {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #555;
+    margin-bottom: 8px;
+  }
+  .subtitle {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 48px;
+  }
+  .subtitle code {
+    background: #ddd;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+    color: #333;
+  }
+
+  /* ── Section ── */
+  .section {
+    margin-bottom: 56px;
+  }
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #999;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+  }
+
+  /* ── Swatch row ── */
+  .row {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    margin-bottom: 32px;
+  }
+
+  /* ── Option card ── */
+  .option {
+    background: #fff;
+    border-radius: 10px;
+    padding: 28px 32px;
+    min-width: 220px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .option-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #888;
+  }
+  .option-meta {
+    font-size: 11px;
+    color: #bbb;
+    margin-top: -10px;
+  }
+
+  /* ── Button base (matches site exactly) ── */
+  .btn {
+    font-family: var(--sans);
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    padding: 14px 32px;
+    text-decoration: none;
+    cursor: pointer;
+    display: inline-block;
+    border: none;
+    transition: background 0.25s, color 0.25s, transform 0.2s;
+  }
+  .btn:hover { transform: translateY(-2px); }
+
+  /* ── Option A: White text ── */
+  .btn-A-solid { background: var(--teal); color: #ffffff; }
+  .btn-A-solid:hover { background: var(--teal-light); }
+  .btn-A-outline {
+    background: transparent;
+    color: var(--teal);
+    border: 1.5px solid var(--teal);
+  }
+  .btn-A-outline:hover { background: var(--teal); color: #ffffff; }
+
+  /* ── Option B: Cream text ── */
+  .btn-B-solid { background: var(--teal); color: var(--cream); }
+  .btn-B-solid:hover { background: var(--teal-light); }
+  .btn-B-outline {
+    background: transparent;
+    color: var(--teal);
+    border: 1.5px solid var(--teal);
+  }
+  .btn-B-outline:hover { background: var(--teal); color: var(--cream); }
+
+  /* ── Option C: Bronze/gold text ── */
+  .btn-C-solid { background: var(--teal); color: var(--bronze); }
+  .btn-C-solid:hover { background: var(--teal-light); }
+  .btn-C-outline {
+    background: transparent;
+    color: var(--teal);
+    border: 1.5px solid var(--teal);
+  }
+  .btn-C-outline:hover { background: var(--teal); color: var(--bronze); }
+
+  /* ── Option D: Light teal/mint text ── */
+  .btn-D-solid { background: var(--teal); color: #A8D8DF; }
+  .btn-D-solid:hover { background: var(--teal-light); }
+  .btn-D-outline {
+    background: transparent;
+    color: var(--teal);
+    border: 1.5px solid var(--teal);
+  }
+  .btn-D-outline:hover { background: var(--teal); color: #A8D8DF; }
+
+  /* ── Dark background section ── */
+  .dark-bg {
+    background: #1a1814;
+    border-radius: 12px;
+    padding: 40px 36px;
+    margin-bottom: 56px;
+  }
+  .dark-bg .section-label { color: #666; border-color: #333; }
+  .dark-bg .option {
+    background: #232020;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  }
+  .dark-bg .option-label { color: #666; }
+  .dark-bg .option-meta { color: #555; }
+
+  /* outline variants on dark bg */
+  .btn-dark-outline {
+    background: transparent;
+    color: var(--teal);
+    border: 1.5px solid var(--teal);
+  }
+  .btn-dark-outline-cream {
+    background: transparent;
+    color: var(--cream);
+    border: 1.5px solid var(--teal);
+  }
+
+  .pair { display: flex; flex-direction: column; gap: 12px; }
+
+  .divider {
+    height: 1px;
+    background: #e0dbd2;
+    margin: 48px 0;
+  }
+</style>
+</head>
+<body>
+
+<h1>Button Color Options</h1>
+<p class="subtitle">New background: <code>#1A444C</code> &nbsp;|&nbsp; Hover over each button to preview the hover state</p>
+
+<!-- ══════════ LIGHT BACKGROUND ══════════ -->
+<p class="section-label" style="font-size:11px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:#999;margin-bottom:24px;">On light background (like About section, Contact section)</p>
+
+<div class="row">
+
+  <div class="option">
+    <span class="option-label">A — White</span>
+    <span class="option-meta">#FFFFFF text</span>
+    <div class="pair">
+      <a class="btn btn-A-solid" href="#">Get Started</a>
+      <a class="btn btn-A-outline" href="#">Learn More</a>
+    </div>
+  </div>
+
+  <div class="option">
+    <span class="option-label">B — Cream</span>
+    <span class="option-meta">#F2EDE4 text</span>
+    <div class="pair">
+      <a class="btn btn-B-solid" href="#">Get Started</a>
+      <a class="btn btn-B-outline" href="#">Learn More</a>
+    </div>
+  </div>
+
+  <div class="option">
+    <span class="option-label">C — Bronze</span>
+    <span class="option-meta">#B8975A text</span>
+    <div class="pair">
+      <a class="btn btn-C-solid" href="#">Get Started</a>
+      <a class="btn btn-C-outline" href="#">Learn More</a>
+    </div>
+  </div>
+
+  <div class="option">
+    <span class="option-label">D — Soft Teal</span>
+    <span class="option-meta">#A8D8DF text</span>
+    <div class="pair">
+      <a class="btn btn-D-solid" href="#">Get Started</a>
+      <a class="btn btn-D-outline" href="#">Learn More</a>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════ DARK BACKGROUND ══════════ -->
+<div class="dark-bg">
+  <p class="section-label" style="font-size:11px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:#555;margin-bottom:24px;">On dark background (like hero section, community page CTA)</p>
+
+  <div class="row">
+
+    <div class="option">
+      <span class="option-label">A — White</span>
+      <span class="option-meta">#FFFFFF text</span>
+      <div class="pair">
+        <a class="btn btn-A-solid" href="#">Get Started</a>
+        <a class="btn btn-dark-outline" href="#">Learn More</a>
+      </div>
+    </div>
+
+    <div class="option">
+      <span class="option-label">B — Cream</span>
+      <span class="option-meta">#F2EDE4 text</span>
+      <div class="pair">
+        <a class="btn btn-B-solid" href="#">Get Started</a>
+        <a class="btn btn-dark-outline-cream" href="#">Learn More</a>
+      </div>
+    </div>
+
+    <div class="option">
+      <span class="option-label">C — Bronze</span>
+      <span class="option-meta">#B8975A text</span>
+      <div class="pair">
+        <a class="btn btn-C-solid" href="#">Get Started</a>
+        <a class="btn btn-C-outline" style="color:var(--bronze);border-color:var(--bronze);" href="#">Learn More</a>
+      </div>
+    </div>
+
+    <div class="option">
+      <span class="option-label">D — Soft Teal</span>
+      <span class="option-meta">#A8D8DF text</span>
+      <div class="pair">
+        <a class="btn btn-D-solid" href="#">Get Started</a>
+        <a class="btn" style="background:transparent;color:#A8D8DF;border:1.5px solid #A8D8DF;" href="#">Learn More</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<p style="font-size:11px;color:#bbb;text-align:center;padding-bottom:32px;">
+  Once you pick an option, these button classes will be updated across the entire site.
+</p>
+
+</body>
+</html>

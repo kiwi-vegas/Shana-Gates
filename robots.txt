@@ -1,8 +1,15 @@
 User-agent: *
 Allow: /
 
-# Block admin areas
+# Block admin and API areas
 Disallow: /admin/
 Disallow: /api/
 
+# Block internal/test pages
+Disallow: /button-preview.html
+Disallow: /index-v2.html
+Disallow: /gated/_template.html
+Disallow: /properties/_template.html
+
 Sitemap: https://www.shanasells.com/sitemap.xml
+Sitemap: https://www.shanasells.com/api/blog/sitemap
