@@ -17,9 +17,9 @@
       --surface:     #141414;
       --surface2:    #1A1A1A;
       --surface3:    #222222;
-      --bronze:      #B8975A;
-      --bronze-light:#CEB07A;
-      --bronze-dim:  rgba(184,151,90,0.18);
+      --bronze:      #C8C8C8;
+      --bronze-light:#DCDCDC;
+      --bronze-dim:  rgba(200,200,200,0.18);
       --cream:       #F2EDE4;
       --cream-muted: rgba(242,237,228,0.55);
       --cb-navy:     #0D1B2A;
@@ -27,7 +27,7 @@
       --cb-teal-mid: #1A3A3C;
       --teal-bright: #4ECDC4;
       --border:      rgba(255,255,255,0.08);
-      --border-bronze: rgba(184,151,90,0.3);
+      --border-bronze: rgba(200,200,200,0.3);
       --font-serif:  'Cormorant Garamond', Georgia, serif;
       --font-sans:   'Jost', system-ui, sans-serif;
       --font-display:'Montserrat', system-ui, sans-serif;
@@ -418,7 +418,7 @@
       display: inline-block;
       transition: background 0.15s, color 0.15s;
     }
-    .btn-secondary:hover { background: rgba(184,151,90,0.08); }
+    .btn-secondary:hover { background: rgba(200,200,200,0.08); }
     .btn-ghost {
       background: transparent;
       color: var(--cream-muted);
@@ -509,8 +509,8 @@
     }
     .card.featured {
       border-color: var(--border-bronze);
-      background: rgba(184,151,90,0.04);
-      box-shadow: 0 0 20px rgba(184,151,90,0.1);
+      background: rgba(200,200,200,0.04);
+      box-shadow: 0 0 20px rgba(200,200,200,0.1);
     }
 
     /* Stat card */
@@ -676,7 +676,7 @@
       position: absolute;
       top: 16px;
       right: 16px;
-      background: rgba(184,151,90,0.12);
+      background: rgba(200,200,200,0.12);
       border: 1px solid var(--border-bronze);
       border-radius: 6px;
       padding: 6px 14px;
@@ -689,7 +689,7 @@
       cursor: pointer;
       transition: background 0.15s;
     }
-    .copy-btn:hover { background: rgba(184,151,90,0.2); }
+    .copy-btn:hover { background: rgba(200,200,200,0.2); }
     .copy-btn.copied { color: var(--teal-bright); border-color: rgba(78,205,196,0.3); }
 
     @media (max-width: 640px) {
@@ -734,7 +734,7 @@
     <section id="colors">
       <div class="section-label">01 — Foundation</div>
       <h2 class="section-title">Color Palette</h2>
-      <p class="section-desc">All brand colors with exact hex values. Never use bronze on white. Never use teal-bright as a background — accent text only.</p>
+      <p class="section-desc">All brand colors with exact hex values. Never use teal-bright as a background — accent text only. Gradients always go dark-to-darker.</p>
 
       <div class="swatch-group-label">Primary — Website &amp; UI</div>
       <div class="swatch-grid">
@@ -763,18 +763,18 @@
           </div>
         </div>
         <div class="swatch">
-          <div class="swatch-color" style="background:#B8975A"></div>
+          <div class="swatch-color" style="background:#C8C8C8"></div>
           <div class="swatch-info">
-            <div class="swatch-name">Bronze</div>
-            <div class="swatch-hex">#B8975A</div>
+            <div class="swatch-name">Light Gray</div>
+            <div class="swatch-hex">#C8C8C8</div>
             <div class="swatch-role">Primary accent, CTAs, active states</div>
           </div>
         </div>
         <div class="swatch">
-          <div class="swatch-color" style="background:#CEB07A"></div>
+          <div class="swatch-color" style="background:#DCDCDC"></div>
           <div class="swatch-info">
-            <div class="swatch-name">Bronze Light</div>
-            <div class="swatch-hex">#CEB07A</div>
+            <div class="swatch-name">Light Gray 2</div>
+            <div class="swatch-hex">#DCDCDC</div>
             <div class="swatch-role">Hover states</div>
           </div>
         </div>
@@ -831,7 +831,7 @@
         <div class="swatch"><div class="swatch-color" style="background:#0EA5E9"></div><div class="swatch-info"><div class="swatch-name">Seller Tips</div><div class="swatch-hex">#0EA5E9</div></div></div>
         <div class="swatch"><div class="swatch-color" style="background:#16A34A"></div><div class="swatch-info"><div class="swatch-name">Community</div><div class="swatch-hex">#16A34A</div></div></div>
         <div class="swatch"><div class="swatch-color" style="background:#9C27B0"></div><div class="swatch-info"><div class="swatch-name">Trending Topics</div><div class="swatch-hex">#9C27B0</div></div></div>
-        <div class="swatch"><div class="swatch-color" style="background:#B8975A"></div><div class="swatch-info"><div class="swatch-name">Local History</div><div class="swatch-hex">#B8975A</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#C8C8C8"></div><div class="swatch-info"><div class="swatch-name">Local History</div><div class="swatch-hex">#C8C8C8</div></div></div>
         <div class="swatch"><div class="swatch-color" style="background:#E67E22"></div><div class="swatch-info"><div class="swatch-name">Local Interest</div><div class="swatch-hex">#E67E22</div></div></div>
       </div>
     </section>
@@ -918,7 +918,7 @@
     <section id="buttons">
       <div class="section-label">04 — Actions</div>
       <h2 class="section-title">Buttons</h2>
-      <p class="section-desc">Four button styles. Primary (bronze) is the main CTA. Secondary (outline) for secondary actions. Ghost for tertiary. Teal for C&B co-branded contexts.</p>
+      <p class="section-desc">Four button styles. Primary (light gray) is the main CTA. Secondary (outline) for secondary actions. Ghost for tertiary. Teal for C&B co-branded contexts.</p>
 
       <div class="btn-grid">
         <a class="btn-primary" href="#">Explore Listings →</a>
@@ -938,8 +938,8 @@
             </tr>
           </thead>
           <tbody>
-            <tr style="border-bottom:1px solid var(--border)"><td style="padding:10px 12px">Primary</td><td style="padding:10px 12px;font-family:monospace">#B8975A</td><td style="padding:10px 12px;font-family:monospace">#000000</td><td style="padding:10px 12px">Main CTA, publish, submit</td></tr>
-            <tr style="border-bottom:1px solid var(--border)"><td style="padding:10px 12px">Secondary</td><td style="padding:10px 12px;font-family:monospace">transparent</td><td style="padding:10px 12px;font-family:monospace">#B8975A</td><td style="padding:10px 12px">Secondary action, learn more</td></tr>
+            <tr style="border-bottom:1px solid var(--border)"><td style="padding:10px 12px">Primary</td><td style="padding:10px 12px;font-family:monospace">#C8C8C8</td><td style="padding:10px 12px;font-family:monospace">#000000</td><td style="padding:10px 12px">Main CTA, publish, submit</td></tr>
+            <tr style="border-bottom:1px solid var(--border)"><td style="padding:10px 12px">Secondary</td><td style="padding:10px 12px;font-family:monospace">transparent</td><td style="padding:10px 12px;font-family:monospace">#C8C8C8</td><td style="padding:10px 12px">Secondary action, learn more</td></tr>
             <tr style="border-bottom:1px solid var(--border)"><td style="padding:10px 12px">Ghost</td><td style="padding:10px 12px;font-family:monospace">transparent</td><td style="padding:10px 12px;font-family:monospace">rgba cream</td><td style="padding:10px 12px">Tertiary, cancel, skip</td></tr>
             <tr><td style="padding:10px 12px">Teal</td><td style="padding:10px 12px;font-family:monospace">#1A4447</td><td style="padding:10px 12px;font-family:monospace">#F2EDE4</td><td style="padding:10px 12px">C&amp;B co-branded contexts only</td></tr>
           </tbody>
@@ -961,7 +961,7 @@
         <span class="badge" style="background:rgba(14,165,233,0.15);color:#0EA5E9;border:1px solid rgba(14,165,233,0.3)">Seller Tips</span>
         <span class="badge" style="background:rgba(22,163,74,0.15);color:#16A34A;border:1px solid rgba(22,163,74,0.3)">Community</span>
         <span class="badge" style="background:rgba(156,39,176,0.15);color:#9C27B0;border:1px solid rgba(156,39,176,0.3)">Trending Topics</span>
-        <span class="badge" style="background:rgba(184,151,90,0.15);color:#B8975A;border:1px solid rgba(184,151,90,0.3)">Local History</span>
+        <span class="badge" style="background:rgba(200,200,200,0.15);color:#C8C8C8;border:1px solid rgba(200,200,200,0.3)">Local History</span>
         <span class="badge" style="background:rgba(230,126,34,0.15);color:#E67E22;border:1px solid rgba(230,126,34,0.3)">Local Interest</span>
       </div>
       <div class="badge-grid">
@@ -1041,8 +1041,8 @@
         <div class="gradient-swatch" style="background:linear-gradient(to top,rgba(0,0,0,0.88) 25%,rgba(0,0,0,0.35) 60%,rgba(0,0,0,0.12) 100%)">
           <div class="gradient-label">Top-from-bottom<br>Card hover overlays</div>
         </div>
-        <div class="gradient-swatch" style="background:radial-gradient(ellipse at 30% 50%,rgba(184,151,90,0.15) 0%,transparent 70%),#0A0A0A">
-          <div class="gradient-label">Bronze radial glow<br>Featured / active states</div>
+        <div class="gradient-swatch" style="background:radial-gradient(ellipse at 30% 50%,rgba(200,200,200,0.15) 0%,transparent 70%),#0A0A0A">
+          <div class="gradient-label">Light gray radial glow<br>Featured / active states</div>
         </div>
       </div>
     </section>
@@ -1110,7 +1110,7 @@
         <button class="copy-btn" id="copyBtn" onclick="copyPrompt()">Copy</button>
         <div class="prompt-box-text" id="promptText">You are creating content for Shana Gates, REALTOR® at Craft & Bauer | Real Broker in the Coachella Valley, CA. Website: shanasells.com. Contact: shana@craftbauer.com.
 
-BRAND COLORS: Background #0A0A0A, Bronze accent #B8975A, Cream text #F2EDE4, C&B Teal #1A4447, Turquoise bright #4ECDC4.
+BRAND COLORS: Background #0A0A0A, Light Gray accent #C8C8C8, Cream text #F2EDE4, C&B Teal #1A4447, Turquoise bright #4ECDC4, C&B Navy #0D1B2A.
 
 FONTS: Cormorant Garamond (elegant serif headlines, weight 300–400) + Montserrat (display/eyebrows/buttons, weight 500–900) + Jost (body/UI, weight 300–500).
 
