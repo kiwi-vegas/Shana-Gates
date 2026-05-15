@@ -272,11 +272,52 @@
         ${!d.gaConnected ? `
         <div class="callout">
           <strong>Connect Google Analytics for live traffic metrics.</strong><br>
-          To see pageviews, sessions, and engagement time per post, add these environment variables to Vercel:<br><br>
-          <code>GOOGLE_ANALYTICS_PROPERTY_ID</code> — your numeric GA4 property ID (found in GA4 → Admin → Property Settings)<br>
-          <code>GOOGLE_SERVICE_ACCOUNT_JSON</code> — a service account JSON key with Viewer access to the GA4 property<br><br>
-          Once set, all "—" values below will populate automatically on each page load.
+          To enable site traffic, YLOPO click attribution, and per-post engagement data, add these environment variables to Vercel:<br><br>
+          <code>GOOGLE_ANALYTICS_PROPERTY_ID</code> — numeric GA4 property ID (GA4 → Admin → Property Settings → Property ID)<br>
+          <code>GOOGLE_SERVICE_ACCOUNT_JSON</code> — service account key JSON with Viewer access to the GA4 property<br><br>
+          Once set, the Site Traffic and YLOPO Attribution sections below will populate automatically.
         </div>` : ''}
+
+        <!-- Site Traffic -->
+        <div class="section">
+          <div class="section-title">Site Traffic — Last 30 Days</div>
+          <div class="stat-cards">
+            <div class="stat-card">
+              <div class="stat-label">Sessions</div>
+              <div class="stat-value ${!d.gaConnected || !d.siteTraffic ? 'td-pending' : ''}">${d.siteTraffic?.sessions ? Number(d.siteTraffic.sessions).toLocaleString() : '—'}</div>
+              <div class="stat-sub">website visits</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Unique Users</div>
+              <div class="stat-value ${!d.gaConnected || !d.siteTraffic ? 'td-pending' : ''}">${d.siteTraffic?.users ? Number(d.siteTraffic.users).toLocaleString() : '—'}</div>
+              <div class="stat-sub">distinct visitors</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- YLOPO IDX Attribution -->
+        <div class="section">
+          <div class="section-title">YLOPO IDX Click Attribution — Last 30 Days</div>
+          <div class="stat-cards" style="margin-bottom:20px;">
+            <div class="stat-card highlight">
+              <div class="stat-label">Total IDX Clicks</div>
+              <div class="stat-value">${d.ylopoClicks != null ? d.ylopoClicks.total.toLocaleString() : '—'}</div>
+              <div class="stat-sub">listings clicked from this site</div>
+            </div>
+          </div>
+          ${d.gaConnected && d.topYlopoPages && d.topYlopoPages.length > 0 ? `
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Page</th><th>IDX Clicks</th></tr></thead>
+              <tbody>
+                ${d.topYlopoPages.map(p => `<tr>
+                  <td>${escHtml(p.page)}</td>
+                  <td style="font-weight:600;">${p.clicks.toLocaleString()}</td>
+                </tr>`).join('')}
+              </tbody>
+            </table>
+          </div>` : d.gaConnected ? `<div style="color:var(--muted);font-size:13px;">No IDX click events recorded yet. Make sure <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;font-size:12px;">/ylopo-tracking.js</code> is deployed and custom dimensions are registered in GA4.</div>` : ''}
+        </div>
 
         <!-- Category breakdown -->
         <div class="section">

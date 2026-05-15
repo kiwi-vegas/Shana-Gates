@@ -9,6 +9,7 @@
 import { createHmac } from 'crypto'
 import { redis } from '../../lib/blog-store'
 import type { BlogPostSummary } from '../../lib/blog-redis'
+import { runGA4Report } from '../../lib/ga4-client'
 
 const COOKIE_NAME = 'sg_assistant_session'
 
@@ -77,6 +78,50 @@ export default async function handler(req: any, res: any) {
     hasImage: !!p.heroImageUrl,
   }))
 
+  let siteTraffic: { sessions: string | null; users: string | null } | null = null
+  let ylopoClicks: { total: number } | null = null
+  let topYlopoPages: { page: string; clicks: number }[] | null = null
+
+  const gaReady = !!(process.env.GOOGLE_SERVICE_ACCOUNT_JSON && process.env.GOOGLE_ANALYTICS_PROPERTY_ID)
+  if (gaReady) {
+    const [sessionRows, topPagesRows] = await Promise.all([
+      runGA4Report({
+        dateRanges: [{ startDate: '30daysAgo', endDate: 'today' }],
+        dimensions: [],
+        metrics: [{ name: 'sessions' }, { name: 'totalUsers' }],
+      }),
+      runGA4Report({
+        dateRanges: [{ startDate: '30daysAgo', endDate: 'today' }],
+        dimensions: [{ name: 'customEvent:page_slug' }],
+        metrics: [{ name: 'eventCount' }],
+        dimensionFilter: {
+          filter: { fieldName: 'eventName', stringFilter: { value: 'idx_property_click' } },
+        },
+        orderBys: [{ metric: { metricName: 'eventCount' }, desc: true }],
+        limit: 10,
+      }),
+    ])
+
+    if (sessionRows.length > 0) {
+      siteTraffic = {
+        sessions: sessionRows[0]?.metricValues[0]?.value ?? null,
+        users: sessionRows[0]?.metricValues[1]?.value ?? null,
+      }
+    }
+
+    if (topPagesRows.length > 0) {
+      const pages = topPagesRows.map((r) => ({
+        page: r.dimensionValues[0].value,
+        clicks: parseInt(r.metricValues[0].value, 10),
+      }))
+      ylopoClicks = { total: pages.reduce((sum, p) => sum + p.clicks, 0) }
+      topYlopoPages = pages
+    } else {
+      ylopoClicks = { total: 0 }
+      topYlopoPages = []
+    }
+  }
+
   res.setHeader('Cache-Control', 'private, no-store')
   return res.status(200).json({
     totalPosts: allPosts.length,
@@ -86,7 +131,10 @@ export default async function handler(req: any, res: any) {
     byPipeline,
     gaMeasurementId: process.env.GA_MEASUREMENT_ID || 'G-X2N2M3LDKS',
     gaPropertyId: process.env.GOOGLE_ANALYTICS_PROPERTY_ID || null,
-    gaConnected: !!process.env.GOOGLE_ANALYTICS_PROPERTY_ID,
+    gaConnected: gaReady,
+    siteTraffic,
+    ylopoClicks,
+    topYlopoPages,
     posts,
     generatedAt: new Date().toISOString(),
   })
