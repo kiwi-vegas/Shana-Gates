@@ -11,9 +11,10 @@
  */
 
 import { PALM_SPRINGS_STORIES } from '../../lib/history-seeds'
-import { writePostFromIdea } from '../../lib/writer'
+import { writeFromArticle } from '../../lib/writer'
 import { publishBlogPost } from '../../lib/blog-redis'
-import type { IdeaCandidate } from '../../lib/types'
+import { generateHeroImage } from '../../lib/blog-images'
+import type { ScoredArticle } from '../../lib/blog-store'
 
 export const config = { maxDuration: 120 }
 
@@ -39,35 +40,24 @@ export default async function handler(req: any, res: any) {
     return res.status(404).json({ error: `Seed not found: ${slug}` })
   }
 
-  const idea: IdeaCandidate = {
+  const article: ScoredArticle = {
     id: `history-${story.slug}`,
-    weekId: new Date().toISOString().slice(0, 10).replace(/-/g, '').slice(0, 6),
-    source: 'internal',
+    url: '',
     title: story.title,
-    angle: story.angle,
-    whyItMatters: story.whyItMatters,
+    source: 'Palm Springs History',
+    publishedDate: '',
+    summary: `${story.angle}\n\n${story.researchData}`,
+    score: 9,
     category: 'local-history',
-    audiences: ['local', 'buyer'],
-    contentType: 'Local History',
-    urgency: 'evergreen',
-    score: {
-      total: 78, localRelevance: 25, timeliness: 8,
-      formatFit: 14, audienceValue: 13, sourceCredibility: 9,
-      novelty: 7, seoPotential: 2,
-    },
-    sourceUrls: [],
-    sourceDomains: [],
-    sourceLabels: ['Curated — Palm Springs History'],
-    researchData: story.researchData,
-    targetKeyword: story.targetKeyword,
-    cityTarget: story.cityTarget,
-    status: 'pending',
-    createdAt: new Date().toISOString(),
+    whyItMatters: story.whyItMatters,
   }
 
   try {
-    const post = await writePostFromIdea(idea)
-    const result = await publishBlogPost(post, { imageUrl: null })
+    const post = await writeFromArticle(article)
+    const heroImage = await generateHeroImage(
+      post.title, story.whyItMatters, post.category, '', post.body
+    ).catch(() => ({ imageUrl: null }))
+    const result = await publishBlogPost(post, heroImage)
     return res.status(200).json({ ok: true, slug: result.slug, title: story.title })
   } catch (err) {
     return res.status(500).json({ error: err instanceof Error ? err.message : 'Unknown error' })
