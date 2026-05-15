@@ -322,17 +322,40 @@ Return ONLY valid JSON, no markdown fences.`,
 
   const rawText = response.content[0].type === 'text' ? response.content[0].text.trim() : '{}'
   // Strip markdown code fences if Claude wrapped the JSON despite instructions
-  const text = rawText.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim()
+  const stripped = rawText.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim()
+
+  // Repair literal control characters (newlines, tabs, carriage returns) inside JSON strings.
+  // Claude sometimes emits real \n characters instead of the escape sequence \n — this breaks JSON.parse.
+  function repairJsonControlChars(src: string): string {
+    let out = ''
+    let inString = false
+    let escaped = false
+    for (let i = 0; i < src.length; i++) {
+      const ch = src[i]
+      if (escaped) { out += ch; escaped = false; continue }
+      if (ch === '\\' && inString) { out += ch; escaped = true; continue }
+      if (ch === '"') { inString = !inString; out += ch; continue }
+      if (inString) {
+        if (ch === '\n') { out += '\\n'; continue }
+        if (ch === '\r') { out += '\\r'; continue }
+        if (ch === '\t') { out += '\\t'; continue }
+      }
+      out += ch
+    }
+    return out
+  }
+
+  const text = repairJsonControlChars(stripped)
 
   let raw: Record<string, string>
   try {
     raw = JSON.parse(text)
   } catch {
     // Try greedy extraction of the first complete JSON object in the response
-    const jsonMatch = text.match(/\{[\s\S]*\}/)
+    const jsonMatch = stripped.match(/\{[\s\S]*\}/)
     if (jsonMatch) {
       try {
-        raw = JSON.parse(jsonMatch[0])
+        raw = JSON.parse(repairJsonControlChars(jsonMatch[0]))
       } catch {
         throw new Error(`Failed to parse post JSON (stop_reason: ${response.stop_reason}). Try approving again.`)
       }
